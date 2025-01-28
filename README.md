@@ -5,6 +5,6 @@ Team Members -
 
 kaipokrandt : Kai Pokrandt
 codingdodia : Dodia Dhairya
-            : Dylan Flanagan
+dylanf9     : Dylan Flanagan
 SherazM1    : Sheraz Mukhtar
-            : EJ Alobuia
+ejmoneyyy1  : EJ Alobuia
