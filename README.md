@@ -8,3 +8,5 @@ codingdodia : Dodia Dhairya /
 dylanf9     : Dylan Flanagan /
 SherazM1    : Sheraz Mukhtar /
 ejmoneyyy1  : EJ Alobuia /
+
+Added main.java, base UDP client-server architecture - 1/28/2025
