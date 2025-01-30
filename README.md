@@ -2,13 +2,13 @@
 Software Engineering project for Jim Strother
 
 ----------------------------------------------------------------
-HOW-TO-RUN
+HOW-TO-RUN /////////////////////////////////////////////////////
 ----------------------------------------------------------------
 
 
 
 ----------------------------------------------------------------
-Team Members - 
+Team Members ///////////////////////////////////////////////////
 ----------------------------------------------------------------
 kaipokrandt : Kai Pokrandt /
 codingdodia : Dodia Dhairya /
@@ -17,19 +17,21 @@ SherazM1    : Sheraz Mukhtar /
 ejmoneyyy1  : EJ Alobuia /
 
 -----------------------------------------------------------------
-UPDATES
+UPDATES /////////////////////////////////////////////////////////
 -----------------------------------------------------------------
 Added main.java, base UDP client-server architecture - 1/28/2025 /
 Added SplashScreen.java and EntryScreen.java - 1/30/2025 /
 
+-----------------------------------------------------------------
+#TO-DO //////////////////////////////////////////////////////////
+-----------------------------------------------------------------
 
-#TO-DO
-BASH SCRIPT or EXE file for ease of use
-Finish EntryScreen.java and format it properly
-Link EntryScreen.java to Database.java
-Store players from EntryScreen to SQLDatabase
-Create UDP sockets and transmit equipment codes
-Add option to select different UDP Network
+BASH SCRIPT or EXE file for ease of use /
+Finish EntryScreen.java and format it properly /
+Link EntryScreen.java to Database.java /
+Store players from EntryScreen to SQLDatabase /
+Create UDP sockets and transmit equipment codes /
+Add option to select different UDP Network /
 
 
 
