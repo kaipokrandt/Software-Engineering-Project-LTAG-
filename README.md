@@ -1,13 +1,35 @@
 # Software-Engineering-Project-LTAG-
 Software Engineering project for Jim Strother
 
-Team Members - 
+----------------------------------------------------------------
+HOW-TO-RUN
+----------------------------------------------------------------
 
+
+
+----------------------------------------------------------------
+Team Members - 
+----------------------------------------------------------------
 kaipokrandt : Kai Pokrandt /
 codingdodia : Dodia Dhairya /
 dylanf9     : Dylan Flanagan /
 SherazM1    : Sheraz Mukhtar /
 ejmoneyyy1  : EJ Alobuia /
 
+-----------------------------------------------------------------
+UPDATES
+-----------------------------------------------------------------
 Added main.java, base UDP client-server architecture - 1/28/2025 /
 Added SplashScreen.java and EntryScreen.java - 1/30/2025 /
+
+
+#TO-DO
+BASH SCRIPT or EXE file for ease of use
+Finish EntryScreen.java and format it properly
+Link EntryScreen.java to Database.java
+Store players from EntryScreen to SQLDatabase
+Create UDP sockets and transmit equipment codes
+Add option to select different UDP Network
+
+
+
