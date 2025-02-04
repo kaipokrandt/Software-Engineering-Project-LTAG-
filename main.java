@@ -17,6 +17,9 @@ public class main{
         SplashScreen SplashScreen = new SplashScreen();
         //create splash screen
         SplashScreen.showSplashScreen();
+
+        Database players = new Database();
+        players.connect_to_db();
     }
 
 }
