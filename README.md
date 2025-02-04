@@ -21,6 +21,7 @@ UPDATES /////////////////////////////////////////////////////////
 -----------------------------------------------------------------
 Added main.java, base UDP client-server architecture - 1/28/2025 /
 Added SplashScreen.java and EntryScreen.java - 1/30/2025 /
+Implemented more detailed UDP client-server interaction - 2/4/2025
 
 -----------------------------------------------------------------
 #TO-DO //////////////////////////////////////////////////////////
