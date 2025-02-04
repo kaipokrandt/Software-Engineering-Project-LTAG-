@@ -14,6 +14,8 @@ public class main{
         //create entry screen
         EntryScreen.showPlayerEntryScreen();
 
+        database db = new database();
+        db.createDatabase();
     }
 
 }
