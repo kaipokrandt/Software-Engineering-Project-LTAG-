@@ -1,12 +1,4 @@
-
-//required imports
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
+//imports here
 
 
 public class main{
@@ -18,8 +10,12 @@ public class main{
         //create splash screen
         SplashScreen.showSplashScreen();
 
-        Database players = new Database();
-        players.connect_to_db();
+        EntryScreen EntryScreen = new EntryScreen();
+        //create entry screen
+        EntryScreen.showPlayerEntryScreen();
+
+        database db = new database();
+        db.createDatabase();
     }
 
 }
