@@ -1,54 +1,73 @@
-// Java program to illustrate Server side
-// Implementation using DatagramSocket
+// Java program to illustrate Server side UDP communication
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-public class udpBaseServer_2
-{
-	public static void main(String[] args) throws IOException
-	{
-		// Step 1 : Create a socket to listen at port 1234
-		DatagramSocket ds = new DatagramSocket(1234);
-		byte[] receive = new byte[65535];
+public class udpBaseServer_2 {
+    public static void main(String[] args) {
+        final int PORT = 7501; // Server listens on port 7501
+        byte[] buffer = new byte[256]; // Buffer size for incoming packets
 
-		DatagramPacket DpReceive = null;
-		while (true)
-		{
+        try {
+            // Step 1: Create a socket to listen on UDP port 7501
+            DatagramSocket socket = new DatagramSocket(PORT);
+            System.out.println("UDP Server started... Listening on port " + PORT);
 
-			// Step 2 : create a DatgramPacket to receive the data.
-			DpReceive = new DatagramPacket(receive, receive.length);
+            while (true) {
+                // Step 2: Create a DatagramPacket to receive incoming data
+                DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
 
-			// Step 3 : revieve the data in byte buffer.
-			ds.receive(DpReceive);
+                // Step 3: Receive the data
+                socket.receive(receivedPacket);
 
-			System.out.println("Client:-" + data(receive));
+                // Step 4: Convert received bytes into a string
+                String receivedMessage = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
 
-			// Exit the server if the client sends "bye"
-			if (data(receive).toString().equals("bye"))
-			{
-				System.out.println("Client sent bye.....EXITING");
-				break;
-			}
+                // Print the received data
+                System.out.println("Received: " + receivedMessage);
 
-			// Clear the buffer after every message.
-			receive = new byte[65535];
-		}
-	}
+                // Step 5: Process the received message
+                processMessage(receivedMessage);
 
-	// A utility method to convert the byte array
-	// data into a string representation.
-	public static StringBuilder data(byte[] a)
-	{
-		if (a == null)
-			return null;
-		StringBuilder ret = new StringBuilder();
-		int i = 0;
-		while (a[i] != 0)
-		{
-			ret.append((char) a[i]);
-			i++;
-		}
-		return ret;
-	}
+                // Step 6: Exit the server if "bye" is received
+                if (receivedMessage.equalsIgnoreCase("bye")) {
+                    System.out.println("Client sent 'bye'... Server shutting down.");
+                    break;
+                }
+            }
+
+            // Close the socket
+            socket.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Method to process game messages based on the received data
+    private static void processMessage(String message) {
+        if (message.equals("202")) {
+            System.out.println("Game Started!");
+        } else if (message.equals("221")) {
+            System.out.println("Game Ended!");
+        } else if (message.equals("53")) {
+            System.out.println(" Red base scored! +100 points for Green Team.");
+        } else if (message.equals("43")) {
+            System.out.println("Green base scored! +100 points for Red Team.");
+        } else if (message.contains(":")) {
+            String[] parts = message.split(":");
+            if (parts.length == 2) {
+                try {
+                    int shooterID = Integer.parseInt(parts[0]);
+                    int targetID = Integer.parseInt(parts[1]);
+                    System.out.println("Player " + shooterID + " hit Player " + targetID);
+                } catch (NumberFormatException e) {
+                    System.out.println("⚠️ Invalid player ID format: " + message);
+                }
+            }
+        } else {
+            System.out.println("⚠️ Unknown command received: " + message);
+            System.out.println("wsg");
+        }
+    }
 }
