@@ -5,11 +5,11 @@ import java.sql.Statement;
 
 public class database {
     
-    private String url = "jdbc:postgresql://localhost:5432/photon";
-    private String user = "student";
-    private String password = "student";
+    private static String url = "jdbc:postgresql://localhost:5432/photon";
+    private static String user = "student";
+    private static String password = "student";
     
-    public Connection connectToDatabase(){
+    public static Connection connectToDatabase(){
         // Database connection details
         
 
@@ -27,7 +27,6 @@ public class database {
         }
 
         return null;
-
         
     }
 
