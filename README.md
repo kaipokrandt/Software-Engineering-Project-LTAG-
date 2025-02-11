@@ -5,7 +5,7 @@ Software Engineering project for Jim Strother
 HOW-TO-RUN /////////////////////////////////////////////////////
 ----------------------------------------------------------------
 
-
+Make sure you have the postgresql 42.7.5 jar file from out in the lib folder
 
 ----------------------------------------------------------------
 Team Members ///////////////////////////////////////////////////
