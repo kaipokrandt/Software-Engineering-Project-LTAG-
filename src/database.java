@@ -31,25 +31,5 @@ public class database {
         
     }
 
-    public void createTables(){
-
-        String createRedTeamTable = "CREATE TABLE IF NOT EXISTS red_team (" +
-                                    "id SERIAL PRIMARY KEY, " +
-                                    "name VARCHAR(50), " +
-                                    "score INT)";
-        
-        String createGreenTeamTable = "CREATE TABLE IF NOT EXISTS green_team (" +
-                                    "id SERIAL PRIMARY KEY, " +
-                                    "name VARCHAR(50), " +
-                                    "score INT)";
-        
-        try(Connection connection = connectToDatabase()) {
-
-        } catch(Exception e){
-            System.err.println("Error: " + e.getMessage());
-        }
-
-
-    }
 }
 
