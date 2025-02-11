@@ -33,6 +33,25 @@ public class database {
 
 
     public void retreiveEntries(){
+        // Database connection details
+
+        // Establish the connection
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            // Execute a query
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM players");
+
+            // Process the result set
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String codename = resultSet.getString("codename");
+                System.out.println("ID: " + id + ", Codename: " + codename);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
 
     }
    
@@ -43,9 +62,6 @@ public class database {
 
     public void addplayer(String playerName, int ID){
         // Database connection details
-        String url = "jdbc:postgresql://localhost:5432/photon";
-        String user = "student";
-        String password = "student";
 
         String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 

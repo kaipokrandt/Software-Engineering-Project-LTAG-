@@ -2,6 +2,8 @@
 
 
 public class main{
+
+    
     public static void main(String[] args) {
         //hi world
         System.out.println("Starting Photon...");
@@ -15,6 +17,9 @@ public class main{
         EntryScreen.showPlayerEntryScreen();
 
         database db = new database();
-        db.createDatabase();
+        db.retreiveEntries();
     }
+
+
+    
 }
