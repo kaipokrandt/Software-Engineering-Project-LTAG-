@@ -16,6 +16,5 @@ public class main{
 
         database db = new database();
         db.createDatabase();
-        db.addplayer("james", 22);
     }
 }
