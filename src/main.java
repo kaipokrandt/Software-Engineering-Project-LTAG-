@@ -15,7 +15,6 @@ public class main{
         EntryScreen.showPlayerEntryScreen();
 
         database db = new database();
-        db.connectToDatabase();
-        db.createTables();
+        db.createDatabase();
     }
 }
