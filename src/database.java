@@ -172,7 +172,7 @@ public class database {
                     IDexists = true;
                 }
             }
-            System.out.println("Id: " + Id + " exists in database");
+            System.out.println("ID checked successfully!");
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());

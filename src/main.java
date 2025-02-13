@@ -20,9 +20,5 @@ public class main{
         EntryScreen.setVariable(db);
         db.checkIfIdExists(1);
         
-        //db.addplayer("Bob",42);
-        //db.addplayer("Bob",42);
-
-        db.retreiveEntries();
     }
 }

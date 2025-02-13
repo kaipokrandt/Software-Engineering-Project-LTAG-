@@ -149,8 +149,10 @@ public class EntryScreen {
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
 
+                    System.out.println("Checking" + database.checkIfIdExists(playerID));
                     if(database.checkIfIdExists(playerID)){
                         InvalidPlayerIds.add(playerID);
+                        System.out.println(playerID + " already exists in the database.");
                     }
                     else{
                         database.addplayer(playerName, playerID);
