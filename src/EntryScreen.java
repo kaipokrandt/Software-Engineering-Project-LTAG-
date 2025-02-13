@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class EntryScreen {
     private JTextField[][] playerFields;
@@ -135,19 +137,40 @@ public class EntryScreen {
             return;
         }
 
+        
+        ArrayList<Integer> InvalidPlayerIds = new ArrayList<Integer>();
         //save players to db
         for (int i = 0; i < 19; i++) {
             try {
                 String playerName = playerFields[i][1].getText().trim();
                 String idText = playerFields[i][0].getText().trim();
                 
+                
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
-                    database.addplayer(playerName, playerID);
+
+                    if(database.checkIfIdExists(playerID)){
+                        InvalidPlayerIds.add(playerID);
+                    }
+                    else{
+                        database.addplayer(playerName, playerID);
+                    }
                 }
+
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for Player ID at entry!" + (i + 1));
             }
+        }
+
+        if(InvalidPlayerIds.size() > 0){
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < InvalidPlayerIds.size(); i++) {
+                sb.append(InvalidPlayerIds.get(i));
+                if(i != InvalidPlayerIds.size() -1){
+                    sb.append(", ");
+                }
+            }
+            JOptionPane.showMessageDialog(null, "The following Player IDs are already in use: " + sb.toString(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

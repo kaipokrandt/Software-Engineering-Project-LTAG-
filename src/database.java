@@ -83,7 +83,10 @@ public class database {
 
     }
 
-    public void removePlayer(int ID){
+    public void removePlayerbyId(int ID){
+
+        //Delete players from the databse, accepts integer;
+
         // Database connection details
 
         String sql = "DELETE FROM players WHERE id = " + ID + ";";
@@ -105,7 +108,10 @@ public class database {
     }  
     
     public void editPlayer(String newName , int ID){ 
+        
+        //EDIT TABLE players SET codename = 'newName' WHERE id = 1;
         // Database connection details
+
 
         String sql = "UPDATE players SET codename = '" + newName + "' WHERE id = " + ID + ";";
 
@@ -125,8 +131,10 @@ public class database {
 
     }
 
-    public void clearTable()
-    {
+    public void clearTable(){
+
+        // Clears the table.
+
         String sql = "TRUNCATE TABLE players;";
 
         // Establish the connection
@@ -145,6 +153,9 @@ public class database {
     }
 
     public boolean checkIfIdExists(int Id){
+
+        //Checks if ID exists in the database, returns true if it does, false if it does not.
+
         String sql = "SELECT COUNT(*) FROM players WHERE id = " + Id + ";";
         boolean IDexists = false;
 
