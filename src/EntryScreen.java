@@ -35,16 +35,18 @@ class EntryScreen {
         DefaultTableModel model = new DefaultTableModel(new Object[]{"Name","Id"},0); 
         JTable table = new JTable(model);
 
-//     addButton.addActionListener(new ActionListener() {
-//         @Override
-//         public void actionPerformed(Action e){
-//             String playerName = playerNameField.getText();
-//             if (!playerName.isEmpty()) {
-//             db.addplayer(playerName, 10);
-//             //new udpBaseClient_2().sendEquipmentCode("Player Name: " + playerName);
-//         }
-//     }
-// });
+    addButton.addActionListener(new ActionListener() 
+    {
+        @Override
+        public void actionPerformed(ActionEvent e){
+            String playerName = playerNameField.getText();
+            int ID = Integer.parseInt(IdField.getText());
+            if (!playerName.isEmpty()) {
+            db.addplayer(playerName, ID);
+            //new udpBaseClient_2().sendEquipmentCode("Player Name: " + playerName);
+            }
+        }
+    });
 
         frame.setVisible(true);
     }

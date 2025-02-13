@@ -17,6 +17,11 @@ public class main{
         EntryScreen.showPlayerEntryScreen();
 
         database db = new database();
+        EntryScreen.setVariable(db);
+
+        db.addplayer("Bob",42);
+        db.addplayer("Bob",42);
+
         db.retreiveEntries();
     }
 
