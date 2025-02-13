@@ -12,7 +12,7 @@ public class main{
 
         EntryScreen EntryScreen = new EntryScreen();
         //create entry screen
-        EntryScreen.showPlayerEntryScreen();
+        EntryScreen.createAndShowGUI();
 
     }
 
