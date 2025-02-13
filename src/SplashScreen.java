@@ -15,7 +15,7 @@ class SplashScreen {
 
         try {
             //find logo.jpg and read it
-            //fix
+            //fix by making it ./images/logo.jpg
             File imageFile = new File("../images/logo.jpg");
             BufferedImage img = ImageIO.read(imageFile);
 

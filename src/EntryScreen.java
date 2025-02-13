@@ -141,7 +141,7 @@ public class EntryScreen {
                     //database.addplayer(playerName, playerID);
                 }
             } catch (NumberFormatException ex) {
-                System.err.println("Invalid input for player ID at entry " + (i + 1));
+                System.err.println("Invalid input for Player ID at entry!" + (i + 1));
             }
         }
     }
