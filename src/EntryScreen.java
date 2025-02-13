@@ -6,10 +6,10 @@ import java.awt.event.KeyEvent;
 
 public class EntryScreen {
     private JTextField[][] playerFields;
+
     //implement database functionality
-
     public database database;
-
+    //set database variable
     public void setVariable(database db) {
         this.database = db;
     }
