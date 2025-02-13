@@ -18,7 +18,7 @@ public class main{
 
         //database db = new database();
         //EntryScreen.setVariable(db);
-
+        
         //db.addplayer("Bob",42);
         //db.addplayer("Bob",42);
 
