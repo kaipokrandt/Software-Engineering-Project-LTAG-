@@ -6,7 +6,7 @@ HOW-TO-RUN /////////////////////////////////////////////////////
 ----------------------------------------------------------------
 
 Make sure you have the postgresql 42.7.5 jar file from out in the lib folder
-Check .vscode to see if the .jar file is one of the files in the referecned library.
+Check .vscode to see if the .jar file is one of the files in the referenced library.
 
 ----------------------------------------------------------------
 Team Members ///////////////////////////////////////////////////
@@ -29,7 +29,6 @@ Implemented more detailed UDP client-server interaction - 2/4/2025
 -----------------------------------------------------------------
 
 BASH SCRIPT or EXE file for ease of use /
-Finish EntryScreen.java and format it properly /
 Link EntryScreen.java to Database.java /
 Store players from EntryScreen to SQLDatabase /
 Create UDP sockets and transmit equipment codes /
