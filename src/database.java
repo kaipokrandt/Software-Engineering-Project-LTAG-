@@ -103,5 +103,30 @@ public class database {
             System.err.println("Error: " + e.getMessage());
         }
     }
+
+    public boolean checkIfIdExists(int Id){
+        String sql = "SELECT COUNT(*) FROM players WHERE id = " + Id + ";";
+        boolean IDexists = false;
+
+        // Establish the connection
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            System.out.println("Connected to the PostgreSQL database successfully!");
+
+            // Execute a query
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                if(Id == resultSet.getInt(1)){
+                    IDexists = true;
+                }
+            }
+            System.out.println("Id: " + Id + " exists in database");
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+        return IDexists;
+    }
 }
 
