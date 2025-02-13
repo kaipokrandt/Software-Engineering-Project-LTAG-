@@ -88,7 +88,47 @@ public class database {
 
     }
 
+    public void removePlayer(int ID){
+        // Database connection details
 
+        String sql = "DELETE FROM players WHERE id = " + ID + ";";
+
+        // Establish the connection
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            System.out.println("Connected to the PostgreSQL database successfully!");
+
+            // Execute a query
+            statement.executeUpdate(sql);
+            System.out.println("Player removed successfully!");
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+
+    }  
+    
+    public void editPlayer(String newName , int ID){ 
+        // Database connection details
+
+        String sql = "UPDATE players SET codename = '" + newName + "' WHERE id = " + ID + ";";
+
+        // Establish the connection
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            System.out.println("Connected to the PostgreSQL database successfully!");
+
+            // Execute a query
+            statement.executeUpdate(sql);
+            System.out.println("Player edited successfully!");
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+
+    }
 
     public void clearTable()
     {
@@ -107,6 +147,31 @@ public class database {
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
+    }
+
+    public boolean checkIfIdExists(int Id){
+        String sql = "SELECT COUNT(*) FROM players WHERE id = " + Id + ";";
+        boolean IDexists = false;
+
+        // Establish the connection
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            System.out.println("Connected to the PostgreSQL database successfully!");
+
+            // Execute a query
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                if(Id == resultSet.getInt(1)){
+                    IDexists = true;
+                }
+            }
+            System.out.println("Id: " + Id + " exists in database");
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+        return IDexists;
     }
 }
 
