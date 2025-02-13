@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 
 class EntryScreen {
 
-    database db = null;
+    static database db = null;
 
     public void setVariable(database db){
         this.db = db;
@@ -39,8 +40,8 @@ class EntryScreen {
 //         public void actionPerformed(Action e){
 //             String playerName = playerNameField.getText();
 //             if (!playerName.isEmpty()) {
-//             db.addplayer(playerName, ID);
-//             new udpBaseClient_2().sendEquipmentCode("Player Name: " + playerName);
+//             db.addplayer(playerName, 10);
+//             //new udpBaseClient_2().sendEquipmentCode("Player Name: " + playerName);
 //         }
 //     }
 // });
