@@ -20,9 +20,11 @@ ejmoneyyy1  : EJ Alobuia /
 -----------------------------------------------------------------
 UPDATES /////////////////////////////////////////////////////////
 -----------------------------------------------------------------
-Added main.java, base UDP client-server architecture - 1/28/2025 /
-Added SplashScreen.java and EntryScreen.java - 1/30/2025 /
-Implemented more detailed UDP client-server interaction - 2/4/2025
+Added main.java, base UDP client-server architecture     - 1/28/2025 /
+Added SplashScreen.java and EntryScreen.java             - 1/30/2025 /
+Implemented more detailed UDP client-server interaction  - 2/4/2025 /
+Implemented Database and finished GUI for Entry Screen   - 2/13/2025 /
+Implemented basic UDP functionality                      - 2/13/2025 /
 
 -----------------------------------------------------------------
 #TO-DO //////////////////////////////////////////////////////////
