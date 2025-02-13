@@ -16,15 +16,12 @@ public class main{
         //create entry screen
         EntryScreen.createAndShowGUI();
 
-        //database db = new database();
-        //EntryScreen.setVariable(db);
+        database db = new database();
+        EntryScreen.setVariable(db);
 
         //db.addplayer("Bob",42);
         //db.addplayer("Bob",42);
 
-        //db.retreiveEntries();
+        db.retreiveEntries();
     }
-
-
-    
 }

@@ -6,8 +6,13 @@ import java.awt.event.KeyEvent;
 
 public class EntryScreen {
     private JTextField[][] playerFields;
-    //implement database functionality
 
+    //implement database functionality
+    public database database;
+    //set database variable
+    public void setVariable(database db) {
+        this.database = db;
+    }
 
     //creates base for user GUI
     public void createAndShowGUI() {
@@ -138,7 +143,7 @@ public class EntryScreen {
                 
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
-                    //database.addplayer(playerName, playerID);
+                    database.addplayer(playerName, playerID);
                 }
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at entry " + (i + 1));
