@@ -17,6 +17,7 @@ class SplashScreen {
             //find logo.jpg and read it
             File imageFile = new File("../images/logo.jpg");
             BufferedImage img = ImageIO.read(imageFile);
+            //
 
             //scale for testing purposes
             Image scaledImg = img.getScaledInstance(600,337,Image.SCALE_SMOOTH);
