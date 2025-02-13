@@ -12,17 +12,21 @@ public class main{
         //create splash screen
         SplashScreen.showSplashScreen();
 
+        database db = new database();
+        db.connectToDatabase();
+        
+        
         EntryScreen EntryScreen = new EntryScreen();
         //create entry screen
+        EntryScreen.setDB(db);
         EntryScreen.createAndShowGUI();
 
-        //database db = new database();
-        //EntryScreen.setVariable(db);
+        
 
         //db.addplayer("Bob",42);
         //db.addplayer("Bob",42);
 
-        //db.retreiveEntries();
+        db.retreiveEntries();
     }
 
 

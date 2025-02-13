@@ -8,11 +8,15 @@ public class database {
     private String url = "jdbc:postgresql://localhost:5432/photon";
     private String user = "student";
     private String password = "student";
+
+
+    
+
     
     public Connection connectToDatabase(){
         // Database connection details
         
-        String sql = "ALTER TABLE players ADD CONSTRAINT unique_id UNIQUE (id);";
+        String sql = "ALTER TABLE players ADD CONSTRAINT IF NOT EXISTS unique_id UNIQUE (id);";
         // Establish the connection
         //Connection connection = null;
         try (Connection connection = DriverManager.getConnection(url, user, password);
@@ -65,7 +69,8 @@ public class database {
     public void addplayer(String playerName, int ID){
         // Database connection details
 
-        String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "') ON CONFLICT (id) DO NOTHING;";
+        //String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "') ON CONFLICT (id) DO NOTHING;";
+        String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 
         // Establish the connection
         try (Connection connection = DriverManager.getConnection(url, user, password);
