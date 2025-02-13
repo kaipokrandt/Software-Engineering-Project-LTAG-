@@ -104,7 +104,7 @@ public class database {
 
     }  
     
-    public void editPlayer(String newName , int ID){
+    public void editPlayer(String newName , int ID){ 
         // Database connection details
 
         String sql = "UPDATE players SET codename = '" + newName + "' WHERE id = " + ID + ";";
