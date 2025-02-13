@@ -12,12 +12,15 @@ public class main{
         //create splash screen
         SplashScreen.showSplashScreen();
 
+        
+        
+        
         EntryScreen EntryScreen = new EntryScreen();
         //create entry screen
         EntryScreen.createAndShowGUI();
 
         database db = new database();
-        EntryScreen.setVariable(db);
+        EntryScreen.setDB(db);
         db.checkIfIdExists(1);
         
     }

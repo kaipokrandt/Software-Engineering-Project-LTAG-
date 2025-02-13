@@ -7,13 +7,16 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class EntryScreen {
-    private JTextField[][] playerFields;
+    //creates two different 2d arrays to read data from both teams
+    private JTextField[][] redTeamFields;
+    private JTextField[][] greenTeamFields;
 
-    //implement database functionality
-    public database database;
-    //set database variable
-    public void setVariable(database db) {
-        this.database = db;
+
+    //implement database functionality to connnect
+    public database db = new database();
+
+    public void setDB(database db){
+        this.db = db;
     }
 
     //creates base for user GUI
@@ -24,8 +27,8 @@ public class EntryScreen {
         frame.setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
-        JPanel redTeamPanel = createTeamPanel("RED TEAM", Color.RED);
-        JPanel greenTeamPanel = createTeamPanel("GREEN TEAM", Color.GREEN);
+        JPanel redTeamPanel = createTeamPanel("RED TEAM", Color.RED, true);
+        JPanel greenTeamPanel = createTeamPanel("GREEN TEAM", Color.GREEN, false);
 
         mainPanel.add(redTeamPanel);
         mainPanel.add(greenTeamPanel);
@@ -38,7 +41,7 @@ public class EntryScreen {
     }
 
     //create team entry panel with player entry fields
-    public JPanel createTeamPanel(String teamName, Color color) {
+    public JPanel createTeamPanel(String teamName, Color color, boolean isRedTeam) {
         JPanel teamPanel = new JPanel();
         teamPanel.setLayout(new BorderLayout());
         teamPanel.setBackground(Color.BLACK);
@@ -64,10 +67,10 @@ public class EntryScreen {
         entryPanel.add(idHeader);    // ID column header
         entryPanel.add(nameHeader);  // Name column header
 
-        playerFields = new JTextField[19][2];
+        JTextField[][] playerFields = new JTextField[19][2];
 
         for (int i = 0; i < 19; i++) {
-            JLabel label = new JLabel(" " + (i + 1), SwingConstants.RIGHT);
+            JLabel label = new JLabel(String.valueOf(i + 1).trim(), SwingConstants.CENTER);
             label.setForeground(Color.WHITE);
             JTextField idField = new JTextField();
             JTextField nameField = new JTextField();
@@ -77,6 +80,16 @@ public class EntryScreen {
             playerFields[i][0] = idField;
             playerFields[i][1] = nameField;
         }
+
+        if (isRedTeam)
+        {
+            redTeamFields = playerFields;
+        }
+        else
+        {
+            greenTeamFields = playerFields;
+        }
+
 
         teamPanel.add(entryPanel, BorderLayout.CENTER);
         return teamPanel;
@@ -121,8 +134,8 @@ public class EntryScreen {
         boolean greenTeamHasPlayer = false;
 
         for (int i = 0; i < 19; i++) {
-            String redPlayerName = playerFields[i][1].getText().trim();
-            String greenPlayerName = playerFields[i][1].getText().trim();
+            String redPlayerName = redTeamFields[i][1].getText().trim();
+            String greenPlayerName = greenTeamFields[i][1].getText().trim();
             
             if (!redPlayerName.isEmpty()) {
                 redTeamHasPlayer = true;
@@ -137,14 +150,29 @@ public class EntryScreen {
             return;
         }
 
+
         
         ArrayList<Integer> InvalidPlayerIds = new ArrayList<Integer>();
-        //save players to db
+        //save the players from the red team
         for (int i = 0; i < 19; i++) {
             try {
-                String playerName = playerFields[i][1].getText().trim();
-                String idText = playerFields[i][0].getText().trim();
+                String playerName = redTeamFields[i][1].getText().trim();
+                String idText = redTeamFields[i][0].getText().trim();
                 
+                if (!playerName.isEmpty() && !idText.isEmpty()) {
+                    int playerID = Integer.parseInt(idText);
+                    db.addplayer(playerName, playerID);
+                }
+            } catch (NumberFormatException ex) {
+                System.err.println("Invalid input for player ID at entry " + (i + 1));
+            }
+        }
+
+        //save the players from the green team
+        for (int i = 0; i < 19; i++) {
+            try {
+                String playerName = greenTeamFields[i][1].getText().trim();
+                String idText = greenTeamFields[i][0].getText().trim();
                 
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
@@ -155,7 +183,7 @@ public class EntryScreen {
                         System.out.println(playerID + " already exists in the database.");
                     }
                     else{
-                        database.addplayer(playerName, playerID);
+                        db.addplayer(playerName, playerID);
                     }
                 }
 
