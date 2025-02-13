@@ -13,7 +13,7 @@ public class EntryScreen {
     public void createAndShowGUI() {
         JFrame frame = new JFrame("Entry Terminal");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 600);
+        frame.setSize(1300, 600);
         frame.setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
@@ -42,9 +42,21 @@ public class EntryScreen {
         titleLabel.setForeground(Color.WHITE);
         teamPanel.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel entryPanel = new JPanel(new GridLayout(19, 2, 5, 5));
+        JPanel entryPanel = new JPanel(new GridLayout(20, 2, 5, 5));
         entryPanel.setBackground(Color.BLACK);
-        
+
+        // Add header row for ID and Name labels
+        JLabel entryHeader = new JLabel("Player Number", SwingConstants.CENTER);
+        entryHeader.setForeground(Color.WHITE);  // Ensure the header text is white
+        JLabel idHeader = new JLabel("Enter ID", SwingConstants.CENTER);
+        idHeader.setForeground(Color.WHITE);  // Ensure the header text is white
+        JLabel nameHeader = new JLabel("Enter Name", SwingConstants.CENTER);
+        nameHeader.setForeground(Color.WHITE);  // Ensure the header text is white
+
+        entryPanel.add(entryHeader); // Player entry number column header
+        entryPanel.add(idHeader);    // ID column header
+        entryPanel.add(nameHeader);  // Name column header
+
         playerFields = new JTextField[19][2];
 
         for (int i = 0; i < 19; i++) {
@@ -75,7 +87,7 @@ public class EntryScreen {
             JButton button = new JButton(buttonLabels[i]);
             button.setForeground(Color.GREEN);
             button.setBackground(Color.DARK_GRAY);
-            button.setPreferredSize(new Dimension(100, 70));
+            button.setPreferredSize(new Dimension(100, 50));
             button.setMnemonic(keyBindings[i]);
             bottomPanel.add(button);
         }
@@ -83,7 +95,7 @@ public class EntryScreen {
         JButton submitButton = new JButton("Submit");
         submitButton.setForeground(Color.GREEN);
         submitButton.setBackground(Color.DARK_GRAY);
-        submitButton.setPreferredSize(new Dimension(100, 70));
+        submitButton.setPreferredSize(new Dimension(100, 50));
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
