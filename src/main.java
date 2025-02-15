@@ -23,5 +23,6 @@ public class main{
         EntryScreen.setDB(db);
         db.checkIfIdExists(1);
         
+        
     }
 }
