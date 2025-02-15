@@ -133,6 +133,15 @@ public class database {
 
     }
 
+    /**
+     
+        Clears the table in the database.
+
+        @return Void
+     */
+
+
+    
     public void clearTable(){
 
         // Clears the table.
@@ -153,6 +162,12 @@ public class database {
             System.err.println("Error: " + e.getMessage());
         }
     }
+
+    /**
+     * Compares against the table in the datase to see if the Id exists.
+     * @param Id Id that needs to be checked against the database.
+     * @return True: If the Id exists in the database. False if it does not.
+     */
 
     public boolean checkIfIdExists(int Id){
 
