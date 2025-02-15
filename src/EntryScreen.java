@@ -150,9 +150,9 @@ public class EntryScreen {
             return;
         }
 
-
+        ArrayList<String> codeNames = new ArrayList<String>();
+        ArrayList<Integer> playerIds = new ArrayList<Integer>();
         
-        ArrayList<Integer> InvalidPlayerIds = new ArrayList<Integer>();
         //save the players from the red team
         for (int i = 0; i < 19; i++) {
             try {
@@ -161,7 +161,8 @@ public class EntryScreen {
                 
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
-                    db.addplayer(playerName, playerID);
+                    codeNames.add(playerName);
+                    playerIds.add(playerID);
                 }
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at entry " + (i + 1));
@@ -177,14 +178,8 @@ public class EntryScreen {
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
 
-                    System.out.println("Checking" + database.checkIfIdExists(playerID));
-                    if(database.checkIfIdExists(playerID)){
-                        InvalidPlayerIds.add(playerID);
-                        System.out.println(playerID + " already exists in the database.");
-                    }
-                    else{
-                        db.addplayer(playerName, playerID);
-                    }
+                    codeNames.add(playerName);
+                    playerIds.add(playerID);
                 }
 
             } catch (NumberFormatException ex) {
@@ -192,15 +187,8 @@ public class EntryScreen {
             }
         }
 
-        if(InvalidPlayerIds.size() > 0){
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < InvalidPlayerIds.size(); i++) {
-                sb.append(InvalidPlayerIds.get(i));
-                if(i != InvalidPlayerIds.size() -1){
-                    sb.append(", ");
-                }
-            }
-            JOptionPane.showMessageDialog(null, "The following Player IDs are already in use: " + sb.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+        for(int i = 0; i < codeNames.size(); i++){
+            db.addplayer(codeNames.get(i), playerIds.get(i));
         }
     }
 }

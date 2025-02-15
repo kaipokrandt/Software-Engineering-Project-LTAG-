@@ -66,8 +66,8 @@ public class database {
     public void addplayer(String playerName, int ID){
         // Database connection details
 
-        //String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "') ON CONFLICT (id) DO NOTHING;";
-        String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
+        String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "') ON CONFLICT (id) DO NOTHING;";
+        //String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 
         // Establish the connection
         try (Connection connection = DriverManager.getConnection(url, user, password);
