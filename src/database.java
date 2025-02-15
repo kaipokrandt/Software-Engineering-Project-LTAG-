@@ -4,14 +4,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class database {
-    
+    //if password authentication failed - 
+    //in terminal "psql photon" then "ALTER USER student WITH PASSWORD 'student';"
     private String url = "jdbc:postgresql://localhost:5432/photon";
     private String user = "student";
     private String password = "student";
-
-
-    
-
     
     public Connection connectToDatabase(){
         // Database connection details
@@ -65,12 +62,18 @@ public class database {
 
    //INSERT INTO players(id,codename) VALUES('42','bob');
 
-
+    /**
+   * Adds the Player's Name and ID into the database.
+   *
+   * @param playerName Name of the player that is added to the database
+   * @param ID ID of the player that is added to the databse
+   * @return Returns Void.
+   */
     public void addplayer(String playerName, int ID){
         // Database connection details
 
-        //String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "') ON CONFLICT (id) DO NOTHING;";
-        String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
+        String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "') ON CONFLICT (id) DO NOTHING;";
+        //String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 
         // Establish the connection
         try (Connection connection = DriverManager.getConnection(url, user, password);
@@ -88,7 +91,10 @@ public class database {
 
     }
 
-    public void removePlayer(int ID){
+    public void removePlayerbyId(int ID){
+
+        //Delete players from the databse, accepts integer;
+
         // Database connection details
 
         String sql = "DELETE FROM players WHERE id = " + ID + ";";
@@ -110,7 +116,10 @@ public class database {
     }  
     
     public void editPlayer(String newName , int ID){ 
+        
+        //EDIT TABLE players SET codename = 'newName' WHERE id = 1;
         // Database connection details
+
 
         String sql = "UPDATE players SET codename = '" + newName + "' WHERE id = " + ID + ";";
 
@@ -130,8 +139,19 @@ public class database {
 
     }
 
-    public void clearTable()
-    {
+    /**
+     
+        Clears the table in the database.
+
+        @return Void
+     */
+
+
+    
+    public void clearTable(){
+
+        // Clears the table.
+
         String sql = "TRUNCATE TABLE players;";
 
         // Establish the connection
@@ -149,7 +169,16 @@ public class database {
         }
     }
 
+    /**
+     * Compares against the table in the datase to see if the Id exists.
+     * @param Id Id that needs to be checked against the database.
+     * @return True: If the Id exists in the database. False if it does not.
+     */
+
     public boolean checkIfIdExists(int Id){
+
+        //Checks if ID exists in the database, returns true if it does, false if it does not.
+
         String sql = "SELECT COUNT(*) FROM players WHERE id = " + Id + ";";
         boolean IDexists = false;
 
@@ -166,7 +195,7 @@ public class database {
                     IDexists = true;
                 }
             }
-            System.out.println("Id: " + Id + " exists in database");
+            System.out.println("ID checked successfully!");
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());

@@ -3,7 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class EntryScreen {
     //creates two different 2d arrays to read data from both teams
@@ -149,7 +150,9 @@ public class EntryScreen {
             return;
         }
 
-
+        ArrayList<String> codeNames = new ArrayList<String>();
+        ArrayList<Integer> playerIds = new ArrayList<Integer>();
+        
         //save the players from the red team
         for (int i = 0; i < 19; i++) {
             try {
@@ -158,7 +161,8 @@ public class EntryScreen {
                 
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
-                    db.addplayer(playerName, playerID);
+                    codeNames.add(playerName);
+                    playerIds.add(playerID);
                 }
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at entry " + (i + 1));
@@ -173,14 +177,18 @@ public class EntryScreen {
                 
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
-                    db.addplayer(playerName, playerID);
+
+                    codeNames.add(playerName);
+                    playerIds.add(playerID);
                 }
+
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for Player ID at entry!" + (i + 1));
             }
         }
 
-
-        
+        for(int i = 0; i < codeNames.size(); i++){
+            db.addplayer(codeNames.get(i), playerIds.get(i));
+        }
     }
 }
