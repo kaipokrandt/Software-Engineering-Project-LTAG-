@@ -13,14 +13,16 @@ public class main{
         SplashScreen.showSplashScreen();
 
         
-        
+        database db = new database();
+        db.connectToDatabase();
         
         EntryScreen EntryScreen = new EntryScreen();
         //create entry screen
+        EntryScreen.setDB(db);
+
         EntryScreen.createAndShowGUI();
 
-        database db = new database();
-        EntryScreen.setDB(db);
+        
         db.checkIfIdExists(1);
         
         
