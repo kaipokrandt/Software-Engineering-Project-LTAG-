@@ -13,7 +13,7 @@ public class database {
     public Connection connectToDatabase(){
         // Database connection details
         
-        String sql = "ALTER TABLE players ADD CONSTRAINT IF NOT EXISTS unique_id UNIQUE (id);";
+        String sql = "ALTER TABLE players ADD CONSTRAINT unique_id UNIQUE (id);";
         // Establish the connection
         //Connection connection = null;
         try (Connection connection = DriverManager.getConnection(url, user, password);
