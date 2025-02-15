@@ -62,7 +62,13 @@ public class database {
 
    //INSERT INTO players(id,codename) VALUES('42','bob');
 
-
+    /**
+   * Adds the Player's Name and ID into the database.
+   *
+   * @param playerName Name of the player that is added to the database
+   * @param ID ID of the player that is added to the databse
+   * @return Returns Void.
+   */
     public void addplayer(String playerName, int ID){
         // Database connection details
 
@@ -154,6 +160,13 @@ public class database {
         }
     }
 
+    /**
+   * Adds the Player's Name and ID into the database.
+   *
+   * @param playerName Name of the player that is added to the database
+   * @param ID ID of the player that is added to the databse
+   * @return Returns Void.
+   */
     public boolean checkIfIdExists(int Id){
 
         //Checks if ID exists in the database, returns true if it does, false if it does not.
