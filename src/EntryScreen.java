@@ -187,6 +187,7 @@ public class EntryScreen {
             }
         }
 
+        // Add all of the Names and IDs to the db.
         for(int i = 0; i < codeNames.size(); i++){
             db.addplayer(codeNames.get(i), playerIds.get(i));
         }
