@@ -26,6 +26,9 @@ public class EntryScreen {
     public EntryScreen(database db, udpBaseClient_2 udpClient){
         this.db = db;
     }
+    public void setDB(database db){
+        this.db = db;
+    }
     //sets udp client
     public void setUdpClient(udpBaseClient_2 udpClient){
         this.udpClient = udpClient;
@@ -71,7 +74,7 @@ public class EntryScreen {
         titleLabel.setForeground(Color.WHITE);
         teamPanel.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel entryPanel = new JPanel(new GridLayout(20, 2, 5, 5));
+        JPanel entryPanel = new JPanel(new GridLayout(16, 2, 5, 5));
         entryPanel.setBackground(Color.BLACK);
 
         // Add header row for ID and Name labels
@@ -86,11 +89,11 @@ public class EntryScreen {
         entryPanel.add(idHeader);    // ID column header
         entryPanel.add(nameHeader);  // Name column header
 
-        JTextField[][] playerFields = new JTextField[19][2];
+        JTextField[][] playerFields = new JTextField[15][2];
 
         //create text fields for player entry
         //create text fields for player entry
-        for (int i = 0; i < 19; i++) {
+        for (int i = 0; i < 15; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1).trim(), SwingConstants.CENTER);
             label.setForeground(Color.WHITE);
             JTextField idField = new JTextField();
