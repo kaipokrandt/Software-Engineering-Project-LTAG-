@@ -17,8 +17,13 @@ public class EntryScreen {
     public database db = new database();
     private udpBaseClient_2 udpClient;
 
-    //sets database
-    public void setDB(database db){
+    /**
+     * 
+     * @param db Databse that receives entries from the Entry Screen
+     * @param udpClient 
+     */
+
+    public EntryScreen(database db, udpBaseClient_2 udpClient){
         this.db = db;
     }
     //sets udp client
@@ -55,7 +60,7 @@ public class EntryScreen {
     }
 
     //create team entry panel with player entry fields
-    public JPanel createTeamPanel(String teamName, Color color, boolean isRedTeam) {
+    private JPanel createTeamPanel(String teamName, Color color, boolean isRedTeam) {
         JPanel teamPanel = new JPanel();
         teamPanel.setLayout(new BorderLayout());
         teamPanel.setBackground(Color.BLACK);
@@ -83,6 +88,7 @@ public class EntryScreen {
 
         JTextField[][] playerFields = new JTextField[19][2];
 
+        //create text fields for player entry
         //create text fields for player entry
         for (int i = 0; i < 19; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1).trim(), SwingConstants.CENTER);
@@ -184,7 +190,7 @@ public class EntryScreen {
         return button;
     }
 
-    public void savePlayersToDatabase() {
+    private void savePlayersToDatabase() {
 
         //error check to see if at least one player is entered in R/G team
         boolean redTeamHasPlayer = false;
@@ -250,7 +256,7 @@ public class EntryScreen {
         }
     }
 
-    public void changeIPAddress() {
+    private void changeIPAddress() {
         // Implement change IP address functionality
         // Create a dialog to enter the new IP address
         System.out.println("Change IP Address functionality triggered.");

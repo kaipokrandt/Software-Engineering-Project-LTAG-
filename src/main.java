@@ -21,6 +21,19 @@ public class main{
             e.printStackTrace();
         }
 
+        //create and start udp server on different thread, port 7500
+        new Thread(() -> {
+            udpBaseServer_2 udpServer = new udpBaseServer_2();
+            udpServer.createSocket();
+        }).start();
+
+        //wait for server to start
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         SplashScreen SplashScreen = new SplashScreen();
         //create splash screen
         SplashScreen.showSplashScreen();
