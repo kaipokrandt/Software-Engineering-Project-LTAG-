@@ -14,11 +14,14 @@ public class EntryScreen {
     
     //implement database functionality to connnect
     public database db = new database();
+    private udpBaseClient_2 udpClient;
 
     public void setDB(database db){
         this.db = db;
     }
-    
+    public void setUdpClient(udpBaseClient_2 udpClient){
+        this.udpClient = udpClient;
+    }
     //creates base for user GUI
     public void createAndShowGUI() {
         JFrame frame = new JFrame("Entry Terminal");
@@ -260,9 +263,13 @@ public class EntryScreen {
         }
        
         // Push the new IP address to udpBaseClient_2
-
+        if (udpClient != null) {
+            udpClient.setNetworkAddress(newIP);
+        } else {
+            System.err.println("udpBaseClient_2 instance is null. Cannot change IP address.");
+        }
         //validate to console
-        System.out.println("New IP Address set to: " + newIP);
+        System.out.println("(entryscreen) New IP Address set to: " + newIP);
     }
 
     public void clearGame() {

@@ -17,17 +17,23 @@ public class main{
         db.connectToDatabase();
         
         
-        //create udp client
+        // Create the UDP client with a default IP (e.g., 127.0.0.1)
+        udpBaseClient_2 udpClient = null;
+        try {
+            udpClient = new udpBaseClient_2("127.0.0.1");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         
         EntryScreen EntryScreen = new EntryScreen();
         //create entry screen
         EntryScreen.setDB(db);
-
+        EntryScreen.setUdpClient(udpClient);
         EntryScreen.createAndShowGUI();
 
         
-        db.checkIfIdExists(1);
+        //db.checkIfIdExists(1);
         
         
     }

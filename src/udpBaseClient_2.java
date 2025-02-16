@@ -30,7 +30,7 @@ public class udpBaseClient_2 {
     public void setNetworkAddress(String newNetwork) {
         try {
             address = InetAddress.getByName(newNetwork);
-            System.out.println("Network address changed to: " + newNetwork);
+            System.out.println("(udp file) Network address changed to: " + newNetwork);
         } catch (Exception e) {
             e.printStackTrace();
         }
