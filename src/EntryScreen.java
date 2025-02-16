@@ -100,17 +100,8 @@ public class EntryScreen {
         JPanel bottomPanel = new JPanel(new GridLayout(1, 9, 5, 5));
         bottomPanel.setBackground(Color.BLACK);
 
-        JButton editGameButton = new JButton("Edit Game (F1)");
-        editGameButton.setForeground(Color.GREEN);
-        editGameButton.setBackground(Color.DARK_GRAY);
-        editGameButton.setPreferredSize(new Dimension(100, 50));
-        editGameButton.setMnemonic(KeyEvent.VK_F1);
-        bottomPanel.add(editGameButton);
-        // Add action listeners for the buttons
-        editGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for editing the game
+        // Add buttons using the helper method.
+        bottomPanel.add(createButton("Edit Game (F1)", KeyEvent.VK_F1, e -> {
                 System.out.println("Edit Game button clicked");
                 editGame();
             }

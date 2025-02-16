@@ -16,6 +16,10 @@ public class main{
         database db = new database();
         db.connectToDatabase();
         
+        
+        //create udp client
+        
+        
         EntryScreen EntryScreen = new EntryScreen();
         //create entry screen
         EntryScreen.setDB(db);
