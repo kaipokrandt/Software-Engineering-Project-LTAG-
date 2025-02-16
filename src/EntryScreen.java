@@ -353,6 +353,7 @@ public class EntryScreen {
             for (int i = 3; i > 0; i--) {
                 countdownLabel.setText(String.valueOf(i));
                 try {
+                    System.out.println("Countdown: " + i);
                     Thread.sleep(1000);  // Wait for 1 second before updating the countdown
                 } catch (InterruptedException e) {
                     e.printStackTrace();
