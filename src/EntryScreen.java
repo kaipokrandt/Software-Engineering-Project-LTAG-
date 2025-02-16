@@ -26,6 +26,9 @@ public class EntryScreen {
     public EntryScreen(database db, udpBaseClient_2 udpClient){
         this.db = db;
     }
+    public void setDB(database db){
+        this.db = db;
+    }
     //sets udp client
     public void setUdpClient(udpBaseClient_2 udpClient){
         this.udpClient = udpClient;
