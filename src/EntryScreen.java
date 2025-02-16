@@ -7,21 +7,25 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class EntryScreen {
+
     //creates two different 2d arrays to read data from both teams
     private JTextField[][] redTeamFields;
     private JTextField[][] greenTeamFields;
 
     
-    //implement database functionality to connnect
+    //implement database and udp client functionality to connnect
     public database db = new database();
     private udpBaseClient_2 udpClient;
 
+    //sets database
     public void setDB(database db){
         this.db = db;
     }
+    //sets udp client
     public void setUdpClient(udpBaseClient_2 udpClient){
         this.udpClient = udpClient;
     }
+
     //creates base for user GUI
     public void createAndShowGUI() {
         JFrame frame = new JFrame("Entry Terminal");
@@ -72,6 +76,7 @@ public class EntryScreen {
 
         JTextField[][] playerFields = new JTextField[19][2];
 
+        //create text fields for player entry
         for (int i = 0; i < 19; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1).trim(), SwingConstants.CENTER);
             label.setForeground(Color.WHITE);
@@ -93,18 +98,17 @@ public class EntryScreen {
             greenTeamFields = playerFields;
         }
 
-
         teamPanel.add(entryPanel, BorderLayout.CENTER);
         return teamPanel;
     }
 
-    //create bottom buttons with keybind functionality
+    //create bottom buttons with keybind functionality through helper
     public JPanel createBottomPanel() {
         JPanel bottomPanel = new JPanel(new GridLayout(1, 9, 5, 5));
         bottomPanel.setBackground(Color.BLACK);
 
         // Add buttons using the helper method.
-        //only IP and Submit buttons currently have use
+        // ***only IP and Submit buttons currently have use***
         bottomPanel.add(createButton("Edit Game (F1)", KeyEvent.VK_F1, e -> {
             System.out.println("Edit Game button clicked");
             editGame();
@@ -244,16 +248,18 @@ public class EntryScreen {
         // Create a dialog to enter the new IP address
         System.out.println("Change IP Address functionality triggered.");
         String newIP = "";
-        //structure for IP address validation
+        // structure for IP address validation
         String ipPattern = "^((\\d{1,3})\\.){1,3}\\d{1,3}$";
 
         while (true) {
+            // Prompt the user for a new IP address
             newIP = JOptionPane.showInputDialog(null, "Enter new IP Address (###.###.###.###):", "Change IP", JOptionPane.PLAIN_MESSAGE);
             if (newIP == null) {  // Cancel button pressed
                 newIP = "127.0.0.1";
                 break;
             }
-        
+            
+            //error handling for incorrect inputs
             newIP = newIP.trim();
             if (newIP.isEmpty() || !newIP.matches(ipPattern)) {
                 JOptionPane.showMessageDialog(null, "Invalid IP Address. Please enter in ###.###.###.### format.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -295,6 +301,12 @@ public class EntryScreen {
     public void startGame() {
         // Implement start game functionality
         System.out.println("Start Game functionality triggered.");
+        // Send a UDP packet to start the game
+        if (udpClient != null) {
+            udpClient.sendEquipmentID(202);
+        } else {
+            System.err.println("udpBaseClient_2 instance is null. Cannot start game.");
+        }
     }
 
     public void gameParameters() {

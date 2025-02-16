@@ -27,10 +27,11 @@ public class udpBaseClient_2 {
         }
     }
 
+    // takes incoming ip from entryscreen.java and sets the network address
     public void setNetworkAddress(String newNetwork) {
         try {
             address = InetAddress.getByName(newNetwork);
-            System.out.println("(udp file) Network address changed to: " + newNetwork);
+            System.out.println("(udp file)Network address changed to: " + newNetwork);
         } catch (Exception e) {
             e.printStackTrace();
         }
