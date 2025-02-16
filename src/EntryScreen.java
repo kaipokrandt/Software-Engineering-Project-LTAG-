@@ -253,7 +253,7 @@ public class EntryScreen {
         
             newIP = newIP.trim();
             if (newIP.isEmpty() || !newIP.matches(ipPattern)) {
-            JOptionPane.showMessageDialog(null, "Invalid IP Address. Please enter in ###.###.###.### format.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid IP Address. Please enter in ###.###.###.### format.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 break;
             }
