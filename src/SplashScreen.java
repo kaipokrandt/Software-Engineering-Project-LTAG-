@@ -9,42 +9,62 @@ import javax.swing.JWindow;
 
 class SplashScreen {
    public static void showSplashScreen() {
-
-        //create new window
+        
+        // Get screen size
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        
+        // Create new window
         JWindow splash = new JWindow();
 
         try {
-            //find logo.jpg and read it
+            // Find logo.jpg and read it
             File imageFile = new File("./images/logo.jpg");
             BufferedImage img = ImageIO.read(imageFile);
-            //
+            
+            // Get the image's original width and height
+            int imgWidth = img.getWidth();
+            int imgHeight = img.getHeight();
 
-            //scale for testing purposes
-            Image scaledImg = img.getScaledInstance(600,337,Image.SCALE_SMOOTH);
+            // Calculate the scaling factor to fit the image to the screen
+            double scaleX = (double) screenWidth / imgWidth;
+            double scaleY = (double) screenHeight / imgHeight;
+            double scaleFactor = Math.min(scaleX, scaleY); // Maintain aspect ratio
 
-            //load
+            // Calculate the new dimensions
+            int newWidth = (int) (imgWidth * scaleFactor);
+            int newHeight = (int) (imgHeight * scaleFactor);
+
+            // Create a new image scaled to the desired size
+            BufferedImage scaledImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = scaledImg.createGraphics();
+            g2d.drawImage(img, 0, 0, newWidth, newHeight, null);
+            g2d.dispose();
+
+            // Display the scaled image
             JLabel label = new JLabel(new ImageIcon(scaledImg));
             splash.getContentPane().add(label, BorderLayout.CENTER);
-        } catch (IOException e){
+            
+            // Set window size to match the scaled image dimensions
+            splash.setSize(newWidth, newHeight);
+        } catch (IOException e) {
             System.out.println("Error loading splash image: " + e.getMessage());
         }
 
-        //set image size and show it
-        splash.setSize(600,337);
+        // Center the splash screen
         splash.setLocationRelativeTo(null);
         splash.setVisible(true);
 
-        //display splash for 5 seconds
+        // Display splash for 3 seconds
         try {
-            Thread.sleep(2000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        //remove splash and dispose
+        // Remove splash and dispose
         splash.setVisible(false);
         splash.dispose();
     } 
-
 }
-

@@ -26,7 +26,7 @@ public class database {
 
             
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("Error 1: " + e.getMessage());
         }
 
         return null;
@@ -53,7 +53,7 @@ public class database {
             }
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("Error 2: " + e.getMessage());
         }
 
     }
@@ -86,7 +86,7 @@ public class database {
             System.out.println("Player added successfully!");
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("Error 3: " + e.getMessage());
         }
 
     }
@@ -110,7 +110,7 @@ public class database {
             System.out.println("Player removed successfully!");
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("Error 4: " + e.getMessage());
         }
 
     }  
@@ -134,7 +134,7 @@ public class database {
             System.out.println("Player edited successfully!");
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("Error 5: " + e.getMessage());
         }
 
     }
@@ -165,7 +165,7 @@ public class database {
             System.out.println("Table cleared successfully!");
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("Error 6: " + e.getMessage());
         }
     }
 
@@ -198,7 +198,7 @@ public class database {
             System.out.println("ID checked successfully!");
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("Error 7: " + e.getMessage());
         }
         return IDexists;
     }
