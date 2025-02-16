@@ -194,7 +194,7 @@ public class EntryScreen {
     }
 
     private void savePlayersToDatabase() {
-
+        //db.clearTable();
         //error check to see if at least one player is entered in R/G team
         boolean redTeamHasPlayer = false;
         boolean greenTeamHasPlayer = false;
@@ -256,7 +256,9 @@ public class EntryScreen {
         // Add all of the Names and IDs to the db.
         for(int i = 0; i < codeNames.size(); i++){
             db.addplayer(codeNames.get(i), playerIds.get(i));
+            //System.out.println("Added " + codeNames.get(i) + " with ID " + playerIds.get(i) + " to the database.");
         }
+        db.retreiveEntries();
     }
 
     private void changeIPAddress() {
@@ -297,6 +299,7 @@ public class EntryScreen {
     public void clearGame() {
         // implement clear game functionality
         System.out.println("Clear Game functionality triggered.");
+        db.clearTable();
     }
 
     public void flickSync() {
