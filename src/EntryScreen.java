@@ -245,19 +245,19 @@ public class EntryScreen {
         String ipPattern = "^((\\d{1,3})\\.){1,3}\\d{1,3}$";
 
         while (true) {
-        newIP = JOptionPane.showInputDialog(null, "Enter new IP Address (###.###.###.###):", "Change IP", JOptionPane.PLAIN_MESSAGE);
-        if (newIP == null) {  // Cancel button pressed
-            newIP = "127.0.0.1";
-            break;
-        }
+            newIP = JOptionPane.showInputDialog(null, "Enter new IP Address (###.###.###.###):", "Change IP", JOptionPane.PLAIN_MESSAGE);
+            if (newIP == null) {  // Cancel button pressed
+                newIP = "127.0.0.1";
+                break;
+            }
         
-        newIP = newIP.trim();
-        if (newIP.isEmpty() || !newIP.matches(ipPattern)) {
+            newIP = newIP.trim();
+            if (newIP.isEmpty() || !newIP.matches(ipPattern)) {
             JOptionPane.showMessageDialog(null, "Invalid IP Address. Please enter in ###.###.###.### format.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            break;
+            } else {
+                break;
+            }
         }
-    }
        
         // Push the new IP address to udpBaseClient_2
 
