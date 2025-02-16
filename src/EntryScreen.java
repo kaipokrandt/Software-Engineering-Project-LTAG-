@@ -199,7 +199,7 @@ public class EntryScreen {
         boolean redTeamHasPlayer = false;
         boolean greenTeamHasPlayer = false;
 
-        for (int i = 0; i < 19; i++) {
+        for (int i = 0; i < 15; i++) {
             String redPlayerName = redTeamFields[i][1].getText().trim();
             String greenPlayerName = greenTeamFields[i][1].getText().trim();
             
@@ -220,7 +220,7 @@ public class EntryScreen {
         ArrayList<Integer> playerIds = new ArrayList<Integer>();
         
         //save the players from the red team
-        for (int i = 0; i < 19; i++) {
+        for (int i = 0; i < 15; i++) {
             try {
                 String playerName = redTeamFields[i][1].getText().trim();
                 String idText = redTeamFields[i][0].getText().trim();
@@ -236,7 +236,7 @@ public class EntryScreen {
         }
 
         //save the players from the green team
-        for (int i = 0; i < 19; i++) {
+        for (int i = 0; i < 15; i++) {
             try {
                 String playerName = greenTeamFields[i][1].getText().trim();
                 String idText = greenTeamFields[i][0].getText().trim();
