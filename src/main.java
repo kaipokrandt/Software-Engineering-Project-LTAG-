@@ -27,6 +27,7 @@ public class main{
 
         
         database db = new database();
+        db.connectToDatabase();
         
         
         // Create the UDP client with a default IP (ex., 127.0.0.1)

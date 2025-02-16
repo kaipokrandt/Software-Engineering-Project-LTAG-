@@ -26,7 +26,10 @@ public class database {
 
             
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            
+            if(!e.getMessage().equals("ERROR: relation \"unique_id\" already exists") ){
+                System.out.println(e.getMessage());
+            }
         }
 
         return null;
