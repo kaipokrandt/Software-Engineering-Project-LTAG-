@@ -20,34 +20,43 @@ class SplashScreen {
 
         try {
             // Find logo.jpg and read it
-            File imageFile = new File("./images/logo.jpg");
-            BufferedImage img = ImageIO.read(imageFile);
+            File imageFile = new File("../images/logo.jpg");
+
+            if (!imageFile.exists()) {
+                imageFile = new File("./images/logo.jpg");
+            }
+            if (imageFile.exists()) {
+                BufferedImage img = ImageIO.read(imageFile);
             
-            // Get the image's original width and height
-            int imgWidth = img.getWidth();
-            int imgHeight = img.getHeight();
+                // Get the image's original width and height
+                int imgWidth = img.getWidth();
+                int imgHeight = img.getHeight();
 
-            // Calculate the scaling factor to fit the image to the screen
-            double scaleX = (double) screenWidth / imgWidth;
-            double scaleY = (double) screenHeight / imgHeight;
-            double scaleFactor = Math.min(scaleX, scaleY); // Maintain aspect ratio
+                // Calculate the scaling factor to fit the image to the screen
+                double scaleX = (double) screenWidth / imgWidth;
+                double scaleY = (double) screenHeight / imgHeight;
+                double scaleFactor = Math.min(scaleX, scaleY); // Maintain aspect ratio
 
-            // Calculate the new dimensions
-            int newWidth = (int) (imgWidth * scaleFactor);
-            int newHeight = (int) (imgHeight * scaleFactor);
+                // Calculate the new dimensions
+                int newWidth = (int) (imgWidth * scaleFactor);
+                int newHeight = (int) (imgHeight * scaleFactor);
 
-            // Create a new image scaled to the desired size
-            BufferedImage scaledImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = scaledImg.createGraphics();
-            g2d.drawImage(img, 0, 0, newWidth, newHeight, null);
-            g2d.dispose();
+                // Create a new image scaled to the desired size
+                BufferedImage scaledImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = scaledImg.createGraphics();
+                g2d.drawImage(img, 0, 0, newWidth, newHeight, null);
+                g2d.dispose();
 
-            // Display the scaled image
-            JLabel label = new JLabel(new ImageIcon(scaledImg));
-            splash.getContentPane().add(label, BorderLayout.CENTER);
+                // Display the scaled image
+                JLabel label = new JLabel(new ImageIcon(scaledImg));
+                splash.getContentPane().add(label, BorderLayout.CENTER);
             
-            // Set window size to match the scaled image dimensions
-            splash.setSize(newWidth, newHeight);
+                // Set window size to match the scaled image dimensions
+                splash.setSize(newWidth, newHeight);
+            } else {
+                System.out.println("Splash image not found.");
+            }
+
         } catch (IOException e) {
             System.out.println("Error loading splash image: " + e.getMessage());
         }
