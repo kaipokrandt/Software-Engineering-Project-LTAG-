@@ -39,10 +39,8 @@ public class main{
         }
         
         
-        EntryScreen EntryScreen = new EntryScreen();
+        EntryScreen EntryScreen = new EntryScreen(db, udpClient);
         //create entry screen, pass db and udp client
-        EntryScreen.setDB(db);
-        EntryScreen.setUdpClient(udpClient);
         EntryScreen.createAndShowGUI();
 
     }
