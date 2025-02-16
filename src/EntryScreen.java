@@ -315,14 +315,63 @@ public class EntryScreen {
     }
 
     public void startGame() {
-        // Implement start game functionality
-        System.out.println("Start Game functionality triggered.");
-        // Send a UDP packet to start the game
-        if (udpClient != null) {
-            udpClient.sendEquipmentID(202);
-        } else {
-            System.err.println("udpBaseClient_2 instance is null. Cannot start game.");
-        }
+        // Create a new thread to handle the countdown
+        new Thread(() -> {
+            // Create the countdown window
+            JWindow countdownWindow = new JWindow();
+            countdownWindow.setLayout(new BorderLayout());
+    
+            // Set background color to black for the window
+            countdownWindow.getContentPane().setBackground(Color.BLACK);
+    
+            // Create a label to display the countdown
+            JLabel countdownLabel = new JLabel("3", SwingConstants.CENTER);
+            countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
+            countdownLabel.setForeground(Color.WHITE);  // White text for contrast
+    
+            // Create a panel for the countdown label with a border (outline)
+            JPanel countdownPanel = new JPanel(new BorderLayout());
+            countdownPanel.setBackground(Color.BLACK); // Make panel background black
+            countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10)); // Set white border with 10px thickness
+            countdownPanel.add(countdownLabel, BorderLayout.CENTER);
+    
+            // Add the panel to the countdown window
+            countdownWindow.add(countdownPanel, BorderLayout.CENTER);
+    
+            // Get screen size for centering the window and scaling it to 80%
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int width = (int) (screenSize.width * 0.8);  // 80% of screen width
+            int height = (int) (screenSize.height * 0.8); // 80% of screen height
+    
+            countdownWindow.setSize(width, height);
+            countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2); // Center the window
+    
+            // Make the countdown window visible
+            countdownWindow.setVisible(true);
+    
+            // Start the countdown
+            for (int i = 3; i > 0; i--) {
+                countdownLabel.setText(String.valueOf(i));
+                try {
+                    Thread.sleep(1000);  // Wait for 1 second before updating the countdown
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+    
+            // After the countdown, close the window
+            countdownWindow.setVisible(false);
+            countdownWindow.dispose();
+    
+            // Now trigger the game start code
+            System.out.println("Start Game functionality triggered.");
+            // Send a UDP packet to start the game
+            if (udpClient != null) {
+                udpClient.sendEquipmentID(202);
+            } else {
+                System.err.println("udpBaseClient_2 instance is null. Cannot start game.");
+            }
+        }).start();
     }
 
     public void gameParameters() {
