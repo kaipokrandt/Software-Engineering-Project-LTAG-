@@ -11,14 +11,14 @@ public class EntryScreen {
     private JTextField[][] redTeamFields;
     private JTextField[][] greenTeamFields;
 
-
+    
     //implement database functionality to connnect
     public database db = new database();
 
     public void setDB(database db){
         this.db = db;
     }
-
+    
     //creates base for user GUI
     public void createAndShowGUI() {
         JFrame frame = new JFrame("Entry Terminal");
@@ -101,140 +101,73 @@ public class EntryScreen {
         bottomPanel.setBackground(Color.BLACK);
 
         // Add buttons using the helper method.
+        //only IP and Submit buttons currently have use
         bottomPanel.add(createButton("Edit Game (F1)", KeyEvent.VK_F1, e -> {
-                System.out.println("Edit Game button clicked");
-                editGame();
-            }
-        });
+            System.out.println("Edit Game button clicked");
+            editGame();
+        }));
 
-        JButton gameParametersButton = new JButton("Game Parameters (F2)");
-        gameParametersButton.setForeground(Color.GREEN);
-        gameParametersButton.setBackground(Color.DARK_GRAY);
-        gameParametersButton.setPreferredSize(new Dimension(100, 50));
-        gameParametersButton.setMnemonic(KeyEvent.VK_F2);
-        bottomPanel.add(gameParametersButton);
-        // Add action listeners for the buttons
-        gameParametersButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for editing the game
-                System.out.println("Game Parameters button clicked");
-                gameParameters();
-            }
-        });
+        bottomPanel.add(createButton("Game Parameters (F2)", KeyEvent.VK_F2, e -> {
+            System.out.println("Game Parameters button clicked");
+            gameParameters();
+        }));
 
-        JButton startGameButton = new JButton("Start Game (F3)");
-        startGameButton.setForeground(Color.GREEN);
-        startGameButton.setBackground(Color.DARK_GRAY);
-        startGameButton.setPreferredSize(new Dimension(100, 50));
-        startGameButton.setMnemonic(KeyEvent.VK_F3);
-        bottomPanel.add(startGameButton);
-        // Add action listeners for the buttons
-        startGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for editing the game
-                System.out.println("Start Game button clicked");
-                startGame();
-            }
-        });
+        bottomPanel.add(createButton("Start Game (F3)", KeyEvent.VK_F3, e -> {
+            System.out.println("Start Game button clicked");
+            startGame();
+        }));
 
-        JButton preEnteredGamesButton = new JButton("PreEntered Games (F5)");
-        preEnteredGamesButton.setForeground(Color.GREEN);
-        preEnteredGamesButton.setBackground(Color.DARK_GRAY);
-        preEnteredGamesButton.setPreferredSize(new Dimension(100, 50));
-        preEnteredGamesButton.setMnemonic(KeyEvent.VK_F5);
-        bottomPanel.add(preEnteredGamesButton);
-        // Add action listeners for the buttons
-        preEnteredGamesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for editing the game
-                System.out.println("PreEntered Game button clicked");
-                preEnteredGames();
-            }
-        });
+        bottomPanel.add(createButton("PreEntered Games (F5)", KeyEvent.VK_F5, e -> {
+            System.out.println("PreEntered Game button clicked");
+            preEnteredGames();
+        }));
 
-        JButton viewGameButton = new JButton("View Game (F7)");
-        viewGameButton.setForeground(Color.GREEN);
-        viewGameButton.setBackground(Color.DARK_GRAY);
-        viewGameButton.setPreferredSize(new Dimension(100, 50));
-        viewGameButton.setMnemonic(KeyEvent.VK_F7);
-        bottomPanel.add(viewGameButton);
-        // Add action listeners for the buttons
-        viewGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for editing the game
-                System.out.println("View Game button clicked");
-                viewGame();
-            }
-        });
+        bottomPanel.add(createButton("View Game (F7)", KeyEvent.VK_F7, e -> {
+            System.out.println("View Game button clicked");
+            viewGame();
+        }));
 
-        JButton flickSyncButton = new JButton("Flick Sync (F10)");
-        flickSyncButton.setForeground(Color.GREEN);
-        flickSyncButton.setBackground(Color.DARK_GRAY);
-        flickSyncButton.setPreferredSize(new Dimension(100, 50));
-        flickSyncButton.setMnemonic(KeyEvent.VK_F10);
-        bottomPanel.add(flickSyncButton);
-        // Add action listeners for the buttons
-        flickSyncButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for editing the game
-                System.out.println("Flick Sync button clicked");
-                flickSync();
-            }
-        });
+        bottomPanel.add(createButton("Flick Sync (F10)", KeyEvent.VK_F10, e -> {
+            System.out.println("Flick Sync button clicked");
+            flickSync();
+        }));
 
-        JButton changeIPButton = new JButton("Change IP (F11)");
-        changeIPButton.setForeground(Color.GREEN);
-        changeIPButton.setBackground(Color.DARK_GRAY);
-        changeIPButton.setPreferredSize(new Dimension(100, 50));
-        changeIPButton.setMnemonic(KeyEvent.VK_F11);
-        bottomPanel.add(changeIPButton);
-        // Add action listeners for the buttons
-        changeIPButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for editing the game
-                System.out.println("Change IP button clicked");
-                changeIPAddress();
-            }
-        });
+        bottomPanel.add(createButton("Change IP (F11)", KeyEvent.VK_F11, e -> {
+            System.out.println("Change IP button clicked");
+            changeIPAddress();
+        }));
 
+        bottomPanel.add(createButton("Clear Game (F12)", KeyEvent.VK_F12, e -> {
+            System.out.println("Clear Game button clicked");
+            clearGame();
+        }));
 
-        JButton clearButton = new JButton("Clear Game (F12)");
-        clearButton.setForeground(Color.GREEN);
-        clearButton.setBackground(Color.DARK_GRAY);
-        clearButton.setPreferredSize(new Dimension(100, 50));
-        clearButton.setMnemonic(KeyEvent.VK_F12);
-        bottomPanel.add(clearButton);
-        // Add action listeners for the buttons
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for editing the game
-                System.out.println("Clear Game button clicked");
-                clearGame();
-            }
-        });
-
-        JButton submitButton = new JButton("Submit");
-        submitButton.setForeground(Color.GREEN);
-        submitButton.setBackground(Color.DARK_GRAY);
-        submitButton.setPreferredSize(new Dimension(100, 50));
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the functionality for starting the game
-                System.out.println("Submit player button clicked");
-                savePlayersToDatabase();
-            }
-        });
-        bottomPanel.add(submitButton);
+        bottomPanel.add(createButton("Submit", -1, e -> {
+            System.out.println("Submit player button clicked");
+            savePlayersToDatabase();
+        }));
 
         return bottomPanel;
+    }
+
+    /**
+    * Helper method to create a JButton with common properties.
+    *
+    * @param text           The button text.
+    * @param mnemonic       The mnemonic key; pass -1 if no mnemonic is desired.
+    * @param actionListener The ActionListener for the button.
+    * @return A configured JButton.
+    */
+    private JButton createButton(String text, int mnemonic, ActionListener actionListener) {
+        JButton button = new JButton(text);
+        button.setForeground(Color.GREEN);
+        button.setBackground(Color.DARK_GRAY);
+        button.setPreferredSize(new Dimension(100, 50));
+        if (mnemonic != -1) {
+            button.setMnemonic(mnemonic);
+        }
+        button.addActionListener(actionListener);
+        return button;
     }
 
     public void savePlayersToDatabase() {
@@ -304,25 +237,37 @@ public class EntryScreen {
     }
 
     public void changeIPAddress() {
+        // Implement change IP address functionality
         // Create a dialog to enter the new IP address
-        String newIP = JOptionPane.showInputDialog(null, "Enter new IP address:", "Change IP Address", JOptionPane.PLAIN_MESSAGE);
-        
-        if (newIP != null && !newIP.trim().isEmpty()) {
-            // Here you would add the code to change the IP address in your application
-            System.out.println("New IP address set to: " + newIP);
-        } else {
-            System.out.println("No valid IP address entered.");
+        System.out.println("Change IP Address functionality triggered.");
+        String newIP = "";
+        //structure for IP address validation
+        String ipPattern = "^((\\d{1,3})\\.){1,3}\\d{1,3}$";
+
+        while (true) {
+        newIP = JOptionPane.showInputDialog(null, "Enter new IP Address (###.###.###.###):", "Change IP", JOptionPane.PLAIN_MESSAGE);
+        if (newIP == null) {  // Cancel button pressed
+            newIP = "127.0.0.1";
+            break;
         }
+        
+        newIP = newIP.trim();
+        if (newIP.isEmpty() || !newIP.matches(ipPattern)) {
+            JOptionPane.showMessageDialog(null, "Invalid IP Address. Please enter in ###.###.###.### format.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            break;
+        }
+    }
+       
+        // Push the new IP address to udpBaseClient_2
+
+        //validate to console
+        System.out.println("New IP Address set to: " + newIP);
     }
 
     public void clearGame() {
-        // Clear all text fields in both teams
-        for (int i = 0; i < 19; i++) {
-            redTeamFields[i][0].setText("");
-            redTeamFields[i][1].setText("");
-            greenTeamFields[i][0].setText("");
-            greenTeamFields[i][1].setText("");
-        }
+        // implement clear game functionality
+        System.out.println("Clear Game functionality triggered.");
     }
 
     public void flickSync() {
