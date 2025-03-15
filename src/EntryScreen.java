@@ -203,12 +203,10 @@ public class EntryScreen {
     }
 
     private void savePlayersToDatabase() {
-        //db.clearTable();
-        //db.clearTable();
-        //error check to see if at least one player is entered in R/G team
+        // Check if at least one player is entered for both teams
         boolean redTeamHasPlayer = false;
         boolean greenTeamHasPlayer = false;
-
+    
         for (int i = 0; i < 15; i++) {
             String redPlayerName = redTeamFields[i][1].getText().trim();
             String greenPlayerName = greenTeamFields[i][1].getText().trim();
@@ -220,18 +218,18 @@ public class EntryScreen {
                 greenTeamHasPlayer = true;
             }
         }
-
+    
         if (!redTeamHasPlayer || !greenTeamHasPlayer) {
             JOptionPane.showMessageDialog(null, "At least one player must be entered for each team.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+    
         ArrayList<String> codeNames = new ArrayList<String>();
         ArrayList<Integer> playerIds = new ArrayList<Integer>();
         ArrayList<Integer> hardwareIds = new ArrayList<Integer>();
         ArrayList<String> teams = new ArrayList<String>();
-        
-        //save the players from the red team
+    
+        // Save the players from the red team
         for (int i = 0; i < 15; i++) {
             try {
                 String playerName = redTeamFields[i][1].getText().trim();
@@ -250,8 +248,8 @@ public class EntryScreen {
                 System.err.println("Invalid input for player ID at entry " + (i + 1));
             }
         }
-
-        //save the players from the green team
+    
+        // Save the players from the green team
         for (int i = 0; i < 15; i++) {
             try {
                 String playerName = greenTeamFields[i][1].getText().trim();
@@ -261,25 +259,43 @@ public class EntryScreen {
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
                     int hardwareId = Integer.parseInt(hardwareIdtext);
-
+    
                     codeNames.add(playerName);
                     playerIds.add(playerID);
                     hardwareIds.add(hardwareId);
                     teams.add("Green");
                 }
-
+    
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for Player ID at entry!" + (i + 1));
             }
         }
-
-        // Add all of the Names and IDs to the db.
-        for(int i = 0; i < codeNames.size(); i++){
-            db.addplayer(codeNames.get(i), playerIds.get(i), hardwareIds.get(i), teams.get(i));
-            //System.out.println("Added " + codeNames.get(i) + " with ID " + playerIds.get(i) + " to the database.");
+    
+        // Add all the Names and IDs to the db
+        for (int i = 0; i < codeNames.size(); i++) {
+            int playerID = playerIds.get(i);
+            String playerName = codeNames.get(i);
+    
+            // Check if the player ID already exists
+            String existingUserName = db.getUserNameByID(playerID);
+            if (existingUserName != null && !existingUserName.equals(playerName)) {
+                // Show a popup to notify the user of the username change
+                JOptionPane.showMessageDialog(null, "Duplicate UserID detected. The username has been changed to: " + existingUserName, 
+                        "Duplicate UserID", JOptionPane.INFORMATION_MESSAGE);
+                // Update the player entry screen with the existing username
+                if (teams.get(i).equals("Red")) {
+                    redTeamFields[i][1].setText(existingUserName); // Update red team entry
+                } else {
+                    greenTeamFields[i-1][1].setText(existingUserName); // Update green team entry
+                }
+            } else {
+                // Add player to the database if there is no duplicate
+                db.addplayer(playerName, playerID, hardwareIds.get(i), teams.get(i));
+            }
         }
-        database.retreiveEntries();
-        //db.retreiveEntries();
+    
+        // Retrieve updated entries from the database
+        db.retreiveEntries();
     }
 
     private void changeIPAddress() {
@@ -321,7 +337,7 @@ public class EntryScreen {
         // Show confirmation dialog to the user for clearing the database
         int confirm = JOptionPane.showConfirmDialog(
             null, 
-            "Do you want to clear the database along with the player entries?", 
+            "DEBUG ONLY! : Do you want to clear the database along with the player entries?", 
             "Clear Game", 
             JOptionPane.YES_NO_OPTION
         );
@@ -427,7 +443,7 @@ public class EntryScreen {
         countdownWindow.dispose();
 
         // Retrieve players from the database
-        ResultSet resultSet = database.retreiveEntries();
+        ResultSet resultSet = db.retreiveEntries();
 
         // Create a new window to display the entered players
         JFrame playerWindow = new JFrame("Entered Players");
@@ -447,7 +463,7 @@ public class EntryScreen {
         greenTeamPanel.setLayout(new BoxLayout(greenTeamPanel, BoxLayout.Y_AXIS));
         greenTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 16), Color.GREEN));
 
-        database.retreiveEntries();
+        db.retreiveEntries();
         try {
             // Iterate through the ResultSet and add players to the respective team panels
             while (resultSet.next()) {
