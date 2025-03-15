@@ -318,24 +318,49 @@ public class EntryScreen {
     }
 
     public void clearGame() {
-        // implement clear game functionality
-        System.out.println("Clear Game functionality triggered.");
-            // Clear red team fields
+        // Show confirmation dialog to the user for clearing the database
+        int confirm = JOptionPane.showConfirmDialog(
+            null, 
+            "Do you want to clear the database along with the player entries?", 
+            "Clear Game", 
+            JOptionPane.YES_NO_OPTION
+        );
+    
+        // Always clear red team fields
         for (int i = 0; i < 15; i++) {
             redTeamFields[i][0].setText(""); // Clear ID field
             redTeamFields[i][1].setText(""); // Clear Name field
             redTeamFields[i][2].setText(""); // Clear Hardware ID field
         }
-
-        // Clear green team fields
+    
+        // Always clear green team fields
         for (int i = 0; i < 15; i++) {
             greenTeamFields[i][0].setText(""); // Clear ID field
             greenTeamFields[i][1].setText(""); // Clear Name field
             greenTeamFields[i][2].setText(""); // Clear Hardware ID field
         }
-
-        JOptionPane.showMessageDialog(null, "Player entries cleared.", "Clear Game", JOptionPane.INFORMATION_MESSAGE);
-        db.clearTable();
+    
+        // If user selects YES, clear the database as well
+        if (confirm == JOptionPane.YES_OPTION) {
+            // Clear the database
+            db.clearTable();
+    
+            // Show confirmation message for clearing both
+            JOptionPane.showMessageDialog(
+                null, 
+                "Player entries and database have been cleared.", 
+                "Clear Game", 
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        } else {
+            // Show message confirming only player entries were cleared
+            JOptionPane.showMessageDialog(
+                null, 
+                "Player entries have been cleared, but database was not affected.", 
+                "Clear Game", 
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }
 
     public void flickSync() {
