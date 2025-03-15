@@ -3,7 +3,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public  class database {
+public class database {
     //if password authentication failed - 
     //in terminal "psql photon" then "ALTER USER student WITH PASSWORD 'student';"
     private static String url = "jdbc:postgresql://localhost:5432/photon";
@@ -40,7 +40,7 @@ public  class database {
     }
 
 
-    public static ResultSet retreiveEntries() {
+    public ResultSet retreiveEntries() {
         try {
             // Establish the connection
             Connection connection = DriverManager.getConnection(url, user, password);
@@ -54,6 +54,25 @@ public  class database {
         }
     }
    
+    public boolean checkIfIdExists(int Id) {
+        String sql = "SELECT COUNT(*) FROM players WHERE id = " + Id + ";";
+        boolean IDexists = false;
+
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                if (Id == resultSet.getInt(1)) {
+                    IDexists = true;
+                }
+            }
+            System.out.println("ID checked successfully!");
+        } catch (Exception e) {
+            System.err.println("Error 7: " + e.getMessage());
+        }
+        return IDexists;
+    }
 
 
    //INSERT INTO players(id,codename,hardwareId) VALUES('42','bob','4');
@@ -169,14 +188,40 @@ public  class database {
             System.err.println("Error 6: " + e.getMessage());
         }
     }
-
     /**
+     * Retrieves the username (codename) for a given player ID.
+     *
+     * @param playerID The ID of the player whose username is to be fetched.
+     * @return The username (codename) if found, or null if the ID does not exist.
+     */
+    public String getUserNameByID(int playerID) {
+        String codename = null;
+
+        String sql = "SELECT codename FROM players WHERE id = " + playerID + ";";
+
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                codename = resultSet.getString("codename");
+            }
+        } catch (Exception e) {
+            System.err.println("Error retrieving username for ID " + playerID + ": " + e.getMessage());
+        }
+
+        return codename;
+    }
+}
+
+
+  /**
      * Compares against the table in the datase to see if the Id exists.
      * @param Id Id that needs to be checked against the database.
      * @return True: If the Id exists in the database. False if it does not.
      */
 
-    public boolean checkIfIdExists(int Id){
+    /*public boolean checkIfIdExists(int Id){
 
         //Checks if ID exists in the database, returns true if it does, false if it does not.
 
@@ -204,4 +249,4 @@ public  class database {
         return IDexists;
     }
 }
-
+*/
