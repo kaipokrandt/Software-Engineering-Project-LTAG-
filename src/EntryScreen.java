@@ -1,9 +1,12 @@
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Array;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class EntryScreen {
@@ -84,12 +87,15 @@ public class EntryScreen {
         idHeader.setForeground(Color.WHITE);  // Ensure the header text is white
         JLabel nameHeader = new JLabel("Enter Name", SwingConstants.CENTER);
         nameHeader.setForeground(Color.WHITE);  // Ensure the header text is white
+        JLabel hardwareHeader = new JLabel("Hardware ID", SwingConstants.CENTER);
+        hardwareHeader.setForeground(Color.WHITE);  // Ensure the header text is white
 
         entryPanel.add(entryHeader); // Player entry number column header
         entryPanel.add(idHeader);    // ID column header
         entryPanel.add(nameHeader);  // Name column header
+        entryPanel.add(hardwareHeader); // Hardware ID column header
 
-        JTextField[][] playerFields = new JTextField[15][2];
+        JTextField[][] playerFields = new JTextField[15][3];
 
         //create text fields for player entry
         //create text fields for player entry
@@ -98,11 +104,14 @@ public class EntryScreen {
             label.setForeground(Color.WHITE);
             JTextField idField = new JTextField();
             JTextField nameField = new JTextField();
+            JTextField hardwareField = new JTextField();
             entryPanel.add(label);
             entryPanel.add(idField);
             entryPanel.add(nameField);
+            entryPanel.add(hardwareField);
             playerFields[i][0] = idField;
             playerFields[i][1] = nameField;
+            playerFields[i][2] = hardwareField;
         }
 
         if (isRedTeam)
@@ -218,17 +227,23 @@ public class EntryScreen {
 
         ArrayList<String> codeNames = new ArrayList<String>();
         ArrayList<Integer> playerIds = new ArrayList<Integer>();
+        ArrayList<Integer> hardwareIds = new ArrayList<Integer>();
+        ArrayList<String> teams = new ArrayList<String>();
         
         //save the players from the red team
         for (int i = 0; i < 15; i++) {
             try {
                 String playerName = redTeamFields[i][1].getText().trim();
                 String idText = redTeamFields[i][0].getText().trim();
+                String hardwareIdtext = redTeamFields[i][2].getText().trim();
                 
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
+                    int hardwareId = Integer.parseInt(hardwareIdtext);
                     codeNames.add(playerName);
                     playerIds.add(playerID);
+                    hardwareIds.add(hardwareId);
+                    teams.add("Red");
                 }
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at entry " + (i + 1));
@@ -240,12 +255,16 @@ public class EntryScreen {
             try {
                 String playerName = greenTeamFields[i][1].getText().trim();
                 String idText = greenTeamFields[i][0].getText().trim();
+                String hardwareIdtext = greenTeamFields[i][2].getText().trim();
                 
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
+                    int hardwareId = Integer.parseInt(hardwareIdtext);
 
                     codeNames.add(playerName);
                     playerIds.add(playerID);
+                    hardwareIds.add(hardwareId);
+                    teams.add("Green");
                 }
 
             } catch (NumberFormatException ex) {
@@ -255,10 +274,10 @@ public class EntryScreen {
 
         // Add all of the Names and IDs to the db.
         for(int i = 0; i < codeNames.size(); i++){
-            db.addplayer(codeNames.get(i), playerIds.get(i));
+            db.addplayer(codeNames.get(i), playerIds.get(i), hardwareIds.get(i), teams.get(i));
             //System.out.println("Added " + codeNames.get(i) + " with ID " + playerIds.get(i) + " to the database.");
         }
-        db.retreiveEntries();
+        database.retreiveEntries();
     }
 
     private void changeIPAddress() {
@@ -303,12 +322,14 @@ public class EntryScreen {
         for (int i = 0; i < 15; i++) {
             redTeamFields[i][0].setText(""); // Clear ID field
             redTeamFields[i][1].setText(""); // Clear Name field
+            redTeamFields[i][2].setText(""); // Clear Hardware ID field
         }
 
         // Clear green team fields
         for (int i = 0; i < 15; i++) {
             greenTeamFields[i][0].setText(""); // Clear ID field
             greenTeamFields[i][1].setText(""); // Clear Name field
+            greenTeamFields[i][2].setText(""); // Clear Hardware ID field
         }
 
         JOptionPane.showMessageDialog(null, "Player entries cleared.", "Clear Game", JOptionPane.INFORMATION_MESSAGE);
@@ -330,63 +351,114 @@ public class EntryScreen {
     }
 
     public void startGame() {
-        // Create a new thread to handle the countdown
-        new Thread(() -> {
-            // Create the countdown window
-            JWindow countdownWindow = new JWindow();
-            countdownWindow.setLayout(new BorderLayout());
-    
-            // Set background color to black for the window
-            countdownWindow.getContentPane().setBackground(Color.BLACK);
-    
-            // Create a label to display the countdown
-            JLabel countdownLabel = new JLabel("3", SwingConstants.CENTER);
-            countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
-            countdownLabel.setForeground(Color.WHITE);  // White text for contrast
-    
-            // Create a panel for the countdown label with a border (outline)
-            JPanel countdownPanel = new JPanel(new BorderLayout());
-            countdownPanel.setBackground(Color.BLACK); // Make panel background black
-            countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10)); // Set white border with 10px thickness
-            countdownPanel.add(countdownLabel, BorderLayout.CENTER);
-    
-            // Add the panel to the countdown window
-            countdownWindow.add(countdownPanel, BorderLayout.CENTER);
-    
-            // Get screen size for centering the window and scaling it to 80%
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int width = (int) (screenSize.width * 0.8);  // 80% of screen width
-            int height = (int) (screenSize.height * 0.8); // 80% of screen height
-    
-            countdownWindow.setSize(width, height);
-            countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2); // Center the window
-    
-            // Make the countdown window visible
-            countdownWindow.setVisible(true);
-    
-            // Start the countdown
-            for (int i = 3; i > 0; i--) {
-                countdownLabel.setText(String.valueOf(i));
-                try {
-                    Thread.sleep(1000);  // Wait for 1 second before updating the countdown
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+    new Thread(() -> {
+        // Create the countdown window
+        JWindow countdownWindow = new JWindow();
+        countdownWindow.setLayout(new BorderLayout());
+
+        // Set background color to black for the window
+        countdownWindow.getContentPane().setBackground(Color.BLACK);
+
+        // Create a label to display the countdown
+        JLabel countdownLabel = new JLabel("3", SwingConstants.CENTER);
+        countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
+        countdownLabel.setForeground(Color.WHITE);  // White text for contrast
+
+        // Create a panel for the countdown label with a border (outline)
+        JPanel countdownPanel = new JPanel(new BorderLayout());
+        countdownPanel.setBackground(Color.BLACK); // Make panel background black
+        countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10)); // Set white border with 10px thickness
+        countdownPanel.add(countdownLabel, BorderLayout.CENTER);
+
+        // Add the panel to the countdown window
+        countdownWindow.add(countdownPanel, BorderLayout.CENTER);
+
+        // Get screen size for centering the window and scaling it to 80%
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = (int) (screenSize.width * 0.8);  // 80% of screen width
+        int height = (int) (screenSize.height * 0.8); // 80% of screen height
+
+        countdownWindow.setSize(width, height);
+        countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2); // Center the window
+
+        // Make the countdown window visible
+        countdownWindow.setVisible(true);
+
+        // Start the countdown
+        for (int i = 3; i > 0; i--) {
+            countdownLabel.setText(String.valueOf(i));
+            try {
+                Thread.sleep(1000);  // Wait for 1 second before updating the countdown
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // After the countdown, close the window
+        countdownWindow.setVisible(false);
+        countdownWindow.dispose();
+
+        // Retrieve players from the database
+        ResultSet resultSet = database.retreiveEntries();
+
+        // Create a new window to display the entered players
+        JFrame playerWindow = new JFrame("Entered Players");
+        playerWindow.setLayout(new BorderLayout());  // Use BorderLayout for better separation of components
+
+        // Create a panel for both Red and Green teams
+        JPanel teamsPanel = new JPanel();
+        teamsPanel.setLayout(new GridLayout(2, 1));  // 2 rows: one for each team
+
+        // Create panel for Red Team with additional styling
+        JPanel redTeamPanel = new JPanel();
+        redTeamPanel.setLayout(new BoxLayout(redTeamPanel, BoxLayout.Y_AXIS)); // Use BoxLayout for better alignment
+        redTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.RED, 2), "RED TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 16), Color.RED));
+
+        // Create panel for Green Team with similar styling
+        JPanel greenTeamPanel = new JPanel();
+        greenTeamPanel.setLayout(new BoxLayout(greenTeamPanel, BoxLayout.Y_AXIS));
+        greenTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 16), Color.GREEN));
+
+        database.retreiveEntries();
+        try {
+            // Iterate through the ResultSet and add players to the respective team panels
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String codename = resultSet.getString("codename");
+                String team = resultSet.getString("team");  // Assuming 'team' column to distinguish teams
+
+                // Create a panel for the player
+                JPanel playerPanel = new JPanel();
+                playerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+                playerPanel.add(new JLabel(String.format("%d. ", id)));  // Player ID
+                playerPanel.add(new JLabel(codename));  // Player codename
+
+                // Add player to the appropriate team panel based on the team column
+                if ("Red".equals(team)) {
+                    redTeamPanel.add(playerPanel);
+                } else if ("Green".equals(team)) {
+                    greenTeamPanel.add(playerPanel);
                 }
             }
-    
-            // After the countdown, close the window
-            countdownWindow.setVisible(false);
-            countdownWindow.dispose();
-    
-            // Now trigger the game start code
-            System.out.println("Start Game functionality triggered.");
-            // Send a UDP packet to start the game
-            if (udpClient != null) {
-                udpClient.sendEquipmentID(202);
-            } else {
-                System.err.println("udpBaseClient_2 instance is null. Cannot start game.");
-            }
-        }).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Add the Red and Green team panels to the teamsPanel
+        teamsPanel.add(redTeamPanel);
+        teamsPanel.add(greenTeamPanel);
+
+        // Add the teamsPanel to the player window
+        playerWindow.add(teamsPanel, BorderLayout.CENTER);
+
+        // Set window size and location
+        playerWindow.setSize(600, 600);  // Increased height to accommodate both teams
+        playerWindow.setLocationRelativeTo(null);  // Center the window
+
+        // Make the player window visible
+        playerWindow.setVisible(true);
+
+    }).start();
     }
 
     public void gameParameters() {

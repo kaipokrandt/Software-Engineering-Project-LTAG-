@@ -3,24 +3,29 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class database {
+public  class database {
     //if password authentication failed - 
     //in terminal "psql photon" then "ALTER USER student WITH PASSWORD 'student';"
-    private String url = "jdbc:postgresql://localhost:5432/photon";
-    private String user = "student";
-    private String password = "student";
+    private static String url = "jdbc:postgresql://localhost:5432/photon";
+    private static String user = "student";
+    private static String password = "student";
     
     public Connection connectToDatabase(){
         // Database connection details
         
-        String sql = "ALTER TABLE players ADD CONSTRAINT unique_id UNIQUE (id);";
+
+        String sqlConstraint = "ALTER TABLE players ADD CONSTRAINT unique_id UNIQUE (id);";
+        String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;";
+        String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
         // Establish the connection
         //Connection connection = null;
         try (Connection connection = DriverManager.getConnection(url, user, password);
             Statement statement = connection.createStatement()) {
 
-
-            statement.executeUpdate(sql);    
+            
+            statement.executeUpdate(sqlConstraint);
+            statement.executeUpdate(sqlColumn);
+            statement.executeUpdate(sqlColumnTeam);
             //System.out.println("Connected to the PostgreSQL database successfully!");
             return connection;
 
@@ -31,51 +36,42 @@ public class database {
                 System.out.println(e.getMessage());
             }
         }
-
         return null;
-
-        
     }
 
 
-    public void retreiveEntries(){
-        // Database connection details
-
-        // Establish the connection
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-            Statement statement = connection.createStatement()) {
-
-            // Execute a query
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM players");
-
-            // Process the result set
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String codename = resultSet.getString("codename");
-                System.out.println("ID: " + id + ", Codename: " + codename);
-            }
-
+    public static ResultSet retreiveEntries() {
+        try {
+            // Establish the connection
+            Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement();
+    
+            // Execute the query and return the result
+            return statement.executeQuery("SELECT * FROM players");
         } catch (Exception e) {
             System.err.println("Error 2: " + e.getMessage());
+            return null;
         }
-
     }
    
 
 
-   //INSERT INTO players(id,codename) VALUES('42','bob');
+   //INSERT INTO players(id,codename,hardwareId) VALUES('42','bob','4');
 
     /**
    * Adds the Player's Name and ID into the database.
    *
    * @param playerName Name of the player that is added to the database
    * @param ID ID of the player that is added to the databse
+   * @param hardwareId Hardware ID of the player that is added to the database
+   * @param team Team of the player that is added to the database
    * @return Returns Void.
    */
-    public void addplayer(String playerName, int ID){
+    public void addplayer(String playerName, int ID, int hardwareId, String team) {
         // Database connection details
-
-        String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "') ON CONFLICT (id) DO NOTHING;";
+        String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
+        String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;";
+        String sql = "INSERT INTO players(id, codename, hardwareId, team) VALUES('" + ID + "','" + playerName + "', '" + hardwareId + "', '" + team + "') ON CONFLICT (id) DO NOTHING;";
         //String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 
         // Establish the connection
@@ -85,6 +81,8 @@ public class database {
             System.out.println("Connected to the PostgreSQL database successfully!");
 
             // Execute a query
+            statement.executeUpdate(sqlColumnTeam);
+            statement.executeUpdate(sqlColumn);
             statement.executeUpdate(sql);
             System.out.println("Player added successfully!");
 
