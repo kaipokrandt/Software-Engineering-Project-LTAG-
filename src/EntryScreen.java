@@ -1,3 +1,4 @@
+import javax.crypto.spec.PBEKeySpec;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
@@ -8,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.concurrent.Flow;
 
 public class EntryScreen {
 
@@ -410,49 +412,80 @@ public class EntryScreen {
 
         // Create a panel for both Red and Green teams
         JPanel teamsPanel = new JPanel();
-        teamsPanel.setLayout(new GridLayout(2, 1));  // 2 rows: one for each team
+        teamsPanel.setLayout(new GridLayout(1, 2));  // 1 rows: one for each team
 
         // Create panel for Red Team with additional styling
         JPanel redTeamPanel = new JPanel();
         redTeamPanel.setLayout(new BoxLayout(redTeamPanel, BoxLayout.Y_AXIS)); // Use BoxLayout for better alignment
-        redTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.RED, 2), "RED TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 16), Color.RED));
+        redTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.RED, 2), "RED TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.RED));
+        redTeamPanel.setBackground(Color.BLACK);
 
         // Create panel for Green Team with similar styling
         JPanel greenTeamPanel = new JPanel();
         greenTeamPanel.setLayout(new BoxLayout(greenTeamPanel, BoxLayout.Y_AXIS));
-        greenTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 16), Color.GREEN));
+        greenTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.GREEN));
+        greenTeamPanel.setBackground(Color.BLACK);
+        
 
         database.retreiveEntries();
         try {
             // Iterate through the ResultSet and add players to the respective team panels
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String codename = resultSet.getString("codename");
-                String team = resultSet.getString("team");  // Assuming 'team' column to distinguish teams
+                int id = resultSet.getInt("id".trim());
+                String codename = resultSet.getString("codename".trim());
+                String team = resultSet.getString("team".trim());  // Assuming 'team' column to distinguish teams
 
                 // Create a panel for the player
                 JPanel playerPanel = new JPanel();
-                playerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-                playerPanel.add(new JLabel(String.format("%d. ", id)));  // Player ID
-                playerPanel.add(new JLabel(codename));  // Player codename
+                playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
+                playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                playerPanel.setBackground(Color.BLACK);
+
+                
+
+                JLabel codenamLabel = new JLabel(codename);
+                codenamLabel.setForeground(Color.WHITE);
+                codenamLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                playerPanel.add(codenamLabel);
+
+
 
                 // Add player to the appropriate team panel based on the team column
                 if ("Red".equals(team)) {
                     redTeamPanel.add(playerPanel);
+                    redTeamPanel.add(Box.createVerticalStrut(10));
                 } else if ("Green".equals(team)) {
                     greenTeamPanel.add(playerPanel);
+                    greenTeamPanel.add(Box.createVerticalStrut(10));
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+
+        //current game action panel
+        JPanel gameActioPanel = new JPanel();
+        gameActioPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        gameActioPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE, 2), "Current Game Action", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.WHITE));
+        gameActioPanel.setBackground(Color.BLUE);
+
         // Add the Red and Green team panels to the teamsPanel
         teamsPanel.add(redTeamPanel);
         teamsPanel.add(greenTeamPanel);
 
+
+        //create a main panel to hold both panels 
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(teamsPanel);
+        mainPanel.add(Box.createVerticalStrut(20)); //add vertical space between two panels
+        mainPanel.add(gameActioPanel);
+
+
+
         // Add the teamsPanel to the player window
-        playerWindow.add(teamsPanel, BorderLayout.CENTER);
+        playerWindow.add(mainPanel, BorderLayout.CENTER);
 
         // Set window size and location
         playerWindow.setSize(600, 600);  // Increased height to accommodate both teams
