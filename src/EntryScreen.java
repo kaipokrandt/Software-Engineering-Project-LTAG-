@@ -299,7 +299,19 @@ public class EntryScreen {
     public void clearGame() {
         // implement clear game functionality
         System.out.println("Clear Game functionality triggered.");
-        db.clearTable();
+            // Clear red team fields
+        for (int i = 0; i < 15; i++) {
+            redTeamFields[i][0].setText(""); // Clear ID field
+            redTeamFields[i][1].setText(""); // Clear Name field
+        }
+
+        // Clear green team fields
+        for (int i = 0; i < 15; i++) {
+            greenTeamFields[i][0].setText(""); // Clear ID field
+            greenTeamFields[i][1].setText(""); // Clear Name field
+        }
+
+        JOptionPane.showMessageDialog(null, "Player entries cleared.", "Clear Game", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void flickSync() {
