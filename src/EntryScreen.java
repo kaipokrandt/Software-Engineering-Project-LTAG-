@@ -277,8 +277,6 @@ public class EntryScreen {
         for(int i = 0; i < codeNames.size(); i++){
             db.addplayer(codeNames.get(i), playerIds.get(i), hardwareIds.get(i), teams.get(i));
             //System.out.println("Added " + codeNames.get(i) + " with ID " + playerIds.get(i) + " to the database.");
-            db.addplayer(codeNames.get(i), playerIds.get(i));
-            //System.out.println("Added " + codeNames.get(i) + " with ID " + playerIds.get(i) + " to the database.");
         }
         database.retreiveEntries();
         //db.retreiveEntries();
