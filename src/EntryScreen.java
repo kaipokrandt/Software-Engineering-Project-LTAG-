@@ -1,7 +1,6 @@
 import javax.crypto.spec.PBEKeySpec;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -189,6 +188,11 @@ public class EntryScreen {
         return button;
     }
 
+    //check for numeric entry (for ID and Hardware ID)
+    private boolean isNumeric(String input) {
+        return input.matches("\\d+"); // Matches only digits
+    }
+
     private void savePlayersToDatabase() {
         // Check if at least one player is entered for both teams
         boolean redTeamHasPlayer = false;
@@ -223,6 +227,16 @@ public class EntryScreen {
                 String idText = redTeamFields[i][0].getText().trim();
                 String hardwareIdtext = redTeamFields[i][2].getText().trim();
                 
+                if (!idText.isEmpty() && !isNumeric(idText)) {
+                    JOptionPane.showMessageDialog(null, "Invalid input in User ID field. Only numbers are allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    redTeamFields[i][0].setText(""); // Clear the field
+                }
+                if (!hardwareIdtext.isEmpty() && !isNumeric(hardwareIdtext)) {
+                    JOptionPane.showMessageDialog(null, "Invalid input in Hardware ID field. Only numbers are allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    redTeamFields[i][2].setText(""); // Clear the field
+                    continue;
+                }
+
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
                     int hardwareId = Integer.parseInt(hardwareIdtext);
@@ -243,6 +257,16 @@ public class EntryScreen {
                 String idText = greenTeamFields[i][0].getText().trim();
                 String hardwareIdtext = greenTeamFields[i][2].getText().trim();
                 
+                if (!idText.isEmpty() && !isNumeric(idText)) {
+                    JOptionPane.showMessageDialog(null, "Invalid input in User ID field. Only numbers are allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    greenTeamFields[i][0].setText(""); // Clear the field
+                }
+                if (!hardwareIdtext.isEmpty() && !isNumeric(hardwareIdtext)) {
+                    JOptionPane.showMessageDialog(null, "Invalid input in Hardware ID field. Only numbers are allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    greenTeamFields[i][2].setText(""); // Clear the field
+                    continue;
+                }
+
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
                     int hardwareId = Integer.parseInt(hardwareIdtext);
