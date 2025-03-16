@@ -128,7 +128,7 @@ public class EntryScreen {
         JPanel bottomPanel = new JPanel(new GridLayout(1, 9, 5, 5));
         bottomPanel.setBackground(Color.BLACK);
     
-        // Add buttons using the helper method.
+        // Add buttons and descriptions using the helper method.
         bottomPanel.add(createButton("Edit Game (F1)", KeyEvent.VK_F1, e -> editGame()));
         bottomPanel.add(createButton("Game Params (F2)", KeyEvent.VK_F2, e -> gameParameters()));
         bottomPanel.add(createButton("View Game (F3)", KeyEvent.VK_F3, e -> viewGame()));
@@ -154,7 +154,7 @@ public class EntryScreen {
         return bottomPanel;
     }
     
-    // Helper method for binding keys to actions
+    // Helper method for binding keys to different actions
     private void bindKeyToAction(JComponent component, int keyCode, String actionName, Runnable action) {
         InputMap inputMap = component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = component.getActionMap();
@@ -190,7 +190,7 @@ public class EntryScreen {
 
     //check for numeric entry (for ID and Hardware ID)
     private boolean isNumeric(String input) {
-        return input.matches("\\d+"); // Matches only digits
+        return input.matches("\\d+"); // Matches digits
     }
 
     private void savePlayersToDatabase() {
@@ -220,7 +220,7 @@ public class EntryScreen {
         ArrayList<Integer> hardwareIds = new ArrayList<Integer>();
         ArrayList<String> teams = new ArrayList<String>();
     
-        // Save the players from the red team
+        // Save players from the red team
         for (int i = 0; i < 15; i++) {
             try {
                 String playerName = redTeamFields[i][1].getText().trim();
