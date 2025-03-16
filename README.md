@@ -12,7 +12,9 @@ The players table should have 2 colums, 1st being id, second being codename.
 Make sure you have the postgresql 42.7.5 jar file from out in the lib folder
 Check .vscode to see if the .jar file is one of the files in the referenced library.
 
-All you must do is run 
+All you must do is download our files, make sure you have java installed, then, in your user terminal, run the following code
+
+java -jar app.jar
 
 
 ----------------------------------------------------------------
