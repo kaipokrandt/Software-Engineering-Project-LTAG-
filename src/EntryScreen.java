@@ -137,9 +137,10 @@ public class EntryScreen {
         bottomPanel.add(createButton("Start Game (F5)", KeyEvent.VK_F5, e -> startGame()));
         bottomPanel.add(createButton("Flick Sync (F6)", KeyEvent.VK_F6, e -> flickSync()));
         bottomPanel.add(createButton("Change IP (F7)", KeyEvent.VK_F7, e -> changeIPAddress()));
-        bottomPanel.add(createButton("Clear Game (F8)", KeyEvent.VK_F8, e -> clearGame()));
-        bottomPanel.add(createButton("Submit (F12)", KeyEvent.VK_F12, e -> savePlayersToDatabase()));
-    
+        bottomPanel.add(createButton("Clear Game (F12)", KeyEvent.VK_F8, e -> clearGame()));
+        bottomPanel.add(createButton("Submit (F8)", KeyEvent.VK_F12, e -> savePlayersToDatabase()));
+        
+        // keybind remapping
         // Bind the function keys to the panel
         bindKeyToAction(bottomPanel, KeyEvent.VK_F1, "editGame", this::editGame);
         bindKeyToAction(bottomPanel, KeyEvent.VK_F2, "gameParams", this::gameParameters);
@@ -148,9 +149,9 @@ public class EntryScreen {
         bindKeyToAction(bottomPanel, KeyEvent.VK_F5, "startGame", this::startGame);
         bindKeyToAction(bottomPanel, KeyEvent.VK_F6, "flickSync", this::flickSync);
         bindKeyToAction(bottomPanel, KeyEvent.VK_F7, "changeIPAddress", this::changeIPAddress);
-        bindKeyToAction(bottomPanel, KeyEvent.VK_F8, "clearGame", this::clearGame);
-        bindKeyToAction(bottomPanel, KeyEvent.VK_F12, "submitPlayers", this::savePlayersToDatabase);
-    
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F12, "clearGame", this::clearGame);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F8, "submitPlayers", this::savePlayersToDatabase);
+        
         return bottomPanel;
     }
     
