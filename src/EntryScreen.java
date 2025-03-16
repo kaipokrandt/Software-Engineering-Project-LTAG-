@@ -128,55 +128,44 @@ public class EntryScreen {
     public JPanel createBottomPanel() {
         JPanel bottomPanel = new JPanel(new GridLayout(1, 9, 5, 5));
         bottomPanel.setBackground(Color.BLACK);
-
+    
         // Add buttons using the helper method.
-        // ***only IP and Submit buttons currently have use***
-        bottomPanel.add(createButton("Edit Game (F1)", KeyEvent.VK_F1, e -> {
-            System.out.println("Edit Game button clicked");
-            editGame();
-        }));
-
-        bottomPanel.add(createButton("Game Parameters (F2)", KeyEvent.VK_F2, e -> {
-            System.out.println("Game Parameters button clicked");
-            gameParameters();
-        }));
-
-        bottomPanel.add(createButton("Start Game (F3)", KeyEvent.VK_F3, e -> {
-            System.out.println("Start Game button clicked");
-            startGame();
-        }));
-
-        bottomPanel.add(createButton("PreEntered Games (F5)", KeyEvent.VK_F5, e -> {
-            System.out.println("PreEntered Game button clicked");
-            preEnteredGames();
-        }));
-
-        bottomPanel.add(createButton("View Game (F7)", KeyEvent.VK_F7, e -> {
-            System.out.println("View Game button clicked");
-            viewGame();
-        }));
-
-        bottomPanel.add(createButton("Flick Sync (F10)", KeyEvent.VK_F10, e -> {
-            System.out.println("Flick Sync button clicked");
-            flickSync();
-        }));
-
-        bottomPanel.add(createButton("Change IP (F11)", KeyEvent.VK_F11, e -> {
-            System.out.println("Change IP button clicked");
-            changeIPAddress();
-        }));
-
-        bottomPanel.add(createButton("Clear Game (F12)", KeyEvent.VK_F12, e -> {
-            System.out.println("Clear Game button clicked");
-            clearGame();
-        }));
-
-        bottomPanel.add(createButton("Submit", -1, e -> {
-            System.out.println("Submit player button clicked");
-            savePlayersToDatabase();
-        }));
-
+        bottomPanel.add(createButton("Edit Game (F1)", KeyEvent.VK_F1, e -> editGame()));
+        bottomPanel.add(createButton("Game Params (F2)", KeyEvent.VK_F2, e -> gameParameters()));
+        bottomPanel.add(createButton("View Game (F3)", KeyEvent.VK_F3, e -> viewGame()));
+        bottomPanel.add(createButton("PreEnt. Games (F4)", KeyEvent.VK_F4, e -> preEnteredGames()));
+        bottomPanel.add(createButton("Start Game (F5)", KeyEvent.VK_F5, e -> startGame()));
+        bottomPanel.add(createButton("Flick Sync (F6)", KeyEvent.VK_F6, e -> flickSync()));
+        bottomPanel.add(createButton("Change IP (F7)", KeyEvent.VK_F7, e -> changeIPAddress()));
+        bottomPanel.add(createButton("Clear Game (F8)", KeyEvent.VK_F8, e -> clearGame()));
+        bottomPanel.add(createButton("Submit (F12)", KeyEvent.VK_F12, e -> savePlayersToDatabase()));
+    
+        // Bind the function keys to the panel
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F1, "editGame", this::editGame);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F2, "gameParams", this::gameParameters);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F3, "viewGame", this::viewGame);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F4, "preEnteredGames", this::preEnteredGames);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F5, "startGame", this::startGame);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F6, "flickSync", this::flickSync);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F7, "changeIPAddress", this::changeIPAddress);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F8, "clearGame", this::clearGame);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_F12, "submitPlayers", this::savePlayersToDatabase);
+    
         return bottomPanel;
+    }
+    
+    // Helper method for binding keys to actions
+    private void bindKeyToAction(JComponent component, int keyCode, String actionName, Runnable action) {
+        InputMap inputMap = component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = component.getActionMap();
+    
+        inputMap.put(KeyStroke.getKeyStroke(keyCode, 0), actionName);
+        actionMap.put(actionName, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action.run();
+            }
+        });
     }
 
     /**
