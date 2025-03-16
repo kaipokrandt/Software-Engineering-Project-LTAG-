@@ -5,12 +5,14 @@ Software Engineering project for Jim Strother
 HOW-TO-RUN /////////////////////////////////////////////////////
 ----------------------------------------------------------------
 
+Requirements :
 Make sure to have postgresql installed, and have a database set up with a table named players.
 The players table should have 2 colums, 1st being id, second being codename.
 
 Make sure you have the postgresql 42.7.5 jar file from out in the lib folder
 Check .vscode to see if the .jar file is one of the files in the referenced library.
 
+All you must do is run 
 
 
 ----------------------------------------------------------------
