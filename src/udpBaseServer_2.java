@@ -69,7 +69,6 @@ public class udpBaseServer_2 {
             }
         } else {
             System.out.println("⚠️ Unknown command received: " + message);
-            System.out.println("wsg");
         }
     }
 }
