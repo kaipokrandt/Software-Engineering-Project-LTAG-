@@ -9,7 +9,13 @@ Requirements :
 Make sure to have postgresql installed, and have a database set up with a table named players.
 The players table should have 4 columns, 1st being id, then codename, hardwareID and team.
 
-All you must do is download our files, make sure you have java installed, then, in your user terminal, run the following code
+All you must do is download our files, make sure you have java installed, then, in your user terminal, navigate to the programs directory, then run the following code.
+
+Use cd ~/ExampleDirectory with "ExampleDirectory" being the area you downloaded it to.
+
+For example, cd ~/Downloads/Software-Engineering-Project-LTAG-
+
+Then, 
 
 TO RUN:
 *****************
