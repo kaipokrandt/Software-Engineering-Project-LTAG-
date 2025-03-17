@@ -12,7 +12,8 @@ public class udpBaseClient_2 {
 
     public udpBaseClient_2(String networkAddress) throws Exception {
         socket = new DatagramSocket();
-        address = InetAddress.getByName(networkAddress); 
+        address = InetAddress.getByName(networkAddress);
+        System.out.println("network address is : " + networkAddress); 
     }
 
     public void sendEquipmentID(int equipmentID) {
@@ -27,10 +28,11 @@ public class udpBaseClient_2 {
         }
     }
 
+    // takes ip from entryscreen.java and sets the network address
     public void setNetworkAddress(String newNetwork) {
         try {
             address = InetAddress.getByName(newNetwork);
-            System.out.println("Network address changed to: " + newNetwork);
+            System.out.println("(udp file)Network address changed to: " + newNetwork);
         } catch (Exception e) {
             e.printStackTrace();
         }

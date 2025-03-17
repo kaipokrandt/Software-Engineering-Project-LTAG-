@@ -4,9 +4,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class udpBaseServer_2 {
-    public static void main(String[] args) {
-        final int PORT = 7501; // Server listens on port 7501
-        byte[] buffer = new byte[256]; // Buffer size for incoming packets
+    
+    final int PORT =7500;
+    byte[] buffer = new byte[256];
+
+    public void createSocket(){
 
         try {
             // Step 1: Create a socket to listen on UDP port 7501
@@ -45,7 +47,7 @@ public class udpBaseServer_2 {
     }
 
     // Method to process game messages based on the received data
-    private static void processMessage(String message) {
+    private void processMessage(String message) {
         if (message.equals("202")) {
             System.out.println("Game Started!");
         } else if (message.equals("221")) {
@@ -66,8 +68,12 @@ public class udpBaseServer_2 {
                 }
             }
         } else {
+<<<<<<< HEAD
             System.out.println("⚠️ Unknown command received!: " + message);
             System.out.println("Hey How Are you!");
+=======
+            System.out.println("⚠️ Unknown command received: " + message);
+>>>>>>> 9e6412e96096b80ef7cd599d13260f34ca208c90
         }
     }
 }
