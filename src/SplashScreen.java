@@ -30,19 +30,18 @@ class SplashScreen {
         }
 
         //set image size and show it
-        splash.setSize(600,337);
+        splash.setSize(600, 337);
         splash.setLocationRelativeTo(null);
         splash.setVisible(true);
 
-        //display splash for 5 seconds
+        // Keep splash screen visible for 5 seconds
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt(); // Restore interrupted status
         }
 
-        //remove splash and dispose
-        splash.setVisible(false);
+        // Close and remove the splash screen
         splash.dispose();
     } 
 

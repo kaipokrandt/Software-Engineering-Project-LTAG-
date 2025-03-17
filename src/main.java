@@ -16,13 +16,7 @@ public class main{
         //create entry screen
         EntryScreen.createAndShowGUI();
 
-        //database db = new database();
-        //EntryScreen.setVariable(db);
-        
-        //db.addplayer("Bob",42);
-        //db.addplayer("Bob",42);
-
-        //db.retreiveEntries();
+        //removed all of the old database functionality
     }
 
 

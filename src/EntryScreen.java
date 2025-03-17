@@ -80,7 +80,7 @@ public class EntryScreen {
         JPanel bottomPanel = new JPanel(new GridLayout(1, 8, 5, 5));
         bottomPanel.setBackground(Color.BLACK);
 
-        String[] buttonLabels = {"Edit Game (F1)", "Game Parameters (F2)", "Start Game (F3)", "PreEntered Games (F5)", "View Game (F7)", "Flick Sync (F10)", "Clear Game (F12)", "Submit"};
+        String[] buttonLabels = {"Edit GameState (F1)", " View Game Parameters (F2)", "Start Game (F3)", "PreEntered Games (F5)", "View Game (F7)", "Flick Sync (F10)", "Clear Game (F12)", "Submit"};
         int[] keyBindings = {KeyEvent.VK_F1, KeyEvent.VK_F2, KeyEvent.VK_F3, KeyEvent.VK_F5, KeyEvent.VK_F7, KeyEvent.VK_F10, KeyEvent.VK_F12};
 
         for (int i = 0; i < buttonLabels.length - 1; i++) {

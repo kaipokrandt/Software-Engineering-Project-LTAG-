@@ -82,7 +82,8 @@ public class database {
         }
 
     }
-
+    
+    //remove player from database
     public void removePlayer(int ID){
         // Database connection details
 
@@ -103,7 +104,8 @@ public class database {
         }
 
     }  
-    
+
+    //edit players name/id method
     public void editPlayer(String newName , int ID){ 
         // Database connection details
 
@@ -137,7 +139,7 @@ public class database {
 
             // Execute a query
             statement.executeUpdate(sql);
-            System.out.println("Table cleared successfully!");
+            System.out.println("Table fully cleared successfully!");
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
