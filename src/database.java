@@ -111,17 +111,11 @@ public class database {
         }
 
     }
-<<<<<<< HEAD
-    
-    //remove player from database
-    public void removePlayer(int ID){
-=======
 
     public void removePlayerbyId(int ID){
 
         //Delete players from the databse, accepts integer;
 
->>>>>>> 9e6412e96096b80ef7cd599d13260f34ca208c90
         // Database connection details
 
         String sql = "DELETE FROM players WHERE id = " + ID + ";";

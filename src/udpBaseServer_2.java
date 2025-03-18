@@ -68,12 +68,7 @@ public class udpBaseServer_2 {
                 }
             }
         } else {
-<<<<<<< HEAD
-            System.out.println("⚠️ Unknown command received!: " + message);
-            System.out.println("Hey How Are you!");
-=======
             System.out.println("⚠️ Unknown command received: " + message);
->>>>>>> 9e6412e96096b80ef7cd599d13260f34ca208c90
         }
     }
 }

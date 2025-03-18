@@ -134,26 +134,6 @@ public class EntryScreen {
     public JPanel createBottomPanel() {
         JPanel bottomPanel = new JPanel(new GridLayout(1, 9, 5, 5));
         bottomPanel.setBackground(Color.BLACK);
-<<<<<<< HEAD
-
-        String[] buttonLabels = {"Edit GameState (F1)", " View Game Parameters (F2)", "Start Game (F3)", "PreEntered Games (F5)", "View Game (F7)", "Flick Sync (F10)", "Clear Game (F12)", "Submit"};
-        int[] keyBindings = {KeyEvent.VK_F1, KeyEvent.VK_F2, KeyEvent.VK_F3, KeyEvent.VK_F5, KeyEvent.VK_F7, KeyEvent.VK_F10, KeyEvent.VK_F12};
-
-        for (int i = 0; i < buttonLabels.length - 1; i++) {
-            JButton button = new JButton(buttonLabels[i]);
-            button.setForeground(Color.GREEN);
-            button.setBackground(Color.DARK_GRAY);
-            button.setPreferredSize(new Dimension(100, 50));
-            button.setMnemonic(keyBindings[i]);
-            bottomPanel.add(button);
-        }
-
-        JButton submitButton = new JButton("Submit");
-        submitButton.setForeground(Color.GREEN);
-        submitButton.setBackground(Color.DARK_GRAY);
-        submitButton.setPreferredSize(new Dimension(100, 50));
-        submitButton.addActionListener(new ActionListener() {
-=======
     
         // Add buttons and descriptions using the helper method.
         bottomPanel.add(createButton("Edit Game (F1)", KeyEvent.VK_F1, e -> editGame()));
@@ -188,7 +168,6 @@ public class EntryScreen {
     
         inputMap.put(KeyStroke.getKeyStroke(keyCode, 0), actionName);
         actionMap.put(actionName, new AbstractAction() {
->>>>>>> 9e6412e96096b80ef7cd599d13260f34ca208c90
             @Override
             public void actionPerformed(ActionEvent e) {
                 action.run();
