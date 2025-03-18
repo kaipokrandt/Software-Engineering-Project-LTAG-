@@ -89,9 +89,10 @@ public class database {
     public void addplayer(String playerName, int ID, int hardwareId, String team) {
         // Database connection details
         String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
-        String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;";
-        String sql = "INSERT INTO players(id, codename, hardwareId, team) VALUES('" + ID + "','" + playerName + "', '" + hardwareId + "', '" + team + "') ON CONFLICT (id) DO NOTHING;";
-        //String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
+        String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;"; 
+        String sql = "INSERT INTO players(id, codename, hardwareId, team) VALUES('" + ID + "','" + playerName + "', '" + hardwareId + "', '" + team + "') ON CONFLICT (id) DO UPDATE SET " + 
+        "team = EXCLUDED.team, hardwareId = EXCLUDED.hardwareID;";
+        //String sql = "INSERT OR REpINTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 
         // Establish the connection
         try (Connection connection = DriverManager.getConnection(url, user, password);

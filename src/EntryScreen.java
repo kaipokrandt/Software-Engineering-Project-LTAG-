@@ -1,12 +1,18 @@
 import javax.crypto.spec.PBEKeySpec;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.NumberFormatter;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Array;
 import java.sql.ResultSet;
+import java.text.DecimalFormat;
+import java.text.Format;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.Flow;
 
@@ -16,7 +22,8 @@ public class EntryScreen {
     private JTextField[][] redTeamFields;
     private JTextField[][] greenTeamFields;
 
-    
+    private ArrayList<String> redTeamCodeNames = new ArrayList<String>();
+    private ArrayList<String> greenTeamCodeNames = new ArrayList<String>();
     //implement database and udp client functionality to connnect
     public database db = new database();
     private udpBaseClient_2 udpClient;
@@ -98,7 +105,7 @@ public class EntryScreen {
         for (int i = 0; i < 15; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1).trim(), SwingConstants.CENTER);
             label.setForeground(Color.WHITE);
-            JTextField idField = new JTextField();
+            JTextField idField = new JTextField();;
             JTextField nameField = new JTextField();
             JTextField hardwareField = new JTextField();
             entryPanel.add(label);
@@ -222,7 +229,8 @@ public class EntryScreen {
     
         // Save the players from the red team
         for (int i = 0; i < 15; i++) {
-            try {
+            try{
+            
                 String playerName = redTeamFields[i][1].getText().trim();
                 String idText = redTeamFields[i][0].getText().trim();
                 String hardwareIdtext = redTeamFields[i][2].getText().trim();
@@ -239,14 +247,18 @@ public class EntryScreen {
 
                 if (!playerName.isEmpty() && !idText.isEmpty()) {
                     int playerID = Integer.parseInt(idText);
+                    
                     int hardwareId = Integer.parseInt(hardwareIdtext);
                     codeNames.add(playerName);
+                    System.out.println(playerName);
                     playerIds.add(playerID);
                     hardwareIds.add(hardwareId);
+                    redTeamCodeNames.add(playerName);
+                    System.out.println("Red Team names: " + redTeamCodeNames.get(0) );
                     teams.add("Red");
                 }
             } catch (NumberFormatException ex) {
-                System.err.println("Invalid input for player ID at entry " + (i + 1));
+               System.err.println("Invalid input for player ID at entry " + (i + 1));
             }
         }
     
@@ -272,14 +284,21 @@ public class EntryScreen {
                     int hardwareId = Integer.parseInt(hardwareIdtext);
     
                     codeNames.add(playerName);
+                    System.out.println(playerName);
                     playerIds.add(playerID);
                     hardwareIds.add(hardwareId);
+                    greenTeamCodeNames.add(playerName);
+                    System.out.println("Green Team names: " + greenTeamCodeNames.get(0) );
                     teams.add("Green");
                 }
     
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for Player ID at entry!" + (i + 1));
             }
+        }
+
+        for(int i = 0; i < codeNames.size(); i++){
+            System.out.println(codeNames.get(i));
         }
     
         // Add all the Names and IDs to the db
@@ -293,15 +312,28 @@ public class EntryScreen {
                 // Show a popup to notify the user of the username change
                 JOptionPane.showMessageDialog(null, "Duplicate UserID detected. The username has been changed to: " + existingUserName, 
                         "Duplicate UserID", JOptionPane.INFORMATION_MESSAGE);
+                redTeamCodeNames.clear();
+                greenTeamCodeNames.clear();
                 // Update the player entry screen with the existing username
                 if (teams.get(i).equals("Red")) {
                     redTeamFields[i][1].setText(existingUserName); // Update red team entry
                 } else {
                     greenTeamFields[i-1][1].setText(existingUserName); // Update green team entry
-                }
-            } else {
+                } 
+            } else if(redTeamCodeNames.size() > 0 && greenTeamCodeNames.size() > 0) {
                 // Add player to the database if there is no duplicate
-                db.addplayer(playerName, playerID, hardwareIds.get(i), teams.get(i));
+                for(int j = 0; j < redTeamCodeNames.size(); j++){
+                    if(redTeamCodeNames.get(j).equals(playerName)){
+                        db.addplayer(playerName, playerID, hardwareIds.get(i),"Red");
+                    }
+                }
+                
+                for(int j = 0; j < greenTeamCodeNames.size(); j++){
+                    if(greenTeamCodeNames.get(j).equals(playerName)){
+                        db.addplayer(playerName, playerID, hardwareIds.get(i),"Green");
+                    }
+                }
+                
             }
         }
     
@@ -543,6 +575,8 @@ public class EntryScreen {
 
         // Make the player window visible
         playerWindow.setVisible(true);
+
+        udpClient.sendEquipmentID(202);
 
     }).start();
     }
