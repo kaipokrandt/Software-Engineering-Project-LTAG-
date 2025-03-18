@@ -25,6 +25,13 @@ public class main{
         //create splash screen
         SplashScreen.showSplashScreen();
 
+<<<<<<< HEAD
+        EntryScreen EntryScreen = new EntryScreen();
+        //create entry screen
+        EntryScreen.createAndShowGUI();
+
+        //removed all of the old database functionality
+=======
         
         database db = new database();
         db.connectToDatabase();
@@ -43,5 +50,6 @@ public class main{
         //create entry screen, pass db and udp client
         EntryScreen.createAndShowGUI();
 
+>>>>>>> 9e6412e96096b80ef7cd599d13260f34ca208c90
     }
 }

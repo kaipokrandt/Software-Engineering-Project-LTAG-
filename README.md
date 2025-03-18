@@ -5,13 +5,23 @@ Software Engineering project for Jim Strother
 HOW-TO-RUN /////////////////////////////////////////////////////
 ----------------------------------------------------------------
 
+Requirements :
 Make sure to have postgresql installed, and have a database set up with a table named players.
-The players table should have 2 colums, 1st being id, second being codename.
+The players table should have 4 columns, 1st being id, then codename, hardwareID and team.
 
-Make sure you have the postgresql 42.7.5 jar file from out in the lib folder
-Check .vscode to see if the .jar file is one of the files in the referenced library.
+All you must do is download our files, make sure you have java installed, then, in your user terminal, navigate to the programs directory, then run the following code.
 
+Use cd ~/ExampleDirectory with "ExampleDirectory" being the area you downloaded it to.
 
+For example, cd ~/Downloads/Software-Engineering-Project-LTAG-
+
+Then, 
+
+TO RUN:
+*****************
+java -jar app.jar
+*****************
+in terminal
 
 ----------------------------------------------------------------
 Team Members ///////////////////////////////////////////////////

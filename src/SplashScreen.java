@@ -61,19 +61,32 @@ class SplashScreen {
             System.out.println("Error loading splash image: " + e.getMessage());
         }
 
+<<<<<<< HEAD
+        //set image size and show it
+        splash.setSize(600, 337);
+        splash.setLocationRelativeTo(null);
+        splash.setVisible(true);
+
+        // Keep splash screen visible for 5 seconds
+=======
         // Center the splash screen
         splash.setLocationRelativeTo(null);
         splash.setVisible(true);
 
         // Display splash for 3 seconds
+>>>>>>> 9e6412e96096b80ef7cd599d13260f34ca208c90
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt(); // Restore interrupted status
         }
 
+<<<<<<< HEAD
+        // Close and remove the splash screen
+=======
         // Remove splash and dispose
         splash.setVisible(false);
+>>>>>>> 9e6412e96096b80ef7cd599d13260f34ca208c90
         splash.dispose();
     } 
 }
