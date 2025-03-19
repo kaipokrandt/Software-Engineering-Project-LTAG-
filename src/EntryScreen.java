@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
@@ -481,9 +483,12 @@ public class EntryScreen {
             }
         }
 
+
         // After the countdown, close the window
         countdownWindow.setVisible(false);
         countdownWindow.dispose();
+
+        udpClient.sendEquipmentID(202);
 
         // Retrieve players from the database
         ResultSet resultSet = db.retreiveEntries();
@@ -491,6 +496,15 @@ public class EntryScreen {
         // Create a new window to display the entered players
         JFrame playerWindow = new JFrame("Entered Players");
         playerWindow.setLayout(new BorderLayout());  // Use BorderLayout for better separation of components
+        
+        playerWindow.addWindowListener(new WindowAdapter() {
+            
+            public void windowClosing(WindowEvent e){
+
+                udpClient.sendEquipmentID(221);
+                playerWindow.dispose();
+            }   
+        });
 
         // Create a panel for both Red and Green teams
         JPanel teamsPanel = new JPanel();
@@ -515,6 +529,22 @@ public class EntryScreen {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id".trim());
                 String codename = resultSet.getString("codename".trim());
+
+                String codeNameinDb = null;
+
+                for(int i = 0; i < redTeamCodeNames.size(); i++){
+                    if(codename.equals(redTeamCodeNames.get(i))){
+                        codeNameinDb = codename;
+                    }
+                }
+
+                for(int i = 0; i < greenTeamCodeNames.size(); i++){
+                    if(codename.equals(greenTeamCodeNames.get(i))){
+                        codeNameinDb = codename;
+                    }
+                }
+                
+                
                 String team = resultSet.getString("team".trim());  // Assuming 'team' column to distinguish teams
 
                 // Create a panel for the player
@@ -525,10 +555,10 @@ public class EntryScreen {
 
                 
 
-                JLabel codenamLabel = new JLabel(codename);
-                codenamLabel.setForeground(Color.WHITE);
-                codenamLabel.setFont(new Font("Arial", Font.BOLD, 12));
-                playerPanel.add(codenamLabel);
+                JLabel codenameLabel = new JLabel(codeNameinDb);
+                codenameLabel.setForeground(Color.WHITE);
+                codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                playerPanel.add(codenameLabel);
 
 
 
@@ -576,7 +606,7 @@ public class EntryScreen {
         // Make the player window visible
         playerWindow.setVisible(true);
 
-        udpClient.sendEquipmentID(202);
+        
 
     }).start();
     }
