@@ -20,8 +20,19 @@ public class main{
         // } catch (InterruptedException e) {
         //     e.printStackTrace();
         // }
-        music_player music_player = new music_player();
-        music_player.play_random_track();
+
+        Thread music_player_Thread = new Thread(() -> {
+            try{
+                music_player music_player = new music_player(Thread.currentThread());
+                music_player.play_random_track();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        music_player_Thread.start();
+        
 
 
         // SplashScreen SplashScreen = new SplashScreen();

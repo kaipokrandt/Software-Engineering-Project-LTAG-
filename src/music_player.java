@@ -1,18 +1,25 @@
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import javax.sound.sampled.*;
 
+
 public class music_player {
+
+    Thread thread = null;
     
-    public music_player(){
+    public music_player(Thread music_player_Thread){
+
+        this.thread = music_player_Thread;
 
     }
 
 
     public File select_random_track(){
 
-        String tracks_dir_path = "/home/student/Documents/Software-Engineering-Project-LTAG-/photon_tracks/";
+        String tracks_dir_path = "/home/student/Documents/Software-Engineering-Project-LTAG-/wav_files/";
         File tracks_dir = new File(tracks_dir_path);
 
         File[] tracks = tracks_dir.listFiles();
@@ -20,23 +27,27 @@ public class music_player {
         Random rand = new Random();
 
         File track = tracks[rand.nextInt(tracks.length)];
+
+        System.out.println("Selected " + track.getName());
         return track;
     }
 
 
     public void play_random_track(){
 
-        
-
         try {
 
-            File track = new File("/home/student/Documents/Software-Engineering-Project-LTAG-/photon_tracks/Track05.mp3");
+            File track = this.select_random_track();
+
             
             if(track.exists()){
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(track);
+                System.out.println("Playing music!");
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(track);
                 Clip clip = AudioSystem.getClip();
-                clip.open(audioInput);
+                clip.open(audioStream);
                 clip.start();
+                this.thread.sleep(396000);
+                this.thread.interrupt();
             }
 
             else{
