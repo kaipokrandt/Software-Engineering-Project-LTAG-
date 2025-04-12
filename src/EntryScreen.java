@@ -30,6 +30,8 @@ public class EntryScreen {
     public database db = new database();
     private udpBaseClient_2 udpClient;
 
+
+
     /**
      * 
      * @param db Databse that receives entries from the Entry Screen
@@ -473,14 +475,36 @@ public class EntryScreen {
         // Make the countdown window visible
         countdownWindow.setVisible(true);
 
+        Thread musicThread = null;
         // Start the countdown
-        for (int i = 3; i > 0; i--) {
+        for (int i = 18; i > -1; i--) {
             countdownLabel.setText(String.valueOf(i));
+
+           
             try {
-                Thread.sleep(1000);  // Wait for 1 second before updating the countdown
+
+                if(i == 16) {
+                    musicThread = new Thread(()-> {
+                        try {
+                            music_player.play_random_track(Thread.currentThread());
+                        } catch (Exception e) {
+                            // TODO: handle exception
+                        }
+                    });
+
+                    musicThread.start();
+                }
+                if(i == 0){
+                    countdownLabel.setText("Begin!");
+                }
+                Thread.sleep(1000); 
+                
+                 // Wait for 1 second before updating the countdown
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            
         }
 
 
