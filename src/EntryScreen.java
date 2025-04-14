@@ -442,197 +442,187 @@ public class EntryScreen {
     }
 
     public void startGame() {
-    new Thread(() -> {
-        // Create the countdown window
-        JWindow countdownWindow = new JWindow();
-        countdownWindow.setLayout(new BorderLayout());
-
-        // Set background color to black for the window
-        countdownWindow.getContentPane().setBackground(Color.BLACK);
-
-        // Create a label to display the countdown
-        JLabel countdownLabel = new JLabel("3", SwingConstants.CENTER);
-        countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
-        countdownLabel.setForeground(Color.WHITE);  // White text for contrast
-
-        // Create a panel for the countdown label with a border (outline)
-        JPanel countdownPanel = new JPanel(new BorderLayout());
-        countdownPanel.setBackground(Color.BLACK); // Make panel background black
-        countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10)); // Set white border with 10px thickness
-        countdownPanel.add(countdownLabel, BorderLayout.CENTER);
-
-        // Add the panel to the countdown window
-        countdownWindow.add(countdownPanel, BorderLayout.CENTER);
-
-        // Get screen size for centering the window and scaling it to 80%
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int width = (int) (screenSize.width * 0.8);  // 80% of screen width
-        int height = (int) (screenSize.height * 0.8); // 80% of screen height
-
-        countdownWindow.setSize(width, height);
-        countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2); // Center the window
-
-        // Make the countdown window visible
-        countdownWindow.setVisible(true);
-
-        Thread musicThread = null;
-        // Start the countdown
-        for (int i = 18; i > -1; i--) {
-            countdownLabel.setText(String.valueOf(i));
-
-           
+        new Thread(() -> {
+            // Create the countdown window
+            JWindow countdownWindow = new JWindow();
+            countdownWindow.setLayout(new BorderLayout());
+    
+            // Set background color to black for the window
+            countdownWindow.getContentPane().setBackground(Color.BLACK);
+    
+            // Create a label to display the countdown
+            JLabel countdownLabel = new JLabel("3", SwingConstants.CENTER);
+            countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
+            countdownLabel.setForeground(Color.WHITE);  // White text for contrast
+    
+            // Create a panel for the countdown label with a border (outline)
+            JPanel countdownPanel = new JPanel(new BorderLayout());
+            countdownPanel.setBackground(Color.BLACK); // Make panel background black
+            countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10)); // Red border with 10px thickness
+            countdownPanel.add(countdownLabel, BorderLayout.CENTER);
+    
+            // Add the panel to the countdown window
+            countdownWindow.add(countdownPanel, BorderLayout.CENTER);
+    
+            // Get screen size for centering the window and scaling it to 80%
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int width = (int) (screenSize.width * 0.8);  // 80% of screen width
+            int height = (int) (screenSize.height * 0.8); // 80% of screen height
+    
+            countdownWindow.setSize(width, height);
+            countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2); // Center the window
+    
+            // Make the countdown window visible
+            countdownWindow.setVisible(true);
+    
+            Thread musicThread = null;
+            // Start the countdown
+            for (int i = 30; i > -1; i--) {
+                countdownLabel.setText(String.valueOf(i));
+                try {
+                    if (i == 16) {
+                        musicThread = new Thread(() -> {
+                            try {
+                                music_player.play_random_track(Thread.currentThread());
+                            } catch (Exception e) {
+                                // TODO: handle exception
+                            }
+                        });
+                        musicThread.start();
+                    }
+                    if (i == 0) {
+                        countdownLabel.setText("Begin!");
+                    }
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+    
+            // After the countdown, close the window
+            countdownWindow.setVisible(false);
+            countdownWindow.dispose();
+    
+            udpClient.sendEquipmentID(202);
+    
+            // Retrieve players from the database
+            ResultSet resultSet = db.retreiveEntries();
+    
+            // Create a new window to display the entered players
+            JFrame playerWindow = new JFrame("Entered Players");
+            playerWindow.setLayout(new BorderLayout());
+    
+            playerWindow.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    udpClient.sendEquipmentID(221);
+                    playerWindow.dispose();
+                }
+            });
+    
+            JPanel teamsPanel = new JPanel();
+            teamsPanel.setLayout(new GridLayout(1, 2));
+    
+            JPanel redTeamPanel = new JPanel();
+            redTeamPanel.setLayout(new BoxLayout(redTeamPanel, BoxLayout.Y_AXIS));
+            redTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.RED, 2), "RED TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.RED));
+            redTeamPanel.setBackground(Color.BLACK);
+    
+            JPanel greenTeamPanel = new JPanel();
+            greenTeamPanel.setLayout(new BoxLayout(greenTeamPanel, BoxLayout.Y_AXIS));
+            greenTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.GREEN));
+            greenTeamPanel.setBackground(Color.BLACK);
+    
+            db.retreiveEntries();
             try {
-
-                if(i == 16) {
-                    musicThread = new Thread(()-> {
-                        try {
-                            music_player.play_random_track(Thread.currentThread());
-                        } catch (Exception e) {
-                            // TODO: handle exception
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("id".trim());
+                    String codename = resultSet.getString("codename".trim());
+                    String codeNameinDb = null;
+    
+                    for (int i = 0; i < redTeamCodeNames.size(); i++) {
+                        if (codename.equals(redTeamCodeNames.get(i))) {
+                            codeNameinDb = codename;
                         }
-                    });
-
-                    musicThread.start();
+                    }
+                    for (int i = 0; i < greenTeamCodeNames.size(); i++) {
+                        if (codename.equals(greenTeamCodeNames.get(i))) {
+                            codeNameinDb = codename;
+                        }
+                    }
+    
+                    String team = resultSet.getString("team".trim());
+    
+                    JPanel playerPanel = new JPanel();
+                    playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
+                    playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    playerPanel.setBackground(Color.BLACK);
+    
+                    JLabel codenameLabel = new JLabel(codeNameinDb);
+                    codenameLabel.setForeground(Color.WHITE);
+                    codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                    playerPanel.add(codenameLabel);
+    
+                    if ("Red".equals(team)) {
+                        redTeamPanel.add(playerPanel);
+                        redTeamPanel.add(Box.createVerticalStrut(10));
+                    } else if ("Green".equals(team)) {
+                        greenTeamPanel.add(playerPanel);
+                        greenTeamPanel.add(Box.createVerticalStrut(10));
+                    }
                 }
-                if(i == 0){
-                    countdownLabel.setText("Begin!");
-                }
-                Thread.sleep(1000); 
-                
-                 // Wait for 1 second before updating the countdown
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            
-        }
-
-
-        // After the countdown, close the window
-        countdownWindow.setVisible(false);
-        countdownWindow.dispose();
-
-        udpClient.sendEquipmentID(202);
-
-        // Retrieve players from the database
-        ResultSet resultSet = db.retreiveEntries();
-
-        // Create a new window to display the entered players
-        JFrame playerWindow = new JFrame("Entered Players");
-        playerWindow.setLayout(new BorderLayout());  // Use BorderLayout for better separation of components
-        
-        playerWindow.addWindowListener(new WindowAdapter() {
-            
-            public void windowClosing(WindowEvent e){
-
-                udpClient.sendEquipmentID(221);
-                playerWindow.dispose();
-            }   
-        });
-
-        // Create a panel for both Red and Green teams
-        JPanel teamsPanel = new JPanel();
-        teamsPanel.setLayout(new GridLayout(1, 2));  // 1 rows: one for each team
-
-        // Create panel for Red Team with additional styling
-        JPanel redTeamPanel = new JPanel();
-        redTeamPanel.setLayout(new BoxLayout(redTeamPanel, BoxLayout.Y_AXIS)); // Use BoxLayout for better alignment
-        redTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.RED, 2), "RED TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.RED));
-        redTeamPanel.setBackground(Color.BLACK);
-
-        // Create panel for Green Team with similar styling
-        JPanel greenTeamPanel = new JPanel();
-        greenTeamPanel.setLayout(new BoxLayout(greenTeamPanel, BoxLayout.Y_AXIS));
-        greenTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.GREEN));
-        greenTeamPanel.setBackground(Color.BLACK);
-        
-
-        db.retreiveEntries();
-        try {
-            // Iterate through the ResultSet and add players to the respective team panels
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id".trim());
-                String codename = resultSet.getString("codename".trim());
-
-                String codeNameinDb = null;
-
-                for(int i = 0; i < redTeamCodeNames.size(); i++){
-                    if(codename.equals(redTeamCodeNames.get(i))){
-                        codeNameinDb = codename;
+    
+            // Current game action panel with gameplay timer
+            JPanel gameActioPanel = new JPanel();
+            gameActioPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            gameActioPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE, 2), "Current Game Action", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.WHITE));
+            gameActioPanel.setBackground(Color.BLUE);
+    
+            // Timer label
+            JLabel timerLabel = new JLabel("06:00");
+            timerLabel.setFont(new Font("Arial", Font.BOLD, 36));
+            timerLabel.setForeground(Color.WHITE);
+            gameActioPanel.add(timerLabel);
+    
+            teamsPanel.add(redTeamPanel);
+            teamsPanel.add(greenTeamPanel);
+    
+            JPanel mainPanel = new JPanel();
+            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+            mainPanel.add(teamsPanel);
+            mainPanel.add(Box.createVerticalStrut(20));
+            mainPanel.add(gameActioPanel);
+    
+            playerWindow.add(mainPanel, BorderLayout.CENTER);
+            playerWindow.setSize(600, 600);
+            playerWindow.setLocationRelativeTo(null);
+            playerWindow.setVisible(true);
+    
+            // Gameplay timer (6 minutes = 360 seconds)
+            new Thread(() -> {
+                int totalSeconds = 360;
+                for (int i = totalSeconds; i >= 0; i--) {
+                    int minutes = i / 60;
+                    int seconds = i % 60;
+                    String timeFormatted = String.format("%02d:%02d", minutes, seconds);
+    
+                    // Update timer label on the Event Dispatch Thread
+                    SwingUtilities.invokeLater(() -> timerLabel.setText(timeFormatted));
+    
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
-
-                for(int i = 0; i < greenTeamCodeNames.size(); i++){
-                    if(codename.equals(greenTeamCodeNames.get(i))){
-                        codeNameinDb = codename;
-                    }
-                }
-                
-                
-                String team = resultSet.getString("team".trim());  // Assuming 'team' column to distinguish teams
-
-                // Create a panel for the player
-                JPanel playerPanel = new JPanel();
-                playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
-                playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                playerPanel.setBackground(Color.BLACK);
-
-                
-
-                JLabel codenameLabel = new JLabel(codeNameinDb);
-                codenameLabel.setForeground(Color.WHITE);
-                codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
-                playerPanel.add(codenameLabel);
-
-
-
-                // Add player to the appropriate team panel based on the team column
-                if ("Red".equals(team)) {
-                    redTeamPanel.add(playerPanel);
-                    redTeamPanel.add(Box.createVerticalStrut(10));
-                } else if ("Green".equals(team)) {
-                    greenTeamPanel.add(playerPanel);
-                    greenTeamPanel.add(Box.createVerticalStrut(10));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        //current game action panel
-        JPanel gameActioPanel = new JPanel();
-        gameActioPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        gameActioPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE, 2), "Current Game Action", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.WHITE));
-        gameActioPanel.setBackground(Color.BLUE);
-
-        // Add the Red and Green team panels to the teamsPanel
-        teamsPanel.add(redTeamPanel);
-        teamsPanel.add(greenTeamPanel);
-
-
-        //create a main panel to hold both panels 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(teamsPanel);
-        mainPanel.add(Box.createVerticalStrut(20)); //add vertical space between two panels
-        mainPanel.add(gameActioPanel);
-
-
-
-        // Add the teamsPanel to the player window
-        playerWindow.add(mainPanel, BorderLayout.CENTER);
-
-        // Set window size and location
-        playerWindow.setSize(600, 600);  // Increased height to accommodate both teams
-        playerWindow.setLocationRelativeTo(null);  // Center the window
-
-        // Make the player window visible
-        playerWindow.setVisible(true);
-
-        
-
-    }).start();
+    
+                // Optional: Action after timer ends
+                SwingUtilities.invokeLater(() -> timerLabel.setText("Game Over!"));
+            }).start();
+    
+        }).start();
     }
 
     public void gameParameters() {
