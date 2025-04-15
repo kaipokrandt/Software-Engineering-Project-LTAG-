@@ -654,7 +654,9 @@ public class EntryScreen {
                 }
     
                 SwingUtilities.invokeLater(() -> timerLabel.setText("Game Over!"));
-                udpClient.sendEquipmentID(221);
+                for(int i = 0; i < 3; i++){
+                    udpClient.sendEquipmentID(221);
+                }
                 System.out.println("Stop Traffic!");
                 System.out.println("Game Has Ended!");
                 db.setIsPlaying_False();
