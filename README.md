@@ -21,7 +21,7 @@ sudo apt upgrade
 
 sudo apt install default-jdk 
 
-sudo apt install python3
+sudo apt-get install python3-pip
 
 verify python runs by running the following in your terminal
 
@@ -41,21 +41,6 @@ pip install psycopg2
 Then, 
 
 TO RUN:
-***PRIMARY METHOD:***
-**************************************************************************************************
-1) Open Terminal
-2) **Navigate to the project directory**
-3) Run the run.bash file (command for linux: "./run.bash")
-**************************************************************************************************
-
-***Alternate Method 1:***
-**************************************************************************************************
-1) Open Terminal
-2) **Navigate to the src project directory (similar to /home/student/Documents/././src/)**
-3) Run the run.bash file(command for linux: "./run.bash")
-**************************************************************************************************
-
-***Alternate Method 2:***
 **************************************************************************************************
 1) Open Terminal
 2) **Navigate to the src project directory (similar to /home/student/Documents/././src/)**

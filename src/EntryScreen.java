@@ -251,6 +251,7 @@ public class EntryScreen {
                 
                 // Add the red team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Red");
+                redTeamCodeNames.add(playerName);
                 redTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at red team entry " + (i + 1));
@@ -292,6 +293,7 @@ public class EntryScreen {
                 
                 // Add the green team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Green");
+                greenTeamCodeNames.add(playerName);
                 greenTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at green team entry " + (i + 1));
@@ -434,7 +436,7 @@ public class EntryScreen {
             countdownWindow.setVisible(true);
     
             final Thread[] musicThread = new Thread[1];
-            for (int i = 30; i > -1; i--) {
+            for (int i = 3; i > -1; i--) {
                 countdownLabel.setText(String.valueOf(i));
                 try {
                     if (i == 16) {
@@ -483,34 +485,81 @@ public class EntryScreen {
                     BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM",
                     TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.GREEN));
             greenTeamPanel.setBackground(Color.BLACK);
-    
-            try {
-                ResultSet resultSet = db.retreiveEntries();
-                while (resultSet.next()) {
-                    String codename = resultSet.getString("codename".trim());
-                    String team = resultSet.getString("team".trim());
-    
-                    JPanel playerPanel = new JPanel();
-                    playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
-                    playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                    playerPanel.setBackground(Color.BLACK);
-    
-                    JLabel codenameLabel = new JLabel(codename);
-                    codenameLabel.setForeground(Color.WHITE);
-                    codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
-                    playerPanel.add(codenameLabel);
-    
-                    if ("red".equalsIgnoreCase(team)) {
-                        redTeamPanel.add(playerPanel);
-                        redTeamPanel.add(Box.createVerticalStrut(10));
-                    } else if ("green".equalsIgnoreCase(team)) {
-                        greenTeamPanel.add(playerPanel);
-                        greenTeamPanel.add(Box.createVerticalStrut(10));
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+
+            //add players from entry screen to play action pane
+            for (int i = 0; i < redTeamCodeNames.size(); i++) {
+                //red team players
+                String redCodename = redTeamCodeNames.get(i);
+                System.out.println("Red Codename: " + redCodename);
+
+
+                        JPanel playerPanel = new JPanel();
+                        playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
+                        playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                        playerPanel.setBackground(Color.BLACK);
+
+                    
+                       JLabel codenameLabel = new JLabel(redCodename);
+                       codenameLabel.setForeground(Color.WHITE);
+                       codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                       playerPanel.add(codenameLabel);
+
+                       redTeamPanel.add(playerPanel);
+                       redTeamPanel.add(Box.createVerticalStrut(10));
+                    
             }
+
+            for (int i = 0; i < greenTeamCodeNames.size(); i++) {
+                
+
+
+                //green team players
+                String greenCodename = greenTeamCodeNames.get(i);
+                
+                        JPanel playerPanel = new JPanel();
+                        playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
+                        playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                        playerPanel.setBackground(Color.BLACK);
+
+                    
+                       JLabel codenameLabel = new JLabel(greenCodename);
+                       codenameLabel.setForeground(Color.WHITE);
+                       codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                       playerPanel.add(codenameLabel);
+
+                       greenTeamPanel.add(playerPanel);
+                       greenTeamPanel.add(Box.createVerticalStrut(10));
+                
+            
+            }
+            
+            // try {
+            //     ResultSet resultSet = db.retreiveEntries();
+            //     while (resultSet.next()) {
+            //         String codename = resultSet.getString("codename".trim());
+            //         String team = resultSet.getString("team".trim());
+    
+            //         JPanel playerPanel = new JPanel();
+            //         playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
+            //         playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            //         playerPanel.setBackground(Color.BLACK);
+    
+            //         JLabel codenameLabel = new JLabel(codename);
+            //         codenameLabel.setForeground(Color.WHITE);
+            //         codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            //         playerPanel.add(codenameLabel);
+    
+            //         if ("red".equalsIgnoreCase(team)) {
+            //             redTeamPanel.add(playerPanel);
+            //             redTeamPanel.add(Box.createVerticalStrut(10));
+            //         } else if ("green".equalsIgnoreCase(team)) {
+            //             greenTeamPanel.add(playerPanel);
+            //             greenTeamPanel.add(Box.createVerticalStrut(10));
+            //         }
+            //     }
+            // } catch (Exception e) {
+            //     e.printStackTrace();
+            // }
     
             // Live score labels
             redScore = 0;
