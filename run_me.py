@@ -31,7 +31,7 @@ def get_player_ids(team):
             port="5432"
         )
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM players WHERE team = %s;", (team,))
+        cursor.execute("SELECT id FROM players WHERE team = %s AND isPlaying = %s;", (team,True,))
         player_ids = cursor.fetchall()
         conn.close()
         return [str(player[0]) for player in player_ids]
