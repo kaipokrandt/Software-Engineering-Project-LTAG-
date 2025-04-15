@@ -2,13 +2,13 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.NumberFormatter;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
@@ -447,74 +447,82 @@ public class EntryScreen {
             JWindow countdownWindow = new JWindow();
             countdownWindow.setLayout(new BorderLayout());
     
-            // Set background color to black for the window
             countdownWindow.getContentPane().setBackground(Color.BLACK);
     
-            // Create a label to display the countdown
             JLabel countdownLabel = new JLabel("3", SwingConstants.CENTER);
             countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
-            countdownLabel.setForeground(Color.WHITE);  // White text for contrast
+            countdownLabel.setForeground(Color.WHITE);
     
-            // Create a panel for the countdown label with a border (outline)
             JPanel countdownPanel = new JPanel(new BorderLayout());
-            countdownPanel.setBackground(Color.BLACK); // Make panel background black
-            countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10)); // Red border with 10px thickness
+            countdownPanel.setBackground(Color.BLACK);
+            countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10));
             countdownPanel.add(countdownLabel, BorderLayout.CENTER);
     
-            // Add the panel to the countdown window
             countdownWindow.add(countdownPanel, BorderLayout.CENTER);
     
-            // Get screen size for centering the window and scaling it to 80%
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int width = (int) (screenSize.width * 0.8);  // 80% of screen width
-            int height = (int) (screenSize.height * 0.8); // 80% of screen height
+            int width = (int) (screenSize.width * 0.8);
+            int height = (int) (screenSize.height * 0.8);
     
             countdownWindow.setSize(width, height);
-            countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2); // Center the window
-    
-            // Make the countdown window visible
+            countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2);
             countdownWindow.setVisible(true);
     
-            Thread musicThread = null;
-            // Start the countdown
+            final Thread[] musicThread = new Thread[1];
             for (int i = 30; i > -1; i--) {
                 countdownLabel.setText(String.valueOf(i));
                 try {
                     if (i == 16) {
-                        musicThread = new Thread(() -> {
-                            try {
-                                music_player.play_random_track(Thread.currentThread());
-                            } catch (Exception e) {
-                                // TODO: handle exception
-                            }
-                        });
-                        musicThread.start();
-                    }
-                    if (i == 0) {
-                        countdownLabel.setText("Begin!");
-                    }
-                    Thread.sleep(1000);
+                        musicThread[0] = new Thread(() -> {
+                        music_player.play_random_track();
+                    });
+                    musicThread[0].start();
+                }
+                if (i == 0) {
+                    countdownLabel.setText("Begin!");
+                }
+                Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-    
-            // After the countdown, close the window
             countdownWindow.setVisible(false);
             countdownWindow.dispose();
-    
+
+            // Score labels
+            JLabel redScoreLabel = new JLabel("Red Score: 0", SwingConstants.CENTER);
+            JLabel greenScoreLabel = new JLabel("Green Score: 0", SwingConstants.CENTER);
+            redScoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            greenScoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            redScoreLabel.setForeground(Color.RED);
+            greenScoreLabel.setForeground(Color.GREEN);
+            redScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            greenScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            
+            
+            
+            // Start the UDP server (in a separate thread) with score labels
+            udpBaseServer_2 server = new udpBaseServer_2(redScoreLabel, greenScoreLabel);
+            Thread serverThread = new Thread(() -> server.createSocket());
+            serverThread.start();
+            
+
+            // send game start code
             udpClient.sendEquipmentID(202);
-    
-            // Retrieve players from the database
+            
             ResultSet resultSet = db.retreiveEntries();
     
-            // Create a new window to display the entered players
             JFrame playerWindow = new JFrame("Entered Players");
             playerWindow.setLayout(new BorderLayout());
-    
+            
+            
             playerWindow.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     udpClient.sendEquipmentID(221);
+
+                    if (musicThread[0] != null && musicThread[0].isAlive()) {
+                        music_player.stopPlayback(); // Stop the music thread
+                    }
                     playerWindow.dispose();
                 }
             });
@@ -574,17 +582,26 @@ public class EntryScreen {
                 e.printStackTrace();
             }
     
-            // Current game action panel with gameplay timer
+            // --- New Score Panel + Game Action Setup ---
             JPanel gameActioPanel = new JPanel();
-            gameActioPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            gameActioPanel.setLayout(new BoxLayout(gameActioPanel, BoxLayout.Y_AXIS));
             gameActioPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE, 2), "Current Game Action", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.WHITE));
             gameActioPanel.setBackground(Color.BLUE);
     
             // Timer label
-            JLabel timerLabel = new JLabel("06:00");
+            JLabel timerLabel = new JLabel("06:00", SwingConstants.CENTER);
             timerLabel.setFont(new Font("Arial", Font.BOLD, 36));
             timerLabel.setForeground(Color.WHITE);
+            timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             gameActioPanel.add(timerLabel);
+    
+            
+    
+            gameActioPanel.add(Box.createVerticalStrut(10));
+            gameActioPanel.add(redScoreLabel);
+            gameActioPanel.add(greenScoreLabel);
+    
+            
     
             teamsPanel.add(redTeamPanel);
             teamsPanel.add(greenTeamPanel);
@@ -599,30 +616,48 @@ public class EntryScreen {
             playerWindow.setSize(600, 600);
             playerWindow.setLocationRelativeTo(null);
             playerWindow.setVisible(true);
-    
-            // Gameplay timer (6 minutes = 360 seconds)
+            
+            
+            // Gameplay timer
             new Thread(() -> {
                 int totalSeconds = 360;
+
+                startPythonTrafficGenerator();
+               
+                // Countdown from 6 minutes (360 seconds)
+                // Update the timer label every second
                 for (int i = totalSeconds; i >= 0; i--) {
                     int minutes = i / 60;
                     int seconds = i % 60;
                     String timeFormatted = String.format("%02d:%02d", minutes, seconds);
-    
-                    // Update timer label on the Event Dispatch Thread
                     SwingUtilities.invokeLater(() -> timerLabel.setText(timeFormatted));
-    
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-    
-                // Optional: Action after timer ends
                 SwingUtilities.invokeLater(() -> timerLabel.setText("Game Over!"));
+                stopPythonTrafficGenerator();
+                
+                udpClient.sendEquipmentID(221);
+                System.out.println("Stop Traffic.");
+                System.out.println("Game Ended!");
+
+                if (musicThread[0] != null && musicThread[0].isAlive()) {
+                    //musicThread[0].interrupt();
+                    music_player.stopPlayback(); // Stop the music thread
+                }
+                // Close the player window after the game ends
+                playerWindow.dispose();
+                System.out.println("Player window closed.");
+                // Stop the UDP server
+                serverThread.interrupt();
+                System.out.println("UDP server thread interrupted.");
             }).start();
-    
+            
         }).start();
+        
     }
 
     public void gameParameters() {
@@ -633,5 +668,36 @@ public class EntryScreen {
     public void editGame() {
         // Implement edit game functionality
         System.out.println("Edit Game functionality triggered.");
+    }
+
+    // Method to start the Python Traffic Generator
+    private void startPythonTrafficGenerator() {
+        try {
+            // Modify the path to your Python script if necessary
+            String pythonScriptPath = "src/python_trafficgenarator_v2.py"; // Use full path to your Python script
+            String pythonExecutable = "python3"; // Path to your Python executable
+            ProcessBuilder processBuilder = new ProcessBuilder(pythonExecutable, pythonScriptPath);
+            processBuilder.start(); // Start the Python script
+            System.out.println("Python Traffic Generator Started.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error starting Python Traffic Generator.");
+        }
+    }
+    // Method to stop the Python traffic generator
+    private void stopPythonTrafficGenerator() {
+        try {
+            // Assuming you are using a process ID or some method to stop the traffic generator
+            // If it's a running process, you can kill it using its PID.
+            // You can also stop it by killing the process if needed
+            String command = "pkill -f python_trafficgenarator_v2.py"; // This will kill the python script by name
+            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            processBuilder.start();
+            System.out.println("Python Traffic Generator Stopped.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error stopping Python Traffic Generator.");
+        }
+
     }
 }

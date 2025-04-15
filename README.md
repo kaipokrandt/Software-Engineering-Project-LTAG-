@@ -15,6 +15,34 @@ Use cd ~/ExampleDirectory with "ExampleDirectory" being the area you downloaded 
 
 For example, cd ~/Downloads/Software-Engineering-Project-LTAG-
 
+**********************************
+INSTALL DEPENDENCIES **IMPORTANT**
+**********************************
+Make sure you have java installed.
+
+Make sure to have python3 installed. 
+Make sure you have updated postgresql.
+Make sure you have psycoph2 installed.
+
+To do the above steps, run these in your linux terminal
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt install python3
+
+Make sure python runs by running the following in your terminal
+
+python3 --version
+
+Next, we will update postgreSQL and install dependencies for the python traffic generator.
+
+Run the following in your linux terminal
+
+sudo apt-get update
+sudo apt-get install libpq-dev
+pip install psycopg2
+
+
 Then, 
 
 TO RUN:

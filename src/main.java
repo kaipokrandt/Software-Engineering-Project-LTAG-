@@ -1,5 +1,7 @@
 //imports here
 
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 public class main{
 
@@ -8,22 +10,24 @@ public class main{
         //hi world
         System.out.println("Starting Photon...");
 
+        // Declare score labels
+        //JLabel redScoreLabel = new JLabel("Red Score: 0", SwingConstants.CENTER);
+        //JLabel greenScoreLabel = new JLabel("Green Score: 0", SwingConstants.CENTER);
+
         //create and start udp server on different thread, port 7500
-        new Thread(() -> {
-            udpBaseServer_2 udpServer = new udpBaseServer_2();
-            udpServer.createSocket();
-        }).start();
+        //new Thread(() -> {
+        //    udpBaseServer_2 udpServer = new udpBaseServer_2(redScoreLabel, greenScoreLabel);
+        //    udpServer.createSocket();
+        //}).start();
 
         //wait for server to start
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    Thread.sleep(1000);
+        //} catch (InterruptedException e) {
+        //    e.printStackTrace();
+        //}
 
         
-
-
         SplashScreen SplashScreen = new SplashScreen();
         //create splash screen
         SplashScreen.showSplashScreen();
@@ -45,8 +49,5 @@ public class main{
         EntryScreen EntryScreen = new EntryScreen(db, udpClient);
         //create entry screen, pass db and udp client
         EntryScreen.createAndShowGUI();
-
-        
-
     }
 }
