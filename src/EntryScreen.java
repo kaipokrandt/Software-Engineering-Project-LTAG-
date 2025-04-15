@@ -1,26 +1,17 @@
-import javax.crypto.spec.PBEKeySpec;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.sql.ResultSet;
-import java.text.DecimalFormat;
-import java.text.Format;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.concurrent.Flow;
 import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+
 import javax.swing.text.BadLocationException;
 
 public class EntryScreen {

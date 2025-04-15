@@ -1,7 +1,3 @@
-//imports here
-
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 
 public class main {
 
