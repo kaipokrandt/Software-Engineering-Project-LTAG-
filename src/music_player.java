@@ -30,7 +30,7 @@ public class music_player {
             File track = music_player.select_random_track();
     
             if (track.exists()) {
-                System.out.println("Playing music!");
+                System.out.println("Playing Music!");
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(track);
                 currentClip = AudioSystem.getClip();
                 currentClip.open(audioStream);
@@ -41,7 +41,7 @@ public class music_player {
                     if (Thread.currentThread().isInterrupted()) {
                         currentClip.stop();
                         currentClip.close();  // ensuring the clip closes after stopping
-                        System.out.println("Music interrupted and stopped.");
+                        System.out.println("Music interrupted and stopped!");
                         return;
                     }
                     Thread.sleep(1000);
@@ -50,7 +50,7 @@ public class music_player {
                 currentClip.stop();
                 currentClip.close(); // Close clip after playback ends
             } else {
-                System.out.println("Can't find file");
+                System.out.println("Can not  find file!");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class music_player {
         if (currentClip != null && currentClip.isRunning()) {
             currentClip.stop();
             currentClip.close();
-            System.out.println("Music stopped.");
+            System.out.println("Music has  Stopped.");
         }
     }
 }

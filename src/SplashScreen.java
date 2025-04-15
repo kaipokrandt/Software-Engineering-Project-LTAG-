@@ -54,7 +54,7 @@ class SplashScreen {
                 // Set window size to match the scaled image dimensions
                 splash.setSize(newWidth, newHeight);
             } else {
-                System.out.println("Splash image not found.");
+                System.out.println("Splash image not found!");
             }
 
         } catch (IOException e) {

@@ -27,7 +27,7 @@ public class EntryScreen {
     private Style baseHitStyle;
     private int redScore = 0;
     private int greenScore = 0;
-    //creates two different 2d arrays to read data from both teams
+    //creates two different 2d arrays to read data from both teams(red and blue)
     private JTextField[][] redTeamFields;
     private JTextField[][] greenTeamFields;
 
@@ -231,7 +231,7 @@ public class EntryScreen {
                 // Validate that ID is numeric
                 if (!isNumeric(idText)) {
                     JOptionPane.showMessageDialog(null, 
-                            "Invalid input in User ID field (Red Team). Only numbers are allowed.", 
+                            "Invalid input in User ID field (Red Team). Only numbers are allowed!", 
                             "Invalid Input", JOptionPane.ERROR_MESSAGE);
                     redTeamFields[i][0].setText("");
                     continue;
@@ -240,7 +240,7 @@ public class EntryScreen {
                 // Validate that Hardware ID (if provided) is numeric
                 if (!hardwareIdText.isEmpty() && !isNumeric(hardwareIdText)) {
                     JOptionPane.showMessageDialog(null, 
-                            "Invalid input in Hardware ID field (Red Team). Only numbers are allowed.", 
+                            "Invalid input in Hardware ID field (Red Team). Only numbers are allowed!", 
                             "Invalid Input", JOptionPane.ERROR_MESSAGE);
                     redTeamFields[i][2].setText("");
                     continue;
@@ -301,7 +301,7 @@ public class EntryScreen {
         // Check if at least one player was entered for each team
         if (!redTeamHasPlayer || !greenTeamHasPlayer) {
             JOptionPane.showMessageDialog(null, 
-                    "At least one player must be entered for each team.", 
+                    "At least one player must be entered for each team!", 
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -313,7 +313,7 @@ public class EntryScreen {
     private void changeIPAddress() {
         // Implement change IP address functionality
         // Create a dialog to enter the new IP address
-        System.out.println("Change IP Address functionality triggered.");
+        System.out.println("Change IP Address functionality triggered!");
         String newIP = "";
         // structure for IP address validation
         String ipPattern = "^((\\d{1,3})\\.){1,3}\\d{1,3}$";
@@ -334,7 +334,8 @@ public class EntryScreen {
                 break;
             }
         }
-       
+
+       //udp setup 
         // Push the new IP address to udpBaseClient_2
         if (udpClient != null) {
             udpClient.setNetworkAddress(newIP);
@@ -393,17 +394,17 @@ public class EntryScreen {
 
     public void flickSync() {
         // Implement flick sync functionality
-        System.out.println("Flick Sync functionality triggered.");
+        System.out.println("Flick Sync functionality triggered!");
     }
 
     public void viewGame() {
         // Implement view game functionality
-        System.out.println("View Game functionality triggered.");
+        System.out.println("View Game functionality triggered!");
     }
 
     public void preEnteredGames() {
         // Implement pre-entered games functionality
-        System.out.println("Pre-Entered Games functionality triggered.");
+        System.out.println("Pre-Entered Games functionality triggered!");
     }
 
     public void startGame() {
@@ -602,8 +603,8 @@ public class EntryScreen {
     
                 SwingUtilities.invokeLater(() -> timerLabel.setText("Game Over!"));
                 udpClient.sendEquipmentID(221);
-                System.out.println("Stop Traffic.");
-                System.out.println("Game Ended!");
+                System.out.println("Stop Traffic!");
+                System.out.println("Game Has Ended!");
     
                 if (musicThread[0] != null && musicThread[0].isAlive()) {
                     music_player.stopPlayback();
@@ -615,7 +616,7 @@ public class EntryScreen {
         }).start();
     }
 
-        // Method to update scores from the Base Server 
+        // Method for updating Scores on Base Server
         public void updateScores(int redScore, int greenScore) {
             // Update the score labels
             SwingUtilities.invokeLater(() -> {
@@ -653,11 +654,11 @@ public class EntryScreen {
     
     public void gameParameters() {
         // Implement game parameters functionality - might do later
-        System.out.println("Game Parameters functionality triggered.");
+        System.out.println("Game Parameters functionality triggered!");
     }
 
     public void editGame() {
         // Implement edit game functionality
-        System.out.println("Edit Game functionality triggered.");
+        System.out.println("Edit Game functionality triggered!");
     }
 }

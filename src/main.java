@@ -14,7 +14,7 @@ public class main {
         database db = new database();
         db.connectToDatabase();
 
-        // Create and start the UDP server (store reference)
+        // Create and start the UDP server! (store reference)
         udpBaseServer_2 udpServer = new udpBaseServer_2(db);
         new Thread(() -> udpServer.createSocket()).start();
 
