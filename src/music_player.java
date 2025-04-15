@@ -15,11 +15,17 @@ public class music_player {
     
         public static File select_random_track(){
         
-                String tracks_dir_path = "/home/student/Documents/Software-Engineering-Project-LTAG-/wav_files/";
+                String tracks_dir_path = "../wav_files";
                 File tracks_dir = new File(tracks_dir_path);
         
-                File[] tracks = tracks_dir.listFiles();
-        
+                System.out.println("Looking for tracks in " + tracks_dir.getAbsolutePath());
+                File[] tracks = tracks_dir.listFiles((dir, name) -> name.toLowerCase().endsWith(".wav"));
+
+                if (tracks == null || tracks.length == 0) {
+                    System.out.println("No tracks found in the directory.");
+                    return null;
+                }
+
                 Random rand = new Random();
         
                 File track = tracks[rand.nextInt(tracks.length)];
@@ -29,21 +35,24 @@ public class music_player {
             }
         
         
-            public static void play_random_track(Thread thread){
+        public static void play_random_track(Thread thread){
         
-                try {
-        
+            try {
+               
                     File track = music_player.select_random_track();
     
                 
-                if(track.exists()){
-                    System.out.println("Playing music!");
-                    AudioInputStream audioStream = AudioSystem.getAudioInputStream(track);
-                    Clip clip = AudioSystem.getClip();
-                    clip.open(audioStream);
-                    clip.start();
-                    thread.sleep(396000);
-                    thread.interrupt();
+            if(track.exists() && track != null){
+                System.out.println("Playing music!");
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(track);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioStream);
+                clip.start();
+
+               
+
+                clip.drain();
+                clip.close();
             }
 
             else{
@@ -53,6 +62,7 @@ public class music_player {
             
         } catch (Exception e) {
             // TODO: handle exception
+            e.printStackTrace();
         }
 
     }
