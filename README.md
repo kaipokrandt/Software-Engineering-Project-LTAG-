@@ -16,9 +16,11 @@ Make sure you have psycoph2 installed.
 To do the above steps, run these in your linux terminal and enter Y when prompted (you might need to enter your password, for us, it is student)
 
 sudo apt update
+
 sudo apt upgrade 
 
 sudo apt install default-jdk 
+
 sudo apt install python3
 
 verify python runs by running the following in your terminal
@@ -30,7 +32,9 @@ Next, we will update postgreSQL and install dependencies for the python traffic 
 Run the following in your linux terminal
 
 sudo apt-get update
+
 sudo apt-get install libpq-dev
+
 pip install psycopg2
 
 
@@ -61,6 +65,9 @@ ejmoneyyy1  : EJ Alobuia /
 #TO-DO //////////////////////////////////////////////////////////
 -----------------------------------------------------------------
 
+Implement stylized B next to player username after they hit the base
+
+Implement username population upon duplicate ID immediately when entering ID (currently updates when submitting)
 
 
 
