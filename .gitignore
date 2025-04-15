@@ -2,7 +2,7 @@ database.class
 EntryScreen$1.class
 EntryScreen.class
 main.class
-SpashScreen.class
+SplashScreen.class
 updBaseClient_2.class
 udpBaseServer_2.class
 src/SplashScreen.class

@@ -2,98 +2,123 @@ import psycopg2
 import socket
 import random
 import time
+import os
+import subprocess
+import sys
+
+# Launch Java application (main class)
+def start_java_game():
+    try:
+        print("Launching Java game...")
+        # Build classpath: include ./src and the JDBC driver in ./lib
+        # Adjust the JDBC jar filename if necessary.
+        classpath_separator = ':'
+        jdbc_jar = './lib/postgresql-42.7.5.jar'
+        java_classpath = './src' + classpath_separator + jdbc_jar
+
+        subprocess.Popen(['java', '-cp', java_classpath, 'main'])
+        # Wait a bit to let the GUI and server spin up
+        time.sleep(5)
+    except Exception as e:
+        print(f"Failed to launch Java game: {e}")
 
 # Database connection function
 def get_player_ids(team):
     try:
-        # Connect to the database
         conn = psycopg2.connect(
-            dbname="photon", 
-            user="student", 
-            password="student", 
-            host="localhost", 
+            dbname="photon",
+            user="student",
+            password="student",
+            host="localhost",
             port="5432"
         )
         cursor = conn.cursor()
-        
-        # Query to fetch equipment IDs for a specific team
-        cursor.execute(f"SELECT id FROM players WHERE team = %s;", (team,))
+        cursor.execute("SELECT id FROM players WHERE team = %s;", (team,))
         player_ids = cursor.fetchall()
-
-        # Close the database connection
         conn.close()
-
-        # Return a list of player IDs
         return [str(player[0]) for player in player_ids]
     except Exception as e:
         print(f"Error fetching player IDs: {e}")
         return []
 
-# Define the server and client address
-bufferSize  = 1024
-serverAddressPort = ("127.0.0.1", 7500)
-clientAddressPort = ("127.0.0.1", 7500)
+# Define UDP settings:
+bufferSize = 1024
 
-# Fetch player IDs from the database
+# Java UDP server address: (host, port) 7500 is where Java listens
+serverAddressPort = ("127.0.0.1", 7500)
+# Python client receiver will bind to a different port: 7501
+clientAddressPort = ("127.0.0.1", 7501)
+
+# Create UDP socket(s) for Python:
+# This socket will be used to receive messages; we bind it to port 7501.
+UDPServerSocketReceive = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+UDPServerSocketReceive.bind(clientAddressPort)
+print(f"Python receiving socket bound to port {clientAddressPort[1]}.")
+
+# This socket is used for transmitting messages. We do not bind it explicitly.
+UDPClientSocketTransmit = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+# Step 1: Launch Java game
+start_java_game()
+
+# Step 2: Wait for game start signal ("202") from Java
+print("Waiting for game start signal (202)...")
+received_data = ''
+while received_data != '202':
+    received_packet, addr = UDPServerSocketReceive.recvfrom(bufferSize)
+    received_data = received_packet.decode('utf-8')
+    print(f"Received from Java: {received_data}")
+print("Game started!")
+
+# Step 3: Fetch updated players from DB
 red_players = get_player_ids('Red')
 green_players = get_player_ids('Green')
-
 print(f"Red Team: {red_players}")
 print(f"Green Team: {green_players}")
 
-# Create UDP sockets
-UDPServerSocketReceive = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-UDPClientSocketTransmit = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-
-# Bind server socket
-UDPServerSocketReceive.bind(serverAddressPort)
-
-# Wait for game start (202 signal)
-print("Waiting for game start signal...")
-received_data = ''
-while received_data != '202':
-    received_data, address = UDPServerSocketReceive.recvfrom(bufferSize)
-    received_data = received_data.decode('utf-8')
-    print(f"Received from game software: {received_data}")
-print('Game started.')
-
-# Start generating traffic
+# Step 4: Start game simulation loop
 counter = 0
+base_hits = {}  # Dictionary to track players who hit the base
 
 while True:
-    # Randomly select players from each team
     red_player = random.choice(red_players)
     green_player = random.choice(green_players)
 
-    # Simulate hit or base event
     if random.randint(1, 2) == 1:
         message = f"{red_player}:{green_player}"
     else:
         message = f"{green_player}:{red_player}"
 
-    # After 10 iterations, simulate base hit for red team
     if counter == 10:
-        message = f"{red_player}:43"
-    # After 20 iterations, simulate base hit for green team
+        hitter = random.choice(green_players)
+        message = f"{hitter}:43"  # Simulate a Red base hit event (Green scores)
+        
     if counter == 20:
-        message = f"{green_player}:53"
+        hitter = random.choice(red_players)
+        message = f"{hitter}:53"  # Simulate a Green base hit event (Red scores)
+        
 
-    # Send message to the game server
     print(f"Transmitting to game: {message}")
-    UDPClientSocketTransmit.sendto(str.encode(message), clientAddressPort)
+    # Send the message to the Java UDP server (which listens on port 7500)
+    UDPClientSocketTransmit.sendto(message.encode(), serverAddressPort)
 
-    # Receive response from game software
-    received_data, address = UDPServerSocketReceive.recvfrom(bufferSize)
-    received_data = received_data.decode('utf-8')
-    print(f"Received from game software: {received_data}")
-    print('')
-    
-    counter += 1
+    # Wait for and print the response from Java via our bound socket (port 7501)
+    try:
+        UDPServerSocketReceive.settimeout(5)  # 5-second timeout
+        response_packet, addr = UDPServerSocketReceive.recvfrom(bufferSize)
+        response = response_packet.decode('utf-8')
+        print(f"Received from Java: {response}\n")
+    except socket.timeout:
+        print("No response received within timeout.\n")
+        response = ""
 
-    # Exit condition if game stops (221 signal)
-    if received_data == '221':
+    if response == "221":
+        print("Game Ended!")
         break
 
+    counter += 1
     time.sleep(random.randint(1, 3))
 
+UDPServerSocketReceive.close()
+UDPClientSocketTransmit.close()
 print("Simulation complete.")

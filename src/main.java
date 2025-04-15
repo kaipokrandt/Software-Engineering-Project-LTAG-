@@ -3,51 +3,45 @@
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-public class main{
+public class main {
 
-    
     public static void main(String[] args) {
-        //hi world
         System.out.println("Starting Photon...");
 
-        // Declare score labels
-        //JLabel redScoreLabel = new JLabel("Red Score: 0", SwingConstants.CENTER);
-        //JLabel greenScoreLabel = new JLabel("Green Score: 0", SwingConstants.CENTER);
-
-        //create and start udp server on different thread, port 7500
-        //new Thread(() -> {
-        //    udpBaseServer_2 udpServer = new udpBaseServer_2(redScoreLabel, greenScoreLabel);
-        //    udpServer.createSocket();
-        //}).start();
-
-        //wait for server to start
-        //try {
-        //    Thread.sleep(1000);
-        //} catch (InterruptedException e) {
-        //    e.printStackTrace();
-        //}
-
         
-        SplashScreen SplashScreen = new SplashScreen();
-        //create splash screen
-        SplashScreen.showSplashScreen();
 
-        
+        // Show splash screen
+        SplashScreen splashScreen = new SplashScreen();
+        splashScreen.showSplashScreen();
+
+        // Connect to database
         database db = new database();
         db.connectToDatabase();
-        
-        
-        // Create the UDP client with a default IP (ex., 127.0.0.1)
+
+        // Create and start the UDP server (store reference)
+        udpBaseServer_2 udpServer = new udpBaseServer_2(db);
+        new Thread(() -> udpServer.createSocket()).start();
+
+        // Wait briefly for server to start
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Create UDP client
         udpBaseClient_2 udpClient = null;
         try {
             udpClient = new udpBaseClient_2("127.0.0.1");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        
-        EntryScreen EntryScreen = new EntryScreen(db, udpClient);
-        //create entry screen, pass db and udp client
-        EntryScreen.createAndShowGUI();
+
+        // Create EntryScreen and link it to the server
+        EntryScreen entryScreen = new EntryScreen(db, udpClient);
+        udpServer.setEntryScreen(entryScreen); // 🔗 Link the server to the GUI
+
+        // Show the GUI
+        entryScreen.createAndShowGUI();
     }
 }

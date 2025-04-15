@@ -8,7 +8,7 @@ import java.net.InetAddress;
 public class udpBaseClient_2 {
     private final DatagramSocket socket;
     private InetAddress address;
-    private final int port = 7500;  // Default broadcast port
+    private final int port = 7501;  // Default broadcast port
 
     public udpBaseClient_2(String networkAddress) throws Exception {
         socket = new DatagramSocket();

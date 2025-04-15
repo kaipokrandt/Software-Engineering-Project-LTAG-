@@ -13,7 +13,7 @@ public class database {
     public Connection connectToDatabase(){
         // Database connection details
         
-
+        
         String sqlConstraint = "ALTER TABLE players ADD CONSTRAINT unique_id UNIQUE (id);";
         String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;";
         String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
@@ -213,5 +213,30 @@ public class database {
         }
 
         return codename;
+    }
+
+    /**
+    * Retrieves the team for a given player ID.
+    *
+    * @param playerID The ID of the player whose team is to be fetched.
+    * @return The team name if found, or null if the ID does not exist.
+    */
+    public String getTeamByID(int playerID) {
+        String team = null;
+
+        String sql = "SELECT team FROM players WHERE id = " + playerID + ";";
+
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                team = resultSet.getString("team");
+            }
+        } catch (Exception e) {
+            System.err.println("Error retrieving team for player ID " + playerID + ": " + e.getMessage());
+        }
+
+        return team;
     }
 }
