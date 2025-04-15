@@ -39,10 +39,11 @@ Then,
 TO RUN:
 *******************************************************************************************
 1) Open Terminal
-2) Find the src project directory (similar to /home/student/Documents/././src/)
+2) **Navigate to the src project directory (similar to /home/student/Documents/././src/)**
 3) Enter "javac *.java" to create class files.
-4) Run python_trafficgenerator_v2.py by entering "python3 python_trafficgenerator_v2.py"
-5) Done!
+4) **Now, navigate to the parent directory of /src/**
+5) Run python_trafficgenerator_v2.py by entering "python3 python_trafficgenerator_v2.py"
+6) Done!
 *******************************************************************************************
 
 
