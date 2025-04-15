@@ -1,21 +1,11 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-<<<<<<< HEAD
-import java.net.InetAddress;
-
-public class udpBaseServer_2 {
-    
-    final int PORT =7501; // Default server port
-    final int CLIENT_PORT = 7500; // Default client port
-    byte[] buffer = new byte[256];
-=======
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class udpBaseServer_2 {
->>>>>>> a903ac7885b842f090930c96f4111f74687bba27
 
     private static final int PORT = 7500;
     private final byte[] buffer = new byte[256];
@@ -54,13 +44,7 @@ public class udpBaseServer_2 {
 
                 // Print the received data
                 System.out.println("Received: " + receivedMessage);
-<<<<<<< HEAD
-
-                // Step 5: Process the received message
-                processMessage(receivedMessage, socket, receivedPacket.getAddress());
-=======
                 processMessage(receivedMessage);
->>>>>>> a903ac7885b842f090930c96f4111f74687bba27
 
                 // Step 6: Exit the server if "bye" is received
                 if (receivedMessage.equalsIgnoreCase("bye")) {
@@ -82,49 +66,6 @@ public class udpBaseServer_2 {
         }
     }
 
-<<<<<<< HEAD
-    // Method to process game messages based on the received data
-    private void processMessage(String message, DatagramSocket socket, InetAddress clientAddress) throws IOException {
-
-        System.out.println("Processing message: " + message);
-
-        if (message.equals("202")) {
-            System.out.println("Game Started!");
-        } else if (message.equals("221")) {
-            System.out.println("Game Ended!");
-        } else if (message.equals("53")) {
-            System.out.println(" Red base scored! +100 points for Green Team.");
-
-            //notify client about the updated score
-            String responseMessage = "Red base scored! +100 points for Green Team.";
-            byte[] responseBuffer = responseMessage.getBytes();
-            DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length, clientAddress, CLIENT_PORT);
-            socket.send(responsePacket);
-            System.out.println("Sent score update to " + clientAddress.getHostAddress() + ":" + CLIENT_PORT);
-
-
-        } else if (message.equals("43")) {
-            System.out.println("Green base scored! +100 points for Red Team.");
-        } else if (message.contains(":")) {
-            String[] parts = message.split(":");
-            if (parts.length == 2) {
-                try {
-                    int shooterID = Integer.parseInt(parts[0]);
-                    int targetID = Integer.parseInt(parts[1]);
-                    System.out.println("Player " + shooterID + " hit Player " + targetID);
-
-
-                    //transmit equpiment ID of player that was hit
-                    String responseMessage = String.valueOf(targetID);
-                    byte[] responseBuffer = responseMessage.getBytes();
-                    DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length, clientAddress, CLIENT_PORT);
-                    socket.send(responsePacket);
-                    System.out.println("Sent Equipment ID: " + targetID + " to " + clientAddress.getHostAddress() + ":" + CLIENT_PORT);
-
-
-                } catch (NumberFormatException e) {
-                    System.out.println("⚠️ Invalid player ID format: " + message);
-=======
     private void fetchPlayersFromDatabase() {
         try {
             ResultSet rs = db.retreiveEntries();
@@ -136,7 +77,6 @@ public class udpBaseServer_2 {
                     redPlayers.add(playerID);
                 } else if ("Green".equalsIgnoreCase(team)) {
                     greenPlayers.add(playerID);
->>>>>>> a903ac7885b842f090930c96f4111f74687bba27
                 }
             }
         } catch (Exception e) {
