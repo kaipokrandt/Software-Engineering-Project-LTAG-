@@ -17,15 +17,20 @@ public class database {
         String sqlConstraint = "ALTER TABLE players ADD CONSTRAINT unique_id UNIQUE (id);";
         String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;";
         String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
+        String sqlColumn_isPlaying = "ALTER TABLE players ADD COLUMN IF NOT EXISTS isPlaying BOOLEAN DEFAULT FALSE;";
         // Establish the connection
         //Connection connection = null;
+
+
+
         try (Connection connection = DriverManager.getConnection(url, user, password);
             Statement statement = connection.createStatement()) {
 
-            
-            statement.executeUpdate(sqlConstraint);
-            statement.executeUpdate(sqlColumn);
+            statement.executeUpdate(sqlColumn_isPlaying);
             statement.executeUpdate(sqlColumnTeam);
+            statement.executeUpdate(sqlColumn);
+            statement.executeUpdate(sqlConstraint);
+
             //System.out.println("Connected to the PostgreSQL database successfully!");
             return connection;
 
