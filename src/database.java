@@ -17,6 +17,7 @@ public class database {
         String sqlConstraint = "ALTER TABLE players ADD CONSTRAINT unique_id UNIQUE (id);";
         String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;";
         String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
+        String sqlColumn_isPlaying = "ALTER TABLE players ADD COLUMN IF NOT EXISTS isPlaying BOOLEAN DEFAULT FALSE;";
         // Establish the connection
         //Connection connection = null;
         try (Connection connection = DriverManager.getConnection(url, user, password);
@@ -26,6 +27,7 @@ public class database {
             statement.executeUpdate(sqlConstraint);
             statement.executeUpdate(sqlColumn);
             statement.executeUpdate(sqlColumnTeam);
+            statement.executeUpdate(sqlColumn_isPlaying);
             //System.out.println("Connected to the PostgreSQL database successfully!");
             return connection;
 
@@ -90,7 +92,7 @@ public class database {
         // Database connection details
         String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
         String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;"; 
-        String sql = "INSERT INTO players(id, codename, hardwareId, team) VALUES('" + ID + "','" + playerName + "', '" + hardwareId + "', '" + team + "') ON CONFLICT (id) DO UPDATE SET " + 
+        String sql = "INSERT INTO players(id, codename, hardwareId, team, isPlaying) VALUES('" + ID + "','" + playerName + "', '" + hardwareId + "', '" + team + "') ON CONFLICT (id) DO UPDATE SET " + 
         "team = EXCLUDED.team, hardwareId = EXCLUDED.hardwareID;";
         //String sql = "INSERT OR REpINTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 
@@ -239,4 +241,32 @@ public class database {
 
         return team;
     }
+
+
+    public void setIsPlaying_True(int playerID) {
+        String sql = "UPDATE players SET isPlaying = " + true + " WHERE id = " + playerID + ";";
+
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            statement.executeUpdate(sql);
+            System.out.println("Player's isPlaying status updated successfully!");
+        } catch (Exception e) {
+            System.err.println("Error updating isPlaying status for player ID " + playerID + ": " + e.getMessage());
+        }
+    }
+
+    public void setIsPlaying_False() {
+        String sql = "UPDATE players SET isPlaying = " + false + ";";
+
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement()) {
+
+            statement.executeUpdate(sql);
+            System.out.println("Player's isPlaying status updated successfully!");
+        } catch (Exception e) {
+            System.err.println("Error updating isPlaying status for player ID " + e.getMessage());
+        }
+    }
+
 }
