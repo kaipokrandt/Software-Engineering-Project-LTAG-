@@ -30,9 +30,7 @@ public class database {
             
             statement.executeUpdate(sqlColumn);
             statement.executeUpdate(sqlColumnTeam);
-           
-            statement.executeUpdate(sqlConstraint);
-
+            statement.executeUpdate(sqlColumn_isPlaying);
             //System.out.println("Connected to the PostgreSQL database successfully!");
             return connection;
 
@@ -97,7 +95,8 @@ public class database {
         // Database connection details
         String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
         String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;"; 
-        String sql = "INSERT INTO players(id, codename, hardwareId, team, isPlaying) VALUES('" + ID + "','" + playerName + "', '" + hardwareId + "', '" + team + "') ON CONFLICT (id) DO UPDATE SET " + 
+        Boolean isPlaying = true;
+        String sql = "INSERT INTO players(id, codename, hardwareId, team, isPlaying) VALUES('" + ID + "','" + playerName + "', '" + hardwareId + "', '" + team + "', '" + isPlaying + "') ON CONFLICT (id) DO UPDATE SET " + 
         "team = EXCLUDED.team, hardwareId = EXCLUDED.hardwareID;";
         //String sql = "INSERT OR REpINTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 

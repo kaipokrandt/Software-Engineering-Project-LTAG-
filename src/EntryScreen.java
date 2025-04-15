@@ -251,6 +251,7 @@ public class EntryScreen {
                 
                 // Add the red team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Red");
+                db.setIsPlaying_True(playerID);
                 redTeamCodeNames.add(playerName);
                 redTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
@@ -293,6 +294,7 @@ public class EntryScreen {
                 
                 // Add the green team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Green");
+                db.setIsPlaying_True(playerID);
                 greenTeamCodeNames.add(playerName);
                 greenTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
@@ -463,6 +465,7 @@ public class EntryScreen {
     
             playerWindow.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
+                    db.setIsPlaying_False();
                     udpClient.sendEquipmentID(221);
                     if (musicThread[0] != null && musicThread[0].isAlive()) {
                         music_player.stopPlayback();
@@ -651,9 +654,12 @@ public class EntryScreen {
                 }
     
                 SwingUtilities.invokeLater(() -> timerLabel.setText("Game Over!"));
-                udpClient.sendEquipmentID(221);
+                for(int i = 0; i < 3; i++){
+                    udpClient.sendEquipmentID(221);
+                }
                 System.out.println("Stop Traffic!");
                 System.out.println("Game Has Ended!");
+                db.setIsPlaying_False();
     
                 if (musicThread[0] != null && musicThread[0].isAlive()) {
                     music_player.stopPlayback();
