@@ -37,14 +37,14 @@ pip install psycopg2
 Then, 
 
 TO RUN:
-*******************************************************************************************
+**************************************************************************************************
 1) Open Terminal
 2) **Navigate to the src project directory (similar to /home/student/Documents/././src/)**
-3) Enter "javac *.java" to create class files.
-4) **Now, navigate to the parent directory of /src/**
-5) Run python_trafficgenerator_v2.py by entering "python3 python_trafficgenerator_v2.py"
+3) Enter "javac *.java" to create class files for all java files.
+4) **Now, navigate to the parent directory of /src/ (this contains run_me.py and the readme.txt)**
+5) Run run_me.py by entering "python3 run_me.py"
 6) Done!
-*******************************************************************************************
+**************************************************************************************************
 
 
 ----------------------------------------------------------------
