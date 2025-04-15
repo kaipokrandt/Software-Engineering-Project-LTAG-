@@ -514,7 +514,10 @@ public class EntryScreen {
     
             playerWindow.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    udpClient.sendEquipmentID(221);
+                    //transmit code 221 three times
+                    for (int i = 0; i < 3; i++) {
+                        udpClient.sendEquipmentID(221);
+                    }
                     playerWindow.dispose();
                 }
             });
@@ -633,5 +636,17 @@ public class EntryScreen {
     public void editGame() {
         // Implement edit game functionality
         System.out.println("Edit Game functionality triggered.");
+    }
+
+    public void updateGreenTeamScore() {
+        for (int i = 0; i < greenTeamFields.length; i++) {
+            String playerName = greenTeamFields[i][1].getText().trim();
+            if (!playerName.isEmpty()) {
+                //add stylized "B"
+                greenTeamFields[i][1].setText("B " + playerName);
+
+                //
+            }
+        }
     }
 }

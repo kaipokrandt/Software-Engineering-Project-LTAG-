@@ -8,7 +8,8 @@ import java.net.InetAddress;
 public class udpBaseClient_2 {
     private final DatagramSocket socket;
     private InetAddress address;
-    private final int port = 7500;  // Default broadcast port
+    private final int broadcastPort = 7500;  // Default broadcast port
+    private final int receivePort = 7501;   // Default receive port
 
     public udpBaseClient_2(String networkAddress) throws Exception {
         socket = new DatagramSocket();
@@ -20,13 +21,27 @@ public class udpBaseClient_2 {
         try {
             String message = String.valueOf(equipmentID);
             byte[] buffer = message.getBytes();
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, broadcastPort);
             socket.send(packet);
-            System.out.println("Sent Equipment ID: " + equipmentID + " to " + address.getHostAddress() + ":" + port);
+            System.out.println("Sent Equipment ID: " + equipmentID + " to " + address.getHostAddress() + ":" + broadcastPort);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
+    public void sendHit(int shooterID, int receiverID) {
+        try {
+            String message = shooterID + ":" + receiverID;
+            byte[] buffer = message.getBytes();
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, broadcastPort);
+            socket.send(packet);
+            System.out.println("Sent Hit: " + message + " to " + address.getHostAddress() + ":" + broadcastPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     // takes ip from entryscreen.java and sets the network address
     public void setNetworkAddress(String newNetwork) {
