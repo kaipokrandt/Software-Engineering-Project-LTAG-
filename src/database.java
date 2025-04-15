@@ -20,14 +20,24 @@ public class database {
         String sqlColumn_isPlaying = "ALTER TABLE players ADD COLUMN IF NOT EXISTS isPlaying BOOLEAN DEFAULT FALSE;";
         // Establish the connection
         //Connection connection = null;
+
+
+
         try (Connection connection = DriverManager.getConnection(url, user, password);
             Statement statement = connection.createStatement()) {
 
+            statement.executeUpdate(sqlColumn_isPlaying);
             
             statement.executeUpdate(sqlConstraint);
             statement.executeUpdate(sqlColumn);
             statement.executeUpdate(sqlColumnTeam);
+<<<<<<< HEAD
             statement.executeUpdate(sqlColumn_isPlaying);
+=======
+            statement.executeUpdate(sqlColumn);
+            statement.executeUpdate(sqlConstraint);
+
+>>>>>>> 273f42e35993df56d95f717076855ae3550cedda
             //System.out.println("Connected to the PostgreSQL database successfully!");
             return connection;
 
