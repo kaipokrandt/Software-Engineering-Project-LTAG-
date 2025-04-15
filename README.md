@@ -65,6 +65,9 @@ ejmoneyyy1  : EJ Alobuia /
 #TO-DO //////////////////////////////////////////////////////////
 -----------------------------------------------------------------
 
+Implement stylized B next to player username after they hit the base
+
+Implement username population upon duplicate ID immediately when entering ID (currently updates when submitting)
 
 
 
