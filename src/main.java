@@ -39,7 +39,7 @@ public class main {
 
         // Create EntryScreen and link it to the server
         EntryScreen entryScreen = new EntryScreen(db, udpClient);
-        udpServer.setEntryScreen(entryScreen); // 🔗 Link the server to the GUI
+        udpServer.setEntryScreen(entryScreen); // Link the server to the GUI
 
         // Show the GUI
         entryScreen.createAndShowGUI();

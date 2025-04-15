@@ -10,8 +10,6 @@ import sys
 def start_java_game():
     try:
         print("Launching Java game...")
-        # Build classpath: include ./src and the JDBC driver in ./lib
-        # Adjust the JDBC jar filename if necessary.
         classpath_separator = ':'
         jdbc_jar = './lib/postgresql-42.7.5.jar'
         java_classpath = './src' + classpath_separator + jdbc_jar
