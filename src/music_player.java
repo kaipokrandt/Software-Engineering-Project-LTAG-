@@ -23,7 +23,8 @@ public class music_player {
         System.out.println("Selected " + track.getName());
         return track;
     }
-
+         
+    // find, select, and play the music
     public static void play_random_track() {
         try {
             File track = music_player.select_random_track();
@@ -39,7 +40,7 @@ public class music_player {
                 for (int i = 0; i < 360; i++) {
                     if (Thread.currentThread().isInterrupted()) {
                         currentClip.stop();
-                        currentClip.close();  // Make sure to close the clip after stopping
+                        currentClip.close();  // ensuring the clip closes after stopping
                         System.out.println("Music interrupted and stopped.");
                         return;
                     }

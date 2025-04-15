@@ -499,10 +499,10 @@ public class EntryScreen {
                     codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
                     playerPanel.add(codenameLabel);
     
-                    if ("Red".equalsIgnoreCase(team)) {
+                    if ("red".equalsIgnoreCase(team)) {
                         redTeamPanel.add(playerPanel);
                         redTeamPanel.add(Box.createVerticalStrut(10));
-                    } else if ("Green".equalsIgnoreCase(team)) {
+                    } else if ("green".equalsIgnoreCase(team)) {
                         greenTeamPanel.add(playerPanel);
                         greenTeamPanel.add(Box.createVerticalStrut(10));
                     }
@@ -615,7 +615,7 @@ public class EntryScreen {
         }).start();
     }
 
-        // Method to update scores from udpBaseServer_2
+        // Method to update scores from the Base Server 
         public void updateScores(int redScore, int greenScore) {
             // Update the score labels
             SwingUtilities.invokeLater(() -> {
@@ -652,7 +652,7 @@ public class EntryScreen {
         }
     
     public void gameParameters() {
-        // Implement game parameters functionality
+        // Implement game parameters functionality - might do later
         System.out.println("Game Parameters functionality triggered.");
     }
 

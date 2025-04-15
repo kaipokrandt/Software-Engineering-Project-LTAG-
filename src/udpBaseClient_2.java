@@ -15,7 +15,8 @@ public class udpBaseClient_2 {
         address = InetAddress.getByName(networkAddress);
         System.out.println("network address is : " + networkAddress); 
     }
-
+    
+    //function for transmitting IDs
     public void sendEquipmentID(int equipmentID) {
         try {
             String message = String.valueOf(equipmentID);
