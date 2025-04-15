@@ -1,7 +1,7 @@
-// Java program to illustrate Server side UDP communication
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+<<<<<<< HEAD
 import java.net.InetAddress;
 
 public class udpBaseServer_2 {
@@ -9,12 +9,37 @@ public class udpBaseServer_2 {
     final int PORT =7501; // Default server port
     final int CLIENT_PORT = 7500; // Default client port
     byte[] buffer = new byte[256];
+=======
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
-    public void createSocket(){
+public class udpBaseServer_2 {
+>>>>>>> a903ac7885b842f090930c96f4111f74687bba27
 
-        try {
-            // Step 1: Create a socket to listen on UDP port 7501
-            DatagramSocket socket = new DatagramSocket(PORT);
+    private static final int PORT = 7500;
+    private final byte[] buffer = new byte[256];
+
+    private int redScore = 0;
+    private int greenScore = 0;
+
+    private List<String> redPlayers = new ArrayList<>();
+    private List<String> greenPlayers = new ArrayList<>();
+
+    private EntryScreen entryScreen;
+    private database db;
+
+    public udpBaseServer_2(database db) {
+        this.db = db;
+        fetchPlayersFromDatabase();
+    }
+
+    public void setEntryScreen(EntryScreen entryScreen) {
+        this.entryScreen = entryScreen;
+    }
+
+    public void createSocket() {
+        try (DatagramSocket socket = new DatagramSocket(PORT)) {
             System.out.println("UDP Server started... Listening on port " + PORT);
 
             while (true) {
@@ -29,25 +54,35 @@ public class udpBaseServer_2 {
 
                 // Print the received data
                 System.out.println("Received: " + receivedMessage);
+<<<<<<< HEAD
 
                 // Step 5: Process the received message
                 processMessage(receivedMessage, socket, receivedPacket.getAddress());
+=======
+                processMessage(receivedMessage);
+>>>>>>> a903ac7885b842f090930c96f4111f74687bba27
 
                 // Step 6: Exit the server if "bye" is received
                 if (receivedMessage.equalsIgnoreCase("bye")) {
                     System.out.println("Client sent 'bye'... Server shutting down.");
                     break;
                 }
-            }
 
-            // Close the socket
-            socket.close();
+                String reply = "ACK";
+                byte[] replyBytes = reply.getBytes();
+                DatagramPacket replyPacket = new DatagramPacket(
+                        replyBytes, replyBytes.length,
+                        receivedPacket.getAddress(), receivedPacket.getPort()
+                );
+                socket.send(replyPacket);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+<<<<<<< HEAD
     // Method to process game messages based on the received data
     private void processMessage(String message, DatagramSocket socket, InetAddress clientAddress) throws IOException {
 
@@ -89,10 +124,126 @@ public class udpBaseServer_2 {
 
                 } catch (NumberFormatException e) {
                     System.out.println("⚠️ Invalid player ID format: " + message);
+=======
+    private void fetchPlayersFromDatabase() {
+        try {
+            ResultSet rs = db.retreiveEntries();
+            while (rs.next()) {
+                String team = rs.getString("team");
+                String playerID = rs.getString("id");
+
+                if ("Red".equalsIgnoreCase(team)) {
+                    redPlayers.add(playerID);
+                } else if ("Green".equalsIgnoreCase(team)) {
+                    greenPlayers.add(playerID);
+>>>>>>> a903ac7885b842f090930c96f4111f74687bba27
                 }
             }
-        } else {
-            System.out.println("⚠️ Unknown command received: " + message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void processMessage(String message) {
+        switch (message) {
+            case "202":
+                System.out.println("Game Started!");
+                break;
+    
+            case "221":
+                System.out.println("Game Ended!");
+                break;
+    
+            case "43":
+                System.out.println("Green base scored! +100 points for Red Team.");
+                redScore += 100;
+                updateScores();
+                break;
+    
+            case "53":
+                System.out.println("Red base scored! +100 points for Green Team.");
+                greenScore += 100;
+                updateScores();
+                break;
+    
+            default:
+                if (message.contains(":")) {
+                    String[] parts = message.split(":");
+                    if (parts.length == 2) {
+                        try {
+                            int shooterID = Integer.parseInt(parts[0]);
+                            int targetOrCode = Integer.parseInt(parts[1]);
+    
+                            String shooterName = db.getUserNameByID(shooterID);
+                            String shooterTag = "Player (" + shooterID + ":" + (shooterName != null ? shooterName : "Unknown") + ")";
+    
+                            if (targetOrCode == 43) {
+                                // Red player hit the Green base
+                                System.out.println(shooterTag + " hit the Green base! +100 Red");
+                                redScore += 100;
+                                if (entryScreen != null) {
+                                    entryScreen.appendPlayAction(shooterTag + " hit the Green base! (BASE)");
+                                }
+                                updateScores();
+                                return;
+    
+                            } else if (targetOrCode == 53) {
+                                // Green player hit the Red base
+                                System.out.println(shooterTag + " hit the Red base! +100 Green");
+                                greenScore += 100;
+                                if (entryScreen != null) {
+                                    entryScreen.appendPlayAction(shooterTag + " hit the Red base! (BASE)");
+                                }
+                                updateScores();
+                                return;
+                            }
+    
+                            int targetID = targetOrCode;
+                            String targetName = db.getUserNameByID(targetID);
+                            String targetTag = "Player (" + targetID + ":" + (targetName != null ? targetName : "Unknown") + ")";
+    
+                            System.out.println(shooterTag + " hit " + targetTag);
+    
+                            String shooterTeam = db.getTeamByID(shooterID);
+                            String targetTeam = db.getTeamByID(targetID);
+    
+                            if (shooterTeam != null && targetTeam != null) {
+                                if (shooterTeam.equals(targetTeam)) {
+                                    if (shooterTeam.equals("Red")) {
+                                        redScore -= 10;
+                                    } else if (shooterTeam.equals("Green")) {
+                                        greenScore -= 10;
+                                    }
+                                    System.out.println(shooterTag + " hit their own teammate " + targetTag);
+                                } else {
+                                    if (shooterTeam.equals("Red")) {
+                                        redScore += 10;
+                                    } else if (shooterTeam.equals("Green")) {
+                                        greenScore += 10;
+                                    }
+                                    System.out.println(shooterTag + " hit an enemy " + targetTag);
+                                }
+    
+                                if (entryScreen != null) {
+                                    entryScreen.appendPlayAction(shooterTag + " hit " + targetTag);
+                                }
+    
+                                updateScores();
+                            }
+    
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid player ID format: " + message);
+                        }
+                    }
+                } else {
+                    System.out.println("Unknown command received: " + message);
+                }
+        }
+    }
+
+    private void updateScores() {
+        if (entryScreen != null) {
+            entryScreen.updateScores(redScore, greenScore);
         }
     }
 }

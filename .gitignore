@@ -1,9 +1,11 @@
 database.class
 EntryScreen$1.class
+EntryScreen$2.class
 EntryScreen.class
 main.class
-SpashScreen.class
+SplashScreen.class
 updBaseClient_2.class
 udpBaseServer_2.class
+music_player.class
 src/SplashScreen.class
 src/udpBaseClient_2.class

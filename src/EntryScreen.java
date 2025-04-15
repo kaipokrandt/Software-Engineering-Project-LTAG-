@@ -1,25 +1,32 @@
-import javax.crypto.spec.PBEKeySpec;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.NumberFormatter;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.Array;
 import java.sql.ResultSet;
-import java.text.DecimalFormat;
-import java.text.Format;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.concurrent.Flow;
+import javax.swing.text.Document;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+
+import javax.swing.text.BadLocationException;
 
 public class EntryScreen {
-
+    // GUI components
+    private JLabel redScoreLabel;
+    private JLabel greenScoreLabel;
+    private JPanel redTeamPanel;
+    private JPanel greenTeamPanel;
+    private JTextPane playActionPane;
+    private Document doc;
+    private Style regularStyle;
+    private Style hitStyle;
+    private Style baseHitStyle;
+    private int redScore = 0;
+    private int greenScore = 0;
     //creates two different 2d arrays to read data from both teams
     private JTextField[][] redTeamFields;
     private JTextField[][] greenTeamFields;
@@ -205,143 +212,101 @@ public class EntryScreen {
     }
 
     private void savePlayersToDatabase() {
-        // Check if at least one player is entered for both teams
+        // Flags to ensure at least one valid entry exists for each team
         boolean redTeamHasPlayer = false;
         boolean greenTeamHasPlayer = false;
-    
+        
+        // Process red team entries
         for (int i = 0; i < 15; i++) {
-            String redPlayerName = redTeamFields[i][1].getText().trim();
-            String greenPlayerName = greenTeamFields[i][1].getText().trim();
-            
-            if (!redPlayerName.isEmpty()) {
-                redTeamHasPlayer = true;
-            }
-            if (!greenPlayerName.isEmpty()) {
-                greenTeamHasPlayer = true;
-            }
-        }
-    
-        if (!redTeamHasPlayer || !greenTeamHasPlayer) {
-            JOptionPane.showMessageDialog(null, "At least one player must be entered for each team.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-    
-        ArrayList<String> codeNames = new ArrayList<String>();
-        ArrayList<Integer> playerIds = new ArrayList<Integer>();
-        ArrayList<Integer> hardwareIds = new ArrayList<Integer>();
-        ArrayList<String> teams = new ArrayList<String>();
-    
-        // Save players from the red team
-        for (int i = 0; i < 15; i++) {
-            try{
-            
+            try {
                 String playerName = redTeamFields[i][1].getText().trim();
                 String idText = redTeamFields[i][0].getText().trim();
-                String hardwareIdtext = redTeamFields[i][2].getText().trim();
+                String hardwareIdText = redTeamFields[i][2].getText().trim();
                 
-                if (!idText.isEmpty() && !isNumeric(idText)) {
-                    JOptionPane.showMessageDialog(null, "Invalid input in User ID field. Only numbers are allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-                    redTeamFields[i][0].setText(""); // Clear the field
-                }
-                if (!hardwareIdtext.isEmpty() && !isNumeric(hardwareIdtext)) {
-                    JOptionPane.showMessageDialog(null, "Invalid input in Hardware ID field. Only numbers are allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-                    redTeamFields[i][2].setText(""); // Clear the field
+                // Skip row if name or ID field is empty
+                if (playerName.isEmpty() || idText.isEmpty()) {
                     continue;
                 }
-
-                if (!playerName.isEmpty() && !idText.isEmpty()) {
-                    int playerID = Integer.parseInt(idText);
-                    
-                    int hardwareId = Integer.parseInt(hardwareIdtext);
-                    codeNames.add(playerName);
-                    System.out.println(playerName);
-                    playerIds.add(playerID);
-                    hardwareIds.add(hardwareId);
-                    redTeamCodeNames.add(playerName);
-                    System.out.println("Red Team names: " + redTeamCodeNames.get(0) );
-                    teams.add("Red");
+                
+                // Validate that ID is numeric
+                if (!isNumeric(idText)) {
+                    JOptionPane.showMessageDialog(null, 
+                            "Invalid input in User ID field (Red Team). Only numbers are allowed.", 
+                            "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    redTeamFields[i][0].setText("");
+                    continue;
                 }
+                
+                // Validate that Hardware ID (if provided) is numeric
+                if (!hardwareIdText.isEmpty() && !isNumeric(hardwareIdText)) {
+                    JOptionPane.showMessageDialog(null, 
+                            "Invalid input in Hardware ID field (Red Team). Only numbers are allowed.", 
+                            "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    redTeamFields[i][2].setText("");
+                    continue;
+                }
+                
+                int playerID = Integer.parseInt(idText);
+                int hardwareId = hardwareIdText.isEmpty() ? 0 : Integer.parseInt(hardwareIdText);
+                
+                // Add the red team player to the database
+                db.addplayer(playerName, playerID, hardwareId, "Red");
+                redTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
-               System.err.println("Invalid input for player ID at entry " + (i + 1));
+                System.err.println("Invalid input for player ID at red team entry " + (i + 1));
             }
         }
-    
-        // Save the players from the green team
+        
+        // Process green team entries
         for (int i = 0; i < 15; i++) {
             try {
                 String playerName = greenTeamFields[i][1].getText().trim();
                 String idText = greenTeamFields[i][0].getText().trim();
-                String hardwareIdtext = greenTeamFields[i][2].getText().trim();
+                String hardwareIdText = greenTeamFields[i][2].getText().trim();
                 
-                if (!idText.isEmpty() && !isNumeric(idText)) {
-                    JOptionPane.showMessageDialog(null, "Invalid input in User ID field. Only numbers are allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-                    greenTeamFields[i][0].setText(""); // Clear the field
-                }
-                if (!hardwareIdtext.isEmpty() && !isNumeric(hardwareIdtext)) {
-                    JOptionPane.showMessageDialog(null, "Invalid input in Hardware ID field. Only numbers are allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-                    greenTeamFields[i][2].setText(""); // Clear the field
+                // Skip row if name or ID field is empty
+                if (playerName.isEmpty() || idText.isEmpty()) {
                     continue;
                 }
-
-                if (!playerName.isEmpty() && !idText.isEmpty()) {
-                    int playerID = Integer.parseInt(idText);
-                    int hardwareId = Integer.parseInt(hardwareIdtext);
-    
-                    codeNames.add(playerName);
-                    System.out.println(playerName);
-                    playerIds.add(playerID);
-                    hardwareIds.add(hardwareId);
-                    greenTeamCodeNames.add(playerName);
-                    System.out.println("Green Team names: " + greenTeamCodeNames.get(0) );
-                    teams.add("Green");
+                
+                // Validate that ID is numeric
+                if (!isNumeric(idText)) {
+                    JOptionPane.showMessageDialog(null, 
+                            "Invalid input in User ID field (Green Team). Only numbers are allowed.", 
+                            "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    greenTeamFields[i][0].setText("");
+                    continue;
                 }
-    
+                
+                // Validate that Hardware ID (if provided) is numeric
+                if (!hardwareIdText.isEmpty() && !isNumeric(hardwareIdText)) {
+                    JOptionPane.showMessageDialog(null, 
+                            "Invalid input in Hardware ID field (Green Team). Only numbers are allowed.", 
+                            "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    greenTeamFields[i][2].setText("");
+                    continue;
+                }
+                
+                int playerID = Integer.parseInt(idText);
+                int hardwareId = hardwareIdText.isEmpty() ? 0 : Integer.parseInt(hardwareIdText);
+                
+                // Add the green team player to the database
+                db.addplayer(playerName, playerID, hardwareId, "Green");
+                greenTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
-                System.err.println("Invalid input for Player ID at entry!" + (i + 1));
+                System.err.println("Invalid input for player ID at green team entry " + (i + 1));
             }
         }
-
-        for(int i = 0; i < codeNames.size(); i++){
-            System.out.println(codeNames.get(i));
+        
+        // Check if at least one player was entered for each team
+        if (!redTeamHasPlayer || !greenTeamHasPlayer) {
+            JOptionPane.showMessageDialog(null, 
+                    "At least one player must be entered for each team.", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-    
-        // Add all the Names and IDs to the db
-        for (int i = 0; i < codeNames.size(); i++) {
-            int playerID = playerIds.get(i);
-            String playerName = codeNames.get(i);
-    
-            // Check if the player ID already exists
-            String existingUserName = db.getUserNameByID(playerID);
-            if (existingUserName != null && !existingUserName.equals(playerName)) {
-                // Show a popup to notify the user of the username change
-                JOptionPane.showMessageDialog(null, "Duplicate UserID detected. The username has been changed to: " + existingUserName, 
-                        "Duplicate UserID", JOptionPane.INFORMATION_MESSAGE);
-                redTeamCodeNames.clear();
-                greenTeamCodeNames.clear();
-                // Update the player entry screen with the existing username
-                if (teams.get(i).equals("Red")) {
-                    redTeamFields[i][1].setText(existingUserName); // Update red team entry
-                } else {
-                    greenTeamFields[i-1][1].setText(existingUserName); // Update green team entry
-                } 
-            } else if(redTeamCodeNames.size() > 0 && greenTeamCodeNames.size() > 0) {
-                // Add player to the database if there is no duplicate
-                for(int j = 0; j < redTeamCodeNames.size(); j++){
-                    if(redTeamCodeNames.get(j).equals(playerName)){
-                        db.addplayer(playerName, playerID, hardwareIds.get(i),"Red");
-                    }
-                }
-                
-                for(int j = 0; j < greenTeamCodeNames.size(); j++){
-                    if(greenTeamCodeNames.get(j).equals(playerName)){
-                        db.addplayer(playerName, playerID, hardwareIds.get(i),"Green");
-                    }
-                }
-                
-            }
-        }
-    
-        // Retrieve updated entries from the database
+        
+        // Retrieve updated entries from the database (if desired)
         db.retreiveEntries();
     }
 
@@ -443,52 +408,39 @@ public class EntryScreen {
 
     public void startGame() {
         new Thread(() -> {
-            // Create the countdown window
+            // Countdown window
             JWindow countdownWindow = new JWindow();
             countdownWindow.setLayout(new BorderLayout());
-    
-            // Set background color to black for the window
             countdownWindow.getContentPane().setBackground(Color.BLACK);
     
-            // Create a label to display the countdown
             JLabel countdownLabel = new JLabel("3", SwingConstants.CENTER);
             countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
-            countdownLabel.setForeground(Color.WHITE);  // White text for contrast
+            countdownLabel.setForeground(Color.WHITE);
     
-            // Create a panel for the countdown label with a border (outline)
             JPanel countdownPanel = new JPanel(new BorderLayout());
-            countdownPanel.setBackground(Color.BLACK); // Make panel background black
-            countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10)); // Red border with 10px thickness
+            countdownPanel.setBackground(Color.BLACK);
+            countdownPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 10));
             countdownPanel.add(countdownLabel, BorderLayout.CENTER);
     
-            // Add the panel to the countdown window
             countdownWindow.add(countdownPanel, BorderLayout.CENTER);
     
-            // Get screen size for centering the window and scaling it to 80%
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int width = (int) (screenSize.width * 0.8);  // 80% of screen width
-            int height = (int) (screenSize.height * 0.8); // 80% of screen height
+            int width = (int) (screenSize.width * 0.8);
+            int height = (int) (screenSize.height * 0.8);
     
             countdownWindow.setSize(width, height);
-            countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2); // Center the window
-    
-            // Make the countdown window visible
+            countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2);
             countdownWindow.setVisible(true);
     
-            Thread musicThread = null;
-            // Start the countdown
+            final Thread[] musicThread = new Thread[1];
             for (int i = 30; i > -1; i--) {
                 countdownLabel.setText(String.valueOf(i));
                 try {
                     if (i == 16) {
-                        musicThread = new Thread(() -> {
-                            try {
-                                music_player.play_random_track(Thread.currentThread());
-                            } catch (Exception e) {
-                                // TODO: handle exception
-                            }
+                        musicThread[0] = new Thread(() -> {
+                            music_player.play_random_track();
                         });
-                        musicThread.start();
+                        musicThread[0].start();
                     }
                     if (i == 0) {
                         countdownLabel.setText("Begin!");
@@ -498,61 +450,43 @@ public class EntryScreen {
                     e.printStackTrace();
                 }
             }
-    
-            // After the countdown, close the window
             countdownWindow.setVisible(false);
             countdownWindow.dispose();
-    
             udpClient.sendEquipmentID(202);
     
-            // Retrieve players from the database
-            ResultSet resultSet = db.retreiveEntries();
-    
-            // Create a new window to display the entered players
+            // Set up player window
             JFrame playerWindow = new JFrame("Entered Players");
             playerWindow.setLayout(new BorderLayout());
     
             playerWindow.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    //transmit code 221 three times
-                    for (int i = 0; i < 3; i++) {
-                        udpClient.sendEquipmentID(221);
+                    udpClient.sendEquipmentID(221);
+                    if (musicThread[0] != null && musicThread[0].isAlive()) {
+                        music_player.stopPlayback();
                     }
                     playerWindow.dispose();
                 }
             });
     
-            JPanel teamsPanel = new JPanel();
-            teamsPanel.setLayout(new GridLayout(1, 2));
-    
+            // Team panels
             JPanel redTeamPanel = new JPanel();
             redTeamPanel.setLayout(new BoxLayout(redTeamPanel, BoxLayout.Y_AXIS));
-            redTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.RED, 2), "RED TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.RED));
+            redTeamPanel.setBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createLineBorder(Color.RED, 2), "RED TEAM",
+                    TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.RED));
             redTeamPanel.setBackground(Color.BLACK);
     
             JPanel greenTeamPanel = new JPanel();
             greenTeamPanel.setLayout(new BoxLayout(greenTeamPanel, BoxLayout.Y_AXIS));
-            greenTeamPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.GREEN));
+            greenTeamPanel.setBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM",
+                    TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.GREEN));
             greenTeamPanel.setBackground(Color.BLACK);
     
-            db.retreiveEntries();
             try {
+                ResultSet resultSet = db.retreiveEntries();
                 while (resultSet.next()) {
-                    int id = resultSet.getInt("id".trim());
                     String codename = resultSet.getString("codename".trim());
-                    String codeNameinDb = null;
-    
-                    for (int i = 0; i < redTeamCodeNames.size(); i++) {
-                        if (codename.equals(redTeamCodeNames.get(i))) {
-                            codeNameinDb = codename;
-                        }
-                    }
-                    for (int i = 0; i < greenTeamCodeNames.size(); i++) {
-                        if (codename.equals(greenTeamCodeNames.get(i))) {
-                            codeNameinDb = codename;
-                        }
-                    }
-    
                     String team = resultSet.getString("team".trim());
     
                     JPanel playerPanel = new JPanel();
@@ -560,15 +494,15 @@ public class EntryScreen {
                     playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
                     playerPanel.setBackground(Color.BLACK);
     
-                    JLabel codenameLabel = new JLabel(codeNameinDb);
+                    JLabel codenameLabel = new JLabel(codename);
                     codenameLabel.setForeground(Color.WHITE);
                     codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
                     playerPanel.add(codenameLabel);
     
-                    if ("Red".equals(team)) {
+                    if ("red".equalsIgnoreCase(team)) {
                         redTeamPanel.add(playerPanel);
                         redTeamPanel.add(Box.createVerticalStrut(10));
-                    } else if ("Green".equals(team)) {
+                    } else if ("green".equalsIgnoreCase(team)) {
                         greenTeamPanel.add(playerPanel);
                         greenTeamPanel.add(Box.createVerticalStrut(10));
                     }
@@ -577,18 +511,65 @@ public class EntryScreen {
                 e.printStackTrace();
             }
     
-            // Current game action panel with gameplay timer
-            JPanel gameActioPanel = new JPanel();
-            gameActioPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-            gameActioPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE, 2), "Current Game Action", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.WHITE));
-            gameActioPanel.setBackground(Color.BLUE);
+            // Live score labels
+            redScore = 0;
+            greenScore = 0;
+            redScoreLabel = new JLabel("Red Score: 0", SwingConstants.CENTER);
+            greenScoreLabel = new JLabel("Green Score: 0", SwingConstants.CENTER);
+            redScoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            greenScoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            redScoreLabel.setForeground(Color.RED);
+            greenScoreLabel.setForeground(Color.GREEN);
+            redScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            greenScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     
             // Timer label
-            JLabel timerLabel = new JLabel("06:00");
+            JLabel timerLabel = new JLabel("06:00", SwingConstants.CENTER);
             timerLabel.setFont(new Font("Arial", Font.BOLD, 36));
             timerLabel.setForeground(Color.WHITE);
-            gameActioPanel.add(timerLabel);
+            timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     
+            // Play action pane
+            playActionPane = new JTextPane();
+            playActionPane.setEditable(false);
+            playActionPane.setBackground(Color.BLACK);
+            doc = playActionPane.getStyledDocument();
+    
+            // Define styles
+            regularStyle = playActionPane.addStyle("Regular", null);
+            StyleConstants.setForeground(regularStyle, Color.WHITE);
+            StyleConstants.setFontSize(regularStyle, 14);
+            StyleConstants.setFontFamily(regularStyle, "Monospaced");
+    
+            hitStyle = playActionPane.addStyle("Hit", null);
+            StyleConstants.setForeground(hitStyle, Color.YELLOW);
+            StyleConstants.setFontSize(hitStyle, 16);
+            StyleConstants.setBold(hitStyle, true);
+    
+            baseHitStyle = playActionPane.addStyle("BaseHit", null);
+            StyleConstants.setForeground(baseHitStyle, Color.CYAN);
+            StyleConstants.setFontSize(baseHitStyle, 16);
+            StyleConstants.setBold(baseHitStyle, true);
+    
+            JScrollPane actionScroll = new JScrollPane(playActionPane);
+            actionScroll.setPreferredSize(new Dimension(400, 150));
+            actionScroll.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
+            actionScroll.setBackground(Color.BLACK);
+    
+            JPanel gameActionPanel = new JPanel();
+            gameActionPanel.setLayout(new BoxLayout(gameActionPanel, BoxLayout.Y_AXIS));
+            gameActionPanel.setBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createLineBorder(Color.WHITE, 2), "Current Game Action",
+                    TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.WHITE));
+            gameActionPanel.setBackground(Color.BLUE);
+            gameActionPanel.add(timerLabel);
+            gameActionPanel.add(Box.createVerticalStrut(10));
+            gameActionPanel.add(redScoreLabel);
+            gameActionPanel.add(greenScoreLabel);
+            gameActionPanel.add(Box.createVerticalStrut(10));
+            gameActionPanel.add(actionScroll);
+    
+            JPanel teamsPanel = new JPanel(new GridLayout(1, 2));
             teamsPanel.add(redTeamPanel);
             teamsPanel.add(greenTeamPanel);
     
@@ -596,24 +577,22 @@ public class EntryScreen {
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
             mainPanel.add(teamsPanel);
             mainPanel.add(Box.createVerticalStrut(20));
-            mainPanel.add(gameActioPanel);
+            mainPanel.add(gameActionPanel);
     
             playerWindow.add(mainPanel, BorderLayout.CENTER);
-            playerWindow.setSize(600, 600);
+            playerWindow.setSize(700, 700);
             playerWindow.setLocationRelativeTo(null);
             playerWindow.setVisible(true);
     
-            // Gameplay timer (6 minutes = 360 seconds)
+            // Start game timer
             new Thread(() -> {
                 int totalSeconds = 360;
+    
                 for (int i = totalSeconds; i >= 0; i--) {
                     int minutes = i / 60;
                     int seconds = i % 60;
                     String timeFormatted = String.format("%02d:%02d", minutes, seconds);
-    
-                    // Update timer label on the Event Dispatch Thread
                     SwingUtilities.invokeLater(() -> timerLabel.setText(timeFormatted));
-    
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -621,32 +600,64 @@ public class EntryScreen {
                     }
                 }
     
-                // Optional: Action after timer ends
                 SwingUtilities.invokeLater(() -> timerLabel.setText("Game Over!"));
+                udpClient.sendEquipmentID(221);
+                System.out.println("Stop Traffic.");
+                System.out.println("Game Ended!");
+    
+                if (musicThread[0] != null && musicThread[0].isAlive()) {
+                    music_player.stopPlayback();
+                }
+    
+                playerWindow.dispose();
             }).start();
     
         }).start();
     }
 
+        // Method to update scores from the Base Server 
+        public void updateScores(int redScore, int greenScore) {
+            // Update the score labels
+            SwingUtilities.invokeLater(() -> {
+                redScoreLabel.setText("Red Score: " + redScore);
+                greenScoreLabel.setText("Green Score: " + greenScore);
+            });
+        }
+    
+        public void appendPlayAction(String message) {
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    Style styleToUse = regularStyle;
+                    String lowerMsg = message.toLowerCase();
+        
+                    // Update score based on team and event
+                    if (lowerMsg.contains("red") && lowerMsg.contains("hit")) {
+                        redScore += lowerMsg.contains("base") ? 10 : 1;
+                        redScoreLabel.setText("Red Score: " + redScore);
+                        styleToUse = lowerMsg.contains("base") ? baseHitStyle : hitStyle;
+        
+                    } else if (lowerMsg.contains("green") && lowerMsg.contains("hit")) {
+                        greenScore += lowerMsg.contains("base") ? 10 : 1;
+                        greenScoreLabel.setText("Green Score: " + greenScore);
+                        styleToUse = lowerMsg.contains("base") ? baseHitStyle : hitStyle;
+                    }
+        
+                    doc.insertString(doc.getLength(), message + "\n", styleToUse);
+                    playActionPane.setCaretPosition(doc.getLength());
+        
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    
     public void gameParameters() {
-        // Implement game parameters functionality
+        // Implement game parameters functionality - might do later
         System.out.println("Game Parameters functionality triggered.");
     }
 
     public void editGame() {
         // Implement edit game functionality
         System.out.println("Edit Game functionality triggered.");
-    }
-
-    public void updateGreenTeamScore() {
-        for (int i = 0; i < greenTeamFields.length; i++) {
-            String playerName = greenTeamFields[i][1].getText().trim();
-            if (!playerName.isEmpty()) {
-                //add stylized "B"
-                greenTeamFields[i][1].setText("B " + playerName);
-
-                //
-            }
-        }
     }
 }

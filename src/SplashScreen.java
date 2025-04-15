@@ -19,7 +19,7 @@ class SplashScreen {
         JWindow splash = new JWindow();
 
         try {
-            // Find logo.jpg and read it
+            // Find the logo and read it
             File imageFile = new File("../images/logo.jpg");
 
             if (!imageFile.exists()) {
@@ -41,7 +41,7 @@ class SplashScreen {
                 int newWidth = (int) (imgWidth * scaleFactor);
                 int newHeight = (int) (imgHeight * scaleFactor);
 
-                // Create a new image scaled to the desired size
+                // Create a new image scaled to the required size
                 BufferedImage scaledImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g2d = scaledImg.createGraphics();
                 g2d.drawImage(img, 0, 0, newWidth, newHeight, null);
