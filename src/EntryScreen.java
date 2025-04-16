@@ -699,6 +699,11 @@ public class EntryScreen {
     public void appendPlayAction(String message) {
         SwingUtilities.invokeLater(() -> {
             try {
+
+                if (doc == null || playActionPane == null) {
+                    System.out.println("Error: doc or playActionPane is null.");
+                    return;
+                }
                 Style styleToUse = regularStyle;
                 String lowerMsg = message.toLowerCase();
         
