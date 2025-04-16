@@ -4,7 +4,7 @@ public class main {
     public static void main(String[] args) {
         System.out.println("Starting Photon...");
 
-        
+
 
         // Show splash screen
         SplashScreen splashScreen = new SplashScreen();

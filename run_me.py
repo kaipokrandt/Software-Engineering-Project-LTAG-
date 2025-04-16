@@ -87,11 +87,11 @@ while True:
     else:
         message = f"{green_player}:{red_player}"
 
-    if counter == 10:
+    if counter == 1:
         hitter = random.choice(green_players)
         message = f"{hitter}:43"  # Simulate a Red base hit event (Green scores)
         
-    if counter == 20:
+    if counter == 2:
         hitter = random.choice(red_players)
         message = f"{hitter}:53"  # Simulate a Green base hit event (Red scores)
         
