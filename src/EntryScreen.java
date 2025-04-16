@@ -655,6 +655,8 @@ public class EntryScreen {
     // Method for updating Scores on Base Server
     public void updateScores(int redScore, int greenScore) {
         // Update the score labels
+        redScoreTotal =+ redScore;
+        greenScoreTotal =+ greenScore;
         SwingUtilities.invokeLater(() -> {
             if(redScoreLabel == null || greenScoreLabel == null){
                 return;
@@ -766,33 +768,38 @@ public class EntryScreen {
 
 
     public void updatePlayerPanel(JPanel Panel, String playerID, String team) {
-         // Iterate through the components of the team panel
-        if(Panel == null){
+        // Return early if the panel is null
+        if (Panel == null) {
             return;
         }
-
-
+    
+        // Iterate through the components of the team panel
         for (Component component : Panel.getComponents()) {
             if (component instanceof JPanel) {
                 JPanel playerPanel = (JPanel) component;
-
+    
                 // Find the JLabel with the player's name
                 for (Component playerComponent : playerPanel.getComponents()) {
                     if (playerComponent instanceof JLabel) {
                         JLabel nameLabel = (JLabel) playerComponent;
-
-                        // Check if the label contains the player's ID
-                            if (!nameLabel.getText().contains("(B)")) {
-                                nameLabel.setText(nameLabel.getText() + " (B)");
-                                Panel.repaint();
+    
+                        String labelText = nameLabel.getText();
+                        if (!labelText.contains("(B)")) {
+                            // If label doesn't already use HTML, wrap it
+                            if (!labelText.startsWith("<html>")) {
+                                labelText = "<html>" + labelText;
                             }
-                            return;
-                        
+    
+                            // Append the stylized (B) using red bold HTML span
+                            labelText += " <span style='color:red; font-weight:bold;'>(B)</span></html>";
+                            nameLabel.setText(labelText);
+                            Panel.repaint();
+                        }
+                        return;
                     }
                 }
             }
         }
-
     }
 
    
