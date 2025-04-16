@@ -15,15 +15,7 @@ public class main {
         db.connectToDatabase();
 
         // Create and start the UDP server! (store reference)
-        udpBaseServer_2 udpServer = new udpBaseServer_2(db);
-        new Thread(() -> udpServer.createSocket()).start();
-
-        // Wait briefly for server to start
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        
 
         // Create UDP client
         udpBaseClient_2 udpClient = null;
@@ -35,7 +27,16 @@ public class main {
 
         // Create EntryScreen and link it to the server
         EntryScreen entryScreen = new EntryScreen(db, udpClient);
-        udpServer.setEntryScreen(entryScreen); // Link the server to the GUI
+
+        udpBaseServer_2 udpServer = new udpBaseServer_2(db, entryScreen);
+        new Thread(() -> udpServer.createSocket()).start();
+
+        // Wait briefly for server to start
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // Show the GUI
         entryScreen.createAndShowGUI();

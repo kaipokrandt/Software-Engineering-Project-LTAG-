@@ -678,6 +678,48 @@ public class EntryScreen {
                 redScoreLabel.setText("Red Score: " + redScore);
                 greenScoreLabel.setText("Green Score: " + greenScore);
             });
+
+            // new Thread(() -> {
+            //     flashHigherScore(redScore, greenScore);
+            // }).start();
+
+            // try {
+            //     Thread.sleep(500);
+            // } catch (Exception e) {
+            //     // TODO: handle exception
+            // }
+
+            
+        }
+
+        public void flashHigherScore(int redScore, int greenScore){
+            if(redScore > greenScore){
+                if(redScoreLabel.getForeground() == Color.RED){
+                    redScoreLabel.setForeground(Color.WHITE);
+                }
+
+                else{
+                    redScoreLabel.setForeground(Color.RED);
+                }
+
+            }
+            else if(greenScore > redScore) {
+                if(greenScoreLabel.getForeground() == Color.GREEN){
+                    greenScoreLabel.setForeground(Color.WHITE);
+                }
+
+                else{
+                    greenScoreLabel.setForeground(Color.GREEN);
+                }
+            }
+
+            else{
+                if(redScoreLabel != null && greenScoreLabel != null){
+                    redScoreLabel.setForeground(Color.RED);
+                    greenScoreLabel.setForeground(Color.GREEN);
+                }
+
+            }
         }
     
         public void appendPlayAction(String message) {
@@ -687,7 +729,7 @@ public class EntryScreen {
                     String lowerMsg = message.toLowerCase();
         
                     // Update score based on team and event
-                    if (lowerMsg.contains("red") && lowerMsg.contains("hit")) {
+                    if (lowerMsg.contains("GREEN") && lowerMsg.contains("hit")) {
                         redScore += lowerMsg.contains("base") ? 10 : 1;
                         redScoreLabel.setText("Red Score: " + redScore);
                         styleToUse = lowerMsg.contains("base") ? baseHitStyle : hitStyle;

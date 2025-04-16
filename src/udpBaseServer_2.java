@@ -4,6 +4,11 @@ import java.net.DatagramSocket;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.SwingUtilities;
 
 public class udpBaseServer_2 {
 
@@ -16,17 +21,25 @@ public class udpBaseServer_2 {
     private List<String> redPlayers = new ArrayList<>();
     private List<String> greenPlayers = new ArrayList<>();
 
-    private EntryScreen entryScreen;
+    private EntryScreen entryScreen = new EntryScreen(null, null);
     private database db;
 
-    public udpBaseServer_2(database db) {
+    public udpBaseServer_2(database db, EntryScreen entryScreen) {
         this.db = db;
         fetchPlayersFromDatabase();
+        this.entryScreen = entryScreen;
+        if(entryScreen != null) {
+            startScheduler();
+        }
+        
     }
 
     public void setEntryScreen(EntryScreen entryScreen) {
         this.entryScreen = entryScreen;
+
+        
     }
+    
 
     public void createSocket() {
         try (DatagramSocket socket = new DatagramSocket(PORT)) {
@@ -88,6 +101,7 @@ public class udpBaseServer_2 {
         switch (message) {
             case "202":
                 System.out.println("Game Started!");
+                startScheduler();
                 break;
     
             case "221":
@@ -186,4 +200,27 @@ public class udpBaseServer_2 {
             entryScreen.updateScores(redScore, greenScore);
         }
     }
+
+    
+
+    
+
+    public void startScheduler() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Runnable flashHigherScore = () -> {
+            SwingUtilities.invokeLater(() -> {
+
+                if (entryScreen == null) {
+                    System.out.println("entryScreen is null!");
+                } else {
+                    entryScreen.flashHigherScore(redScore, greenScore);
+                }
+            });
+        };
+        scheduler.scheduleAtFixedRate(flashHigherScore, 0, 350, TimeUnit.MILLISECONDS);
+    }
+
+
+
+    
 }
