@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class udpBaseServer_2 {
@@ -25,6 +26,9 @@ public class udpBaseServer_2 {
 
     private EntryScreen entryScreen = new EntryScreen(null, null);
     private database db;
+
+    private int shooterID;
+    private int team;
 
     private Set<Integer> baseHitPlayerIDs = new HashSet<>();
 
@@ -116,7 +120,7 @@ public class udpBaseServer_2 {
                     String[] parts = message.split(":");
                     if (parts.length == 2) {
                         try {
-                            int shooterID = Integer.parseInt(parts[0]);
+                            shooterID = Integer.parseInt(parts[0]);
                             int targetOrCode = Integer.parseInt(parts[1]);
 
                             String shooterTeam = db.getTeamByID(shooterID);
@@ -129,8 +133,12 @@ public class udpBaseServer_2 {
                                     System.out.println(shooterTag + " hit the Green base! +100 Red");
                                     redScore += 100;
                                     if (entryScreen != null) {
-                                        entryScreen.appendPlayAction(shooterTag + " hit the Green base! (BASE)");
-                                    }
+                                        //entryScreen.markPlayerWithBaseHit(shooterID, "Green");
+                                    entryScreen.appendPlayAction(shooterTag + " hit the Green base! (BASE)");
+                                        stylelizedBaseHitRepaint(targetOrCode, shooterID);
+                                    
+
+                                }
                                     updateScores();
                                 } else {
                                     System.out.println("Ignored: " + shooterID + " attempted to hit their own base (Green)");
@@ -144,8 +152,12 @@ public class udpBaseServer_2 {
                                     System.out.println(shooterTag + " hit the Red base! +100 Green");
                                     greenScore += 100;
                                     if (entryScreen != null) {
-                                        entryScreen.appendPlayAction(shooterTag + " hit the Red base! (BASE)");
-                                    }
+                                        //entryScreen.markPlayerWithBaseHit(shooterID, "Red");
+                                    entryScreen.appendPlayAction(shooterTag + " hit the Red base! (BASE)");
+                                        stylelizedBaseHitRepaint(targetOrCode, shooterID);
+
+
+                                }
                                     updateScores();
                                 } else {
                                     System.out.println("Ignored: " + shooterID + " attempted to hit their own base (Red)");
@@ -221,6 +233,41 @@ public class udpBaseServer_2 {
                 }
             });
         };
+
         scheduler.scheduleAtFixedRate(flashHigherScore, 0, 350, TimeUnit.MILLISECONDS);
     }
+
+
+    public void stylelizedBaseHitRepaint(int targOpCode, int shooterId) {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        Runnable stylizedBaseHit = () -> {
+
+            final JPanel teamPanel;
+
+            if (targOpCode == 43) {
+                System.out.println("Green base hit by Red player!");
+                teamPanel = entryScreen.greenTeamPlayerPanel; // Replace with entryScreen.greenTeamPlayerPanel if needed
+            } else if (targOpCode == 53) {
+                System.out.println("Red base hit by Green player!");
+                teamPanel = entryScreen.redTeamPlayerPanel;
+            } else {
+                teamPanel = new JPanel(); // Default case to ensure teamPanel is initialized
+            }
+            SwingUtilities.invokeLater(() -> {
+                if (entryScreen == null) {
+                    System.out.println("entryScreen is null!");
+                } else {
+                    entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterID), db.getTeamByID(shooterID));
+                }
+            });
+        };
+
+        scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350,TimeUnit.MILLISECONDS);
+
+
+    }
 }
+
+    
+

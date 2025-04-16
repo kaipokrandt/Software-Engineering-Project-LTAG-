@@ -22,7 +22,9 @@ public class EntryScreen {
     private JLabel redScoreLabel;
     private JLabel greenScoreLabel;
     private JPanel redTeamPanel;
+    public JPanel redTeamPlayerPanel;
     private JPanel greenTeamPanel;
+    public JPanel greenTeamPlayerPanel;
     private JTextPane playActionPane;
     private Document doc;
     private Style regularStyle;
@@ -36,8 +38,8 @@ public class EntryScreen {
     private JTextField[][] redTeamFields;
     private JTextField[][] greenTeamFields;
 
-    private ArrayList<String> redTeamCodeNames = new ArrayList<String>();
-    private ArrayList<String> greenTeamCodeNames = new ArrayList<String>();
+    private ArrayList<Integer> redTeamPlayerIds = new ArrayList<Integer>();
+    private ArrayList<Integer> greenTeamPlayerIds = new ArrayList<Integer>();
     //implement database and udp client functionality to connnect
     public database db = new database();
     private udpBaseClient_2 udpClient;
@@ -257,7 +259,7 @@ public class EntryScreen {
                 // Add the red team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Red");
                 db.setIsPlaying_True(playerID);
-                redTeamCodeNames.add(playerName);
+                redTeamPlayerIds.add(playerID);
                 redTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at red team entry " + (i + 1));
@@ -300,7 +302,7 @@ public class EntryScreen {
                 // Add the green team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Green");
                 db.setIsPlaying_True(playerID);
-                greenTeamCodeNames.add(playerName);
+                greenTeamPlayerIds.add(playerID);
                 greenTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at green team entry " + (i + 1));
@@ -480,24 +482,24 @@ public class EntryScreen {
             });
     
             // Team panels
-            JPanel redTeamPanel = new JPanel();
-            redTeamPanel.setLayout(new BoxLayout(redTeamPanel, BoxLayout.Y_AXIS));
-            redTeamPanel.setBorder(BorderFactory.createTitledBorder(
+            redTeamPlayerPanel = new JPanel();
+            redTeamPlayerPanel.setLayout(new BoxLayout(redTeamPlayerPanel, BoxLayout.Y_AXIS));
+            redTeamPlayerPanel.setBorder(BorderFactory.createTitledBorder(
                     BorderFactory.createLineBorder(Color.RED, 2), "RED TEAM",
                     TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.RED));
-            redTeamPanel.setBackground(Color.BLACK);
+            redTeamPlayerPanel.setBackground(Color.BLACK);
     
-            JPanel greenTeamPanel = new JPanel();
-            greenTeamPanel.setLayout(new BoxLayout(greenTeamPanel, BoxLayout.Y_AXIS));
-            greenTeamPanel.setBorder(BorderFactory.createTitledBorder(
+            greenTeamPlayerPanel = new JPanel();
+            greenTeamPlayerPanel.setLayout(new BoxLayout(greenTeamPlayerPanel, BoxLayout.Y_AXIS));
+            greenTeamPlayerPanel.setBorder(BorderFactory.createTitledBorder(
                     BorderFactory.createLineBorder(Color.GREEN, 2), "GREEN TEAM",
                     TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 24), Color.GREEN));
-            greenTeamPanel.setBackground(Color.BLACK);
+            greenTeamPlayerPanel.setBackground(Color.BLACK);
 
             //add players from entry screen to play action pane
-            for (int i = 0; i < redTeamCodeNames.size(); i++) {
+            for (int i = 0; i < redTeamPlayerIds.size(); i++) {
                 //red team players
-                String redCodename = redTeamCodeNames.get(i);
+                String redCodename = db.getUserNameByID(redTeamPlayerIds.get(i));
                 System.out.println("Red Codename: " + redCodename);
 
                 JPanel playerPanel = new JPanel();
@@ -510,13 +512,18 @@ public class EntryScreen {
                 codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
                 playerPanel.add(codenameLabel);
 
-                redTeamPanel.add(playerPanel);
-                redTeamPanel.add(Box.createVerticalStrut(10));  
+                       redTeamPlayerPanel.add(playerPanel);
+                       redTeamPlayerPanel.add(Box.createVerticalStrut(10));
+
+                    
             }
 
-            for (int i = 0; i < greenTeamCodeNames.size(); i++) {
+            for (int i = 0; i < greenTeamPlayerIds.size(); i++) {
+                
+
+
                 //green team players
-                String greenCodename = greenTeamCodeNames.get(i);
+                String greenCodename = db.getUserNameByID(greenTeamPlayerIds.get(i));
                 
                 JPanel playerPanel = new JPanel();
                 playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
@@ -529,38 +536,13 @@ public class EntryScreen {
                 codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
                 playerPanel.add(codenameLabel);
 
-                greenTeamPanel.add(playerPanel);
-                greenTeamPanel.add(Box.createVerticalStrut(10));
+                       greenTeamPlayerPanel.add(playerPanel);
+                       greenTeamPlayerPanel.add(Box.createVerticalStrut(10));
+                
+            
             }
             
-            // try {
-            //     ResultSet resultSet = db.retreiveEntries();
-            //     while (resultSet.next()) {
-            //         String codename = resultSet.getString("codename".trim());
-            //         String team = resultSet.getString("team".trim());
-    
-            //         JPanel playerPanel = new JPanel();
-            //         playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
-            //         playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            //         playerPanel.setBackground(Color.BLACK);
-    
-            //         JLabel codenameLabel = new JLabel(codename);
-            //         codenameLabel.setForeground(Color.WHITE);
-            //         codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
-            //         playerPanel.add(codenameLabel);
-    
-            //         if ("red".equalsIgnoreCase(team)) {
-            //             redTeamPanel.add(playerPanel);
-            //             redTeamPanel.add(Box.createVerticalStrut(10));
-            //         } else if ("green".equalsIgnoreCase(team)) {
-            //             greenTeamPanel.add(playerPanel);
-            //             greenTeamPanel.add(Box.createVerticalStrut(10));
-            //         }
-            //     }
-            // } catch (Exception e) {
-            //     e.printStackTrace();
-            // }
-    
+           
             // Live score labels
             redScore = 0;
             greenScore = 0;
@@ -620,8 +602,8 @@ public class EntryScreen {
             gameActionPanel.add(actionScroll);
     
             JPanel teamsPanel = new JPanel(new GridLayout(1, 2));
-            teamsPanel.add(redTeamPanel);
-            teamsPanel.add(greenTeamPanel);
+            teamsPanel.add(redTeamPlayerPanel);
+            teamsPanel.add(greenTeamPlayerPanel);
     
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -671,85 +653,77 @@ public class EntryScreen {
         }).start();
     }
 
-        // Method for updating Scores on Base Server
-        public void updateScores(int redScore, int greenScore) {
-            // Update the score labels
-            SwingUtilities.invokeLater(() -> {
-                redScoreTotal =+ redScore;
-                greenScoreTotal =+ greenScore;
-                redScoreLabel.setText("Red Score: " + redScore);
-                greenScoreLabel.setText("Green Score: " + greenScore);
-            });
-
-            // new Thread(() -> {
-            //     flashHigherScore(redScore, greenScore);
-            // }).start();
-
-            // try {
-            //     Thread.sleep(500);
-            // } catch (Exception e) {
-            //     // TODO: handle exception
-            // }
-
-            
-        }
-
-        public void flashHigherScore(int redScore, int greenScore){
-            if(redScore > greenScore){
-                if(redScoreLabel.getForeground() == Color.RED){
-                    redScoreLabel.setForeground(Color.WHITE);
-                }
-
-                else{
-                    redScoreLabel.setForeground(Color.RED);
-                }
-
+    // Method for updating Scores on Base Server
+    public void updateScores(int redScore, int greenScore) {
+        // Update the score labels
+        SwingUtilities.invokeLater(() -> {
+            if(redScoreLabel == null || greenScoreLabel == null){
+                return;
             }
-            else if(greenScore > redScore) {
-                if(greenScoreLabel.getForeground() == Color.GREEN){
-                    greenScoreLabel.setForeground(Color.WHITE);
-                }
+            redScoreLabel.setText("Red Score: " + redScore);
+            greenScoreLabel.setText("Green Score: " + greenScore);
+        });
+    }
 
-                else{
-                    greenScoreLabel.setForeground(Color.GREEN);
-                }
+    public void flashHigherScore(int redScore, int greenScore){
+
+        if(redScoreLabel == null || greenScoreLabel == null){
+            return;
+        }
+        if(redScore > greenScore){
+            if(redScoreLabel.getForeground() == Color.RED){
+                redScoreLabel.setForeground(Color.WHITE);
             }
 
             else{
-                if(redScoreLabel != null && greenScoreLabel != null){
-                    redScoreLabel.setForeground(Color.RED);
-                    greenScoreLabel.setForeground(Color.GREEN);
-                }
+                redScoreLabel.setForeground(Color.RED);
+            }
 
+        }
+        else if(greenScore > redScore) {
+            if(greenScoreLabel.getForeground() == Color.GREEN){
+               greenScoreLabel.setForeground(Color.WHITE);
+            }
+            else{
+                greenScoreLabel.setForeground(Color.GREEN);
             }
         }
+        else{
+            if(redScoreLabel != null && greenScoreLabel != null){
+                redScoreLabel.setForeground(Color.RED);
+                greenScoreLabel.setForeground(Color.GREEN);
+            }
+
+        }
+    }
     
-        public void appendPlayAction(String message) {
-            SwingUtilities.invokeLater(() -> {
-                try {
-                    Style styleToUse = regularStyle;
-                    String lowerMsg = message.toLowerCase();
+    public void appendPlayAction(String message) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Style styleToUse = regularStyle;
+                String lowerMsg = message.toLowerCase();
         
-                    // Update score based on team and event
-                    if (lowerMsg.contains("red") && lowerMsg.contains("hit")) {
-                        redScore += lowerMsg.contains("base") ? 10 : 1;
-                        redScoreLabel.setText("Red Score: " + redScore);
-                        styleToUse = lowerMsg.contains("base") ? baseHitStyle : hitStyle;
+                // Update score based on team and event
+                if (lowerMsg.contains("red") && lowerMsg.contains("hit")) {
+                    redScore += lowerMsg.contains("base") ? 10 : 1;
+                    redScoreLabel.setText("Red Score: " + redScore);
+                    styleToUse = lowerMsg.contains("base") ? baseHitStyle : hitStyle;
+
         
-                    } else if (lowerMsg.contains("green") && lowerMsg.contains("hit")) {
-                        greenScore += lowerMsg.contains("base") ? 10 : 1;
-                        greenScoreLabel.setText("Green Score: " + greenScore);
-                        styleToUse = lowerMsg.contains("base") ? baseHitStyle : hitStyle;
-                    }
+                } else if (lowerMsg.contains("green") && lowerMsg.contains("hit")) {
+                    greenScore += lowerMsg.contains("base") ? 10 : 1;
+                    greenScoreLabel.setText("Green Score: " + greenScore);
+                    styleToUse = lowerMsg.contains("base") ? baseHitStyle : hitStyle;
+                }
         
-                    doc.insertString(doc.getLength(), message + "\n", styleToUse);
-                    playActionPane.setCaretPosition(doc.getLength());
+                doc.insertString(doc.getLength(), message + "\n", styleToUse);
+                playActionPane.setCaretPosition(doc.getLength());
         
                 } catch (BadLocationException e) {
                     e.printStackTrace();
                 }
-            });
-        }
+        });
+    }
     
     public int getRedScoreTotal() {
         return redScoreTotal;
@@ -758,6 +732,66 @@ public class EntryScreen {
     public int getGreenScoreTotal() {
         return greenScoreTotal;
     }
+
+
+
+    // public void markPlayerWithBaseHit(int playerID, String team) {
+    //     // Implement base hit functionality
+    //     System.out.println("Base Hit functionality triggered for Player ID: " + playerID);
+
+    //     String playerIDString = String.valueOf(playerID);
+
+    //     if (team.equalsIgnoreCase("Red")) {
+    //         for (int i = 0; i < redTeamFields.length; i++) {
+    //             if (redTeamFields[i][0].getText().equals(playerIDString)) {
+    //                 if (!redTeamFields[i][1].getText().contains("(B)")) {
+    //                     redTeamPlayerIds.add(redTeamPlayerIds.get(i) + " (B)");
+    //                 }
+    //             }
+    //         }
+    //     } else if (team.equalsIgnoreCase("Green")) {
+    //         for (int i = 0; i < greenTeamFields.length; i++) {
+    //             if (greenTeamFields[i][0].getText().equals(playerIDString)) {
+    //                 if (!greenTeamFields[i][1].getText().contains("(B)")) {
+    //                     greenTeamPlayerIds.add(greenTeamPlayerIds.get(i) + " (B)");
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+
+    public void updatePlayerPanel(JPanel Panel, String playerID, String team) {
+         // Iterate through the components of the team panel
+        if(Panel == null){
+            return;
+        }
+
+
+        for (Component component : Panel.getComponents()) {
+            if (component instanceof JPanel) {
+                JPanel playerPanel = (JPanel) component;
+
+                // Find the JLabel with the player's name
+                for (Component playerComponent : playerPanel.getComponents()) {
+                    if (playerComponent instanceof JLabel) {
+                        JLabel nameLabel = (JLabel) playerComponent;
+
+                        // Check if the label contains the player's ID
+                            if (!nameLabel.getText().contains("(B)")) {
+                                nameLabel.setText(nameLabel.getText() + " (B)");
+                                Panel.repaint();
+                            }
+                            return;
+                        
+                    }
+                }
+            }
+        }
+
+    }
+
+   
     
     public void gameParameters() {
         // Implement game parameters functionality - might do later
