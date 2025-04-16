@@ -45,6 +45,8 @@ public class EntryScreen {
     private udpBaseClient_2 udpClient;
 
 
+    Map<String, JLabel> redScoreLabels = new HashMap<>();
+    Map<String, JLabel> greenScoreLabels = new HashMap<>();
 
     /**
      * 
@@ -510,10 +512,20 @@ public class EntryScreen {
                 JLabel codenameLabel = new JLabel(redCodename);
                 codenameLabel.setForeground(Color.WHITE);
                 codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                codenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
                 playerPanel.add(codenameLabel);
 
-                       redTeamPlayerPanel.add(playerPanel);
-                       redTeamPlayerPanel.add(Box.createVerticalStrut(10));
+
+                //playerPanel.add(Box.createHorizontalStrut(10));
+
+                JLabel scoreLabel = new JLabel("0");
+                scoreLabel.setForeground(Color.WHITE);
+                scoreLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                playerPanel.add(scoreLabel);
+                redScoreLabels.put(redCodename, scoreLabel);
+
+                redTeamPlayerPanel.add(playerPanel);
+                redTeamPlayerPanel.add(Box.createVerticalStrut(10));
 
                     
             }
@@ -534,10 +546,17 @@ public class EntryScreen {
                 JLabel codenameLabel = new JLabel(greenCodename);
                 codenameLabel.setForeground(Color.WHITE);
                 codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                codenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
                 playerPanel.add(codenameLabel);
 
-                       greenTeamPlayerPanel.add(playerPanel);
-                       greenTeamPlayerPanel.add(Box.createVerticalStrut(10));
+                JLabel scoreLabel = new JLabel("0");
+                scoreLabel.setForeground(Color.WHITE);
+                scoreLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                playerPanel.add(scoreLabel);
+                greenScoreLabels.put(greenCodename, scoreLabel);
+
+                greenTeamPlayerPanel.add(playerPanel);
+                greenTeamPlayerPanel.add(Box.createVerticalStrut(10));
                 
             
             }
@@ -761,34 +780,64 @@ public class EntryScreen {
     // }
 
 
-    public void updatePlayerPanel(JPanel Panel, String playerID, String team) {
+    public void updatePlayerPanel(JPanel Panel, String playerID, String team, Boolean isBaseHit) {
          // Iterate through the components of the team panel
         if(Panel == null){
             return;
         }
 
+        String shooterName = db.getUserNameByID(Integer.parseInt(playerID));
 
         for (Component component : Panel.getComponents()) {
             if (component instanceof JPanel) {
                 JPanel playerPanel = (JPanel) component;
+                Component[] playerComponents = playerPanel.getComponents();
+                if(playerComponents.length >= 2 && playerComponents[0] instanceof JLabel && playerComponents[1] instanceof JLabel){
+                    JLabel playerNameLabel = (JLabel) playerComponents[0];
+                    JLabel playerScoreLabel = (JLabel) playerComponents[1];
 
-                // Find the JLabel with the player's name
-                for (Component playerComponent : playerPanel.getComponents()) {
-                    if (playerComponent instanceof JLabel) {
-                        JLabel nameLabel = (JLabel) playerComponent;
-
-                        // Check if the label contains the player's ID
-                            if (!nameLabel.getText().contains("(B)")) {
-                                nameLabel.setText(nameLabel.getText() + " (B)");
-                                Panel.repaint();
-                            }
-                            return;
+                    
+                    // Check if the player's ID matches
+                    if (playerNameLabel.getText().contains(shooterName) && isBaseHit == false) {
+                        // Update the player's score
+                        int currentScore = Integer.parseInt(playerScoreLabel.getText());
+                        currentScore += 10;
+                        playerScoreLabel.setText(String.valueOf(currentScore));
+                        redScoreLabels.put(shooterName, playerScoreLabel);
+                    }
+                    else if (playerNameLabel.getText().equals(shooterName) && isBaseHit == true) {
+                        // Update the player's score
+                        if (!playerNameLabel.getText().contains("(B)")) {
+                            playerNameLabel.setText(playerNameLabel.getText() + " (B)");
+                        }
+                    }
+                    else{
+                        return;
                         
                     }
+                    Panel.revalidate();
+                    Panel.repaint();
+                    return;
                 }
+
+
+                // Find the JLabel with the player's name
+                // for (Component playerComponent : playerPanel.getComponents()) {
+                //     if (playerComponent instanceof JLabel) {
+                //         JLabel nameLabel = (JLabel) playerComponent;
+
+                //         // Check if the label contains the player's ID
+                //             if (!nameLabel.getText().contains("(B)")) {
+                //                 nameLabel.setText(nameLabel.getText() + " (B)");
+                //             }
+
+                //         Panel.revalidate();
+                //         Panel.repaint();  
+                //         return;
+                //     }
+                // }
             }
         }
-
     }
 
    

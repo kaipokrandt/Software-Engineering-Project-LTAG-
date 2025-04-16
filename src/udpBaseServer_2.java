@@ -172,6 +172,12 @@ public class udpBaseServer_2 {
 
                             System.out.println(shooterTag + " hit " + targetTag);
 
+                            if (entryScreen != null) {
+                                shooterTeam = db.getTeamByID(shooterID);
+                                JPanel shooterTeamPanel = "Red".equalsIgnoreCase(shooterTeam) ? entryScreen.redTeamPlayerPanel : entryScreen.greenTeamPlayerPanel;
+                                entryScreen.updatePlayerPanel(shooterTeamPanel, Integer.toString(shooterID), shooterTeam, false);
+                            }
+
                             String targetTeam = db.getTeamByID(targetID);
 
                             if (shooterTeam != null && targetTeam != null) {
@@ -247,10 +253,10 @@ public class udpBaseServer_2 {
 
             if (targOpCode == 43) {
                 System.out.println("Green base hit by Red player!");
-                teamPanel = entryScreen.greenTeamPlayerPanel; // Replace with entryScreen.greenTeamPlayerPanel if needed
+                teamPanel = entryScreen.redTeamPlayerPanel; // Replace with entryScreen.greenTeamPlayerPanel if needed
             } else if (targOpCode == 53) {
                 System.out.println("Red base hit by Green player!");
-                teamPanel = entryScreen.redTeamPlayerPanel;
+                teamPanel = entryScreen.greenTeamPlayerPanel;
             } else {
                 teamPanel = new JPanel(); // Default case to ensure teamPanel is initialized
             }
@@ -258,7 +264,7 @@ public class udpBaseServer_2 {
                 if (entryScreen == null) {
                     System.out.println("entryScreen is null!");
                 } else {
-                    entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterID), db.getTeamByID(shooterID));
+                    entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterID), db.getTeamByID(shooterID), true);
                 }
             });
         };
