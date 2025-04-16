@@ -30,6 +30,7 @@ public class udpBaseServer_2 {
     private int shooterID;
     private int team;
 
+    private ScheduledExecutorService scheduler;
     private Set<Integer> baseHitPlayerIDs = new HashSet<>();
 
     public udpBaseServer_2(database db, EntryScreen entryScreen) {
@@ -104,6 +105,9 @@ public class udpBaseServer_2 {
 
             case "221":
                 System.out.println("Game Ended!");
+                if (scheduler != null && !scheduler.isShutdown()) {
+                    scheduler.shutdown();
+                }
                 break;
 
             case "43": 
@@ -223,6 +227,10 @@ public class udpBaseServer_2 {
     }
 
     public void startScheduler() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
+        scheduler = Executors.newScheduledThreadPool(1);
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Runnable flashHigherScore = () -> {
             SwingUtilities.invokeLater(() -> {
@@ -237,35 +245,32 @@ public class udpBaseServer_2 {
         scheduler.scheduleAtFixedRate(flashHigherScore, 0, 350, TimeUnit.MILLISECONDS);
     }
 
-
     public void stylelizedBaseHitRepaint(int targOpCode, int shooterId) {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
+    
         Runnable stylizedBaseHit = () -> {
-
+    
+            // Get the shooter's team and target the correct team panel
+            String shooterTeam = db.getTeamByID(shooterId);
             final JPanel teamPanel;
-
-            if (targOpCode == 43) {
-                System.out.println("Green base hit by Red player!");
-                teamPanel = entryScreen.greenTeamPlayerPanel; // Replace with entryScreen.greenTeamPlayerPanel if needed
-            } else if (targOpCode == 53) {
-                System.out.println("Red base hit by Green player!");
+    
+            if ("red".equalsIgnoreCase(shooterTeam)) {
                 teamPanel = entryScreen.redTeamPlayerPanel;
             } else {
-                teamPanel = new JPanel(); // Default case to ensure teamPanel is initialized
+                teamPanel = entryScreen.greenTeamPlayerPanel;
             }
+    
+            // Now use the correct team panel
             SwingUtilities.invokeLater(() -> {
                 if (entryScreen == null) {
                     System.out.println("entryScreen is null!");
                 } else {
-                    entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterID), db.getTeamByID(shooterID));
+                    entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId), shooterTeam);
                 }
             });
         };
-
-        scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350,TimeUnit.MILLISECONDS);
-
-
+    
+        scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350, TimeUnit.MILLISECONDS);
     }
 }
 

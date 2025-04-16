@@ -37,7 +37,6 @@ public class EntryScreen {
     //creates two different 2d arrays to read data from both teams(red and blue)
     private JTextField[][] redTeamFields;
     private JTextField[][] greenTeamFields;
-
     private ArrayList<Integer> redTeamPlayerIds = new ArrayList<Integer>();
     private ArrayList<Integer> greenTeamPlayerIds = new ArrayList<Integer>();
     //implement database and udp client functionality to connnect
