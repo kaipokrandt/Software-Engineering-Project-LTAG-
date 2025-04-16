@@ -8,6 +8,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -497,45 +500,37 @@ public class EntryScreen {
                 String redCodename = redTeamCodeNames.get(i);
                 System.out.println("Red Codename: " + redCodename);
 
-
-                        JPanel playerPanel = new JPanel();
-                        playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
-                        playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                        playerPanel.setBackground(Color.BLACK);
-
+                JPanel playerPanel = new JPanel();
+                playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
+                playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                playerPanel.setBackground(Color.BLACK);
                     
-                       JLabel codenameLabel = new JLabel(redCodename);
-                       codenameLabel.setForeground(Color.WHITE);
-                       codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
-                       playerPanel.add(codenameLabel);
+                JLabel codenameLabel = new JLabel(redCodename);
+                codenameLabel.setForeground(Color.WHITE);
+                codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                playerPanel.add(codenameLabel);
 
-                       redTeamPanel.add(playerPanel);
-                       redTeamPanel.add(Box.createVerticalStrut(10));
-                    
+                redTeamPanel.add(playerPanel);
+                redTeamPanel.add(Box.createVerticalStrut(10));  
             }
 
             for (int i = 0; i < greenTeamCodeNames.size(); i++) {
-                
-
-
                 //green team players
                 String greenCodename = greenTeamCodeNames.get(i);
                 
-                        JPanel playerPanel = new JPanel();
-                        playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
-                        playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                        playerPanel.setBackground(Color.BLACK);
+                JPanel playerPanel = new JPanel();
+                playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
+                playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                playerPanel.setBackground(Color.BLACK);
 
-                    
-                       JLabel codenameLabel = new JLabel(greenCodename);
-                       codenameLabel.setForeground(Color.WHITE);
-                       codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
-                       playerPanel.add(codenameLabel);
-
-                       greenTeamPanel.add(playerPanel);
-                       greenTeamPanel.add(Box.createVerticalStrut(10));
                 
-            
+                JLabel codenameLabel = new JLabel(greenCodename);
+                codenameLabel.setForeground(Color.WHITE);
+                codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                playerPanel.add(codenameLabel);
+
+                greenTeamPanel.add(playerPanel);
+                greenTeamPanel.add(Box.createVerticalStrut(10));
             }
             
             // try {
