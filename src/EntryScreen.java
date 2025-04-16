@@ -791,7 +791,9 @@ public class EntryScreen {
         for (Component component : Panel.getComponents()) {
             if (component instanceof JPanel) {
                 JPanel playerPanel = (JPanel) component;
+
                 Component[] playerComponents = playerPanel.getComponents();
+
                 if(playerComponents.length >= 2 && playerComponents[0] instanceof JLabel && playerComponents[1] instanceof JLabel){
                     JLabel playerNameLabel = (JLabel) playerComponents[0];
                     JLabel playerScoreLabel = (JLabel) playerComponents[1];
@@ -804,21 +806,22 @@ public class EntryScreen {
                         currentScore += 10;
                         playerScoreLabel.setText(String.valueOf(currentScore));
                         redScoreLabels.put(shooterName, playerScoreLabel);
+                        Panel.revalidate();
+                        Panel.repaint();
+                        return;
+
                     }
                     else if (playerNameLabel.getText().equals(shooterName) && isBaseHit == true) {
                         // Update the player's score
                         if (!playerNameLabel.getText().contains("(B)")) {
                             playerNameLabel.setText(playerNameLabel.getText() + " (B)");
                         }
-                    }
-                    else{
+                        Panel.revalidate();
+                        Panel.repaint();
                         return;
-                        
                     }
-                    Panel.revalidate();
-                    Panel.repaint();
-                    return;
                 }
+                
 
 
                 // Find the JLabel with the player's name
