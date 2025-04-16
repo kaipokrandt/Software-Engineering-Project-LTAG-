@@ -438,7 +438,7 @@ public class EntryScreen {
             countdownWindow.setVisible(true);
     
             final Thread[] musicThread = new Thread[1];
-            for (int i = 3; i > -1; i--) {
+            for (int i = 30; i > -1; i--) {
                 countdownLabel.setText(String.valueOf(i));
                 try {
                     if (i == 16) {
@@ -664,7 +664,32 @@ public class EntryScreen {
                 if (musicThread[0] != null && musicThread[0].isAlive()) {
                     music_player.stopPlayback();
                 }
-    
+                // Determine winner
+                String winningTeam, losingTeam;
+                int winningScore, losingScore;
+
+                if (redScore > greenScore) {
+                    winningTeam = "Red";
+                    winningScore = redScore;
+                    losingTeam = "Green";
+                    losingScore = greenScore;
+                } else if (greenScore > redScore) {
+                    winningTeam = "Green";
+                    winningScore = greenScore;
+                    losingTeam = "Red";
+                    losingScore = redScore;
+                } else {
+                    winningTeam = "It's a Tie!";
+                    winningScore = redScore; // same as greenScore
+                    losingTeam = "";
+                    losingScore = greenScore;
+                }
+
+                // Show results window
+                SwingUtilities.invokeLater(() -> {
+                    ResultWindow results = new ResultWindow(winningTeam, winningScore, losingTeam, losingScore);
+                    results.setVisible(true);
+                });
                 playerWindow.dispose();
             }).start();
     
@@ -729,7 +754,7 @@ public class EntryScreen {
                     String lowerMsg = message.toLowerCase();
         
                     // Update score based on team and event
-                    if (lowerMsg.contains("GREEN") && lowerMsg.contains("hit")) {
+                    if (lowerMsg.contains("red") && lowerMsg.contains("hit")) {
                         redScore += lowerMsg.contains("base") ? 10 : 1;
                         redScoreLabel.setText("Red Score: " + redScore);
                         styleToUse = lowerMsg.contains("base") ? baseHitStyle : hitStyle;
