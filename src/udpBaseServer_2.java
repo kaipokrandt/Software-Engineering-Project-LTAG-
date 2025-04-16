@@ -3,7 +3,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,42 +26,34 @@ public class udpBaseServer_2 {
     private EntryScreen entryScreen = new EntryScreen(null, null);
     private database db;
 
+    private Set<Integer> baseHitPlayerIDs = new HashSet<>();
+
     public udpBaseServer_2(database db, EntryScreen entryScreen) {
         this.db = db;
         fetchPlayersFromDatabase();
         this.entryScreen = entryScreen;
-        if(entryScreen != null) {
+        if (entryScreen != null) {
             startScheduler();
         }
-        
     }
 
     public void setEntryScreen(EntryScreen entryScreen) {
         this.entryScreen = entryScreen;
-
-        
     }
-    
 
     public void createSocket() {
         try (DatagramSocket socket = new DatagramSocket(PORT)) {
             System.out.println("UDP Server started... Listening on port " + PORT);
 
             while (true) {
-                // Step 2: Create a DatagramPacket to receive incoming data
                 DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
-
-                // Step 3: Receive the data
                 socket.receive(receivedPacket);
 
-                // Step 4: Convert received bytes into a string
                 String receivedMessage = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
-
-                // Print the received data
                 System.out.println("Received: " + receivedMessage);
+
                 processMessage(receivedMessage);
 
-                // Step 6: Exit the server if "bye" is received
                 if (receivedMessage.equalsIgnoreCase("bye")) {
                     System.out.println("Client sent 'bye'... Server shutting down.");
                     break;
@@ -103,23 +97,20 @@ public class udpBaseServer_2 {
                 System.out.println("Game Started!");
                 startScheduler();
                 break;
-    
+
             case "221":
                 System.out.println("Game Ended!");
                 break;
-    
-            case "43":
-                System.out.println("Green base scored! +100 points for Red Team.");
-                redScore += 100;
-                updateScores();
+
+            case "43": 
+                // These should only be processed with shooter ID context
+                System.out.println("Invalid format for base hit (missing shooter ID)");
                 break;
-    
             case "53":
-                System.out.println("Red base scored! +100 points for Green Team.");
-                greenScore += 100;
-                updateScores();
+                // These should only be processed with shooter ID context
+                System.out.println("Invalid format for base hit (missing shooter ID)");
                 break;
-    
+
             default:
                 if (message.contains(":")) {
                     String[] parts = message.split(":");
@@ -127,64 +118,76 @@ public class udpBaseServer_2 {
                         try {
                             int shooterID = Integer.parseInt(parts[0]);
                             int targetOrCode = Integer.parseInt(parts[1]);
-    
-                            String shooterName = db.getUserNameByID(shooterID);
-                            String shooterTag = "Player (" + shooterID + ":" + (shooterName != null ? shooterName : "Unknown") + ")";
-    
+
+                            String shooterTeam = db.getTeamByID(shooterID);
+
                             if (targetOrCode == 43) {
-                                // Red player hit the Green base
-                                System.out.println(shooterTag + " hit the Green base! +100 Red");
-                                redScore += 100;
-                                if (entryScreen != null) {
-                                    entryScreen.appendPlayAction(shooterTag + " hit the Green base! (BASE)");
+                                // Green base hit
+                                if ("Red".equalsIgnoreCase(shooterTeam)) {
+                                    baseHitPlayerIDs.add(shooterID);
+                                    String shooterTag = getTaggedPlayer(shooterID);
+                                    System.out.println(shooterTag + " hit the Green base! +100 Red");
+                                    redScore += 100;
+                                    if (entryScreen != null) {
+                                        entryScreen.appendPlayAction(shooterTag + " hit the Green base! (BASE)");
+                                    }
+                                    updateScores();
+                                } else {
+                                    System.out.println("Ignored: " + shooterID + " attempted to hit their own base (Green)");
                                 }
-                                updateScores();
                                 return;
-    
                             } else if (targetOrCode == 53) {
-                                // Green player hit the Red base
-                                System.out.println(shooterTag + " hit the Red base! +100 Green");
-                                greenScore += 100;
-                                if (entryScreen != null) {
-                                    entryScreen.appendPlayAction(shooterTag + " hit the Red base! (BASE)");
+                                // Red base hit
+                                if ("Green".equalsIgnoreCase(shooterTeam)) {
+                                    baseHitPlayerIDs.add(shooterID);
+                                    String shooterTag = getTaggedPlayer(shooterID);
+                                    System.out.println(shooterTag + " hit the Red base! +100 Green");
+                                    greenScore += 100;
+                                    if (entryScreen != null) {
+                                        entryScreen.appendPlayAction(shooterTag + " hit the Red base! (BASE)");
+                                    }
+                                    updateScores();
+                                } else {
+                                    System.out.println("Ignored: " + shooterID + " attempted to hit their own base (Red)");
                                 }
-                                updateScores();
                                 return;
                             }
-    
+
+                            // Standard player vs player hit
                             int targetID = targetOrCode;
-                            String targetName = db.getUserNameByID(targetID);
-                            String targetTag = "Player (" + targetID + ":" + (targetName != null ? targetName : "Unknown") + ")";
-    
+                            String shooterTag = getTaggedPlayer(shooterID);
+                            String targetTag = getTaggedPlayer(targetID);
+
                             System.out.println(shooterTag + " hit " + targetTag);
-    
-                            String shooterTeam = db.getTeamByID(shooterID);
+
                             String targetTeam = db.getTeamByID(targetID);
-    
+
                             if (shooterTeam != null && targetTeam != null) {
                                 if (shooterTeam.equals(targetTeam)) {
-                                    if (shooterTeam.equals("Red")) {
+                                    // Friendly fire
+                                    if (shooterTeam.equalsIgnoreCase("Red")) {
                                         redScore -= 10;
-                                    } else if (shooterTeam.equals("Green")) {
+                                    } else {
                                         greenScore -= 10;
                                     }
                                     System.out.println(shooterTag + " hit their own teammate " + targetTag);
                                 } else {
-                                    if (shooterTeam.equals("Red")) {
+                                    // Enemy hit
+                                    if (shooterTeam.equalsIgnoreCase("Red")) {
                                         redScore += 10;
-                                    } else if (shooterTeam.equals("Green")) {
+                                    } else {
                                         greenScore += 10;
                                     }
                                     System.out.println(shooterTag + " hit an enemy " + targetTag);
                                 }
-    
+
                                 if (entryScreen != null) {
                                     entryScreen.appendPlayAction(shooterTag + " hit " + targetTag);
                                 }
-    
+
                                 updateScores();
                             }
-    
+
                         } catch (NumberFormatException e) {
                             System.out.println("Invalid player ID format: " + message);
                         }
@@ -201,15 +204,16 @@ public class udpBaseServer_2 {
         }
     }
 
-    
-
-    
+    private String getTaggedPlayer(int playerID) {
+        String name = db.getUserNameByID(playerID);
+        boolean isBaseShooter = baseHitPlayerIDs.contains(playerID);
+        return "Player (" + playerID + ":" + (name != null ? name : "Unknown") + (isBaseShooter ? " B" : "") + ")";
+    }
 
     public void startScheduler() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Runnable flashHigherScore = () -> {
             SwingUtilities.invokeLater(() -> {
-
                 if (entryScreen == null) {
                     System.out.println("entryScreen is null!");
                 } else {
@@ -219,8 +223,4 @@ public class udpBaseServer_2 {
         };
         scheduler.scheduleAtFixedRate(flashHigherScore, 0, 350, TimeUnit.MILLISECONDS);
     }
-
-
-
-    
 }

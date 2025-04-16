@@ -641,7 +641,7 @@ public class EntryScreen {
     
             // Start game timer
             new Thread(() -> {
-                int totalSeconds = 20;
+                int totalSeconds = 360;
     
                 for (int i = totalSeconds; i >= 0; i--) {
                     int minutes = i / 60;
