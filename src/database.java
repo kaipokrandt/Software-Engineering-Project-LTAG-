@@ -28,7 +28,6 @@ public class database {
 
             statement.executeUpdate(sqlColumn_isPlaying);
             
-            statement.executeUpdate(sqlConstraint);
             statement.executeUpdate(sqlColumn);
             statement.executeUpdate(sqlColumnTeam);
             statement.executeUpdate(sqlColumn_isPlaying);
