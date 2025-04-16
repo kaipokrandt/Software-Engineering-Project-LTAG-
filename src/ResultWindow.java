@@ -3,60 +3,62 @@ import java.awt.*;
 
 public class ResultWindow extends JFrame {
 
-    public ResultWindow(String winningTeam, int winningScore, String losingTeam, int losingScore) {
+    public ResultWindow(int redScore, int greenScore) {
         setTitle("Game Results");
         setSize(400, 250);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        getContentPane().setBackground(Color.BLACK);
         setLayout(new BorderLayout());
 
-        Color winningColor = Color.WHITE;
-        Color losingColor = Color.WHITE;
+        String winningTeam, losingTeam;
+        int winningScore, losingScore;
+        Color winningColor, losingColor;
 
-        if (winningTeam.equalsIgnoreCase("Red")) {
+        if (redScore > greenScore) {
+            winningTeam = "Red";
+            winningScore = redScore;
+            losingTeam = "Green";
+            losingScore = greenScore;
             winningColor = Color.RED;
             losingColor = Color.GREEN;
-        } else if (winningTeam.equalsIgnoreCase("Green")) {
+        } else if (greenScore > redScore) {
+            winningTeam = "Green";
+            winningScore = greenScore;
+            losingTeam = "Red";
+            losingScore = redScore;
             winningColor = Color.GREEN;
             losingColor = Color.RED;
-        }
-
-        JLabel titleLabel;
-        JLabel winnerLabel = new JLabel();
-        JLabel loserLabel = new JLabel();
-
-        if (losingTeam.equals("")) {
-            // It's a tie
-            titleLabel = new JLabel("It's a Tie!", SwingConstants.CENTER);
-            titleLabel.setForeground(Color.YELLOW);
-            winnerLabel.setText("Both Teams Score: " + winningScore);
-            winnerLabel.setForeground(Color.WHITE);
-            loserLabel.setText(""); // No losing team
         } else {
-            titleLabel = new JLabel(winningTeam + " Team Wins!", SwingConstants.CENTER);
-            titleLabel.setForeground(winningColor);
-            winnerLabel.setText(winningTeam + " Score: " + winningScore);
-            winnerLabel.setForeground(winningColor);
-            loserLabel.setText(losingTeam + " Score: " + losingScore);
-            loserLabel.setForeground(losingColor);
+            winningTeam = "It's a tie!";
+            winningScore = redScore;
+            losingTeam = "";
+            losingScore = greenScore;
+            winningColor = Color.GRAY;
+            losingColor = Color.GRAY;
         }
 
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        winnerLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-        loserLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        JLabel resultLabel = new JLabel();
+        resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        resultLabel.setVerticalAlignment(SwingConstants.CENTER);
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
-        JPanel textPanel = new JPanel();
-        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-        textPanel.setBackground(Color.BLACK);
-        textPanel.add(titleLabel);
-        textPanel.add(Box.createVerticalStrut(20));
-        textPanel.add(winnerLabel);
-        if (!losingTeam.equals("")) {
-            textPanel.add(Box.createVerticalStrut(10));
-            textPanel.add(loserLabel);
+        if (winningTeam.equals("It's a tie!")) {
+            resultLabel.setText("<html><center><b>It's a Tie!</b><br/>"
+                    + "Red Score: " + redScore + "<br/>"
+                    + "Green Score: " + greenScore + "</center></html>");
+            resultLabel.setForeground(Color.GRAY);
+        } else {
+            resultLabel.setText("<html><center><b><span style='color:" + toHex(winningColor) + "'>"
+                    + winningTeam + " Team Wins!</span></b><br/>"
+                    + "<span style='color:" + toHex(winningColor) + "'>" + winningTeam + " Score: " + winningScore + "</span><br/>"
+                    + "<span style='color:" + toHex(losingColor) + "'>" + losingTeam + " Score: " + losingScore + "</span></center></html>");
         }
 
-        add(textPanel, BorderLayout.CENTER);
+        add(resultLabel, BorderLayout.CENTER);
+    }
+
+    private String toHex(Color color) {
+        return String.format("#%02x%02x%02x",
+                color.getRed(), color.getGreen(), color.getBlue());
     }
 }

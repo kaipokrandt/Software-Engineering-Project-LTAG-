@@ -27,6 +27,8 @@ public class EntryScreen {
     private Style baseHitStyle;
     private int redScore = 0;
     private int greenScore = 0;
+    public int redScoreTotal = 0;
+    public int greenScoreTotal = 0;
     //creates two different 2d arrays to read data from both teams(red and blue)
     private JTextField[][] redTeamFields;
     private JTextField[][] greenTeamFields;
@@ -639,7 +641,7 @@ public class EntryScreen {
     
             // Start game timer
             new Thread(() -> {
-                int totalSeconds = 360;
+                int totalSeconds = 20;
     
                 for (int i = totalSeconds; i >= 0; i--) {
                     int minutes = i / 60;
@@ -664,32 +666,10 @@ public class EntryScreen {
                 if (musicThread[0] != null && musicThread[0].isAlive()) {
                     music_player.stopPlayback();
                 }
-                // Determine winner
-                String winningTeam, losingTeam;
-                int winningScore, losingScore;
-
-                if (redScore > greenScore) {
-                    winningTeam = "Red";
-                    winningScore = redScore;
-                    losingTeam = "Green";
-                    losingScore = greenScore;
-                } else if (greenScore > redScore) {
-                    winningTeam = "Green";
-                    winningScore = greenScore;
-                    losingTeam = "Red";
-                    losingScore = redScore;
-                } else {
-                    winningTeam = "It's a Tie!";
-                    winningScore = redScore; // same as greenScore
-                    losingTeam = "";
-                    losingScore = greenScore;
-                }
-
-                // Show results window
-                SwingUtilities.invokeLater(() -> {
-                    ResultWindow results = new ResultWindow(winningTeam, winningScore, losingTeam, losingScore);
-                    results.setVisible(true);
-                });
+                
+                new ResultWindow(getRedScoreTotal(), getGreenScoreTotal()).setVisible(true);
+                redScoreTotal = 0;
+                greenScoreTotal = 0;
                 playerWindow.dispose();
             }).start();
     
@@ -700,6 +680,8 @@ public class EntryScreen {
         public void updateScores(int redScore, int greenScore) {
             // Update the score labels
             SwingUtilities.invokeLater(() -> {
+                redScoreTotal =+ redScore;
+                greenScoreTotal =+ greenScore;
                 redScoreLabel.setText("Red Score: " + redScore);
                 greenScoreLabel.setText("Green Score: " + greenScore);
             });
@@ -773,6 +755,14 @@ public class EntryScreen {
                 }
             });
         }
+    
+    public int getRedScoreTotal() {
+        return redScoreTotal;
+    }
+
+    public int getGreenScoreTotal() {
+        return greenScoreTotal;
+    }
     
     public void gameParameters() {
         // Implement game parameters functionality - might do later
