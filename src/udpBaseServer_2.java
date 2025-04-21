@@ -47,7 +47,8 @@ public class udpBaseServer_2 {
     }
 
     public void createSocket() {
-        try (DatagramSocket socket = new DatagramSocket(PORT)) {
+        try {
+            DatagramSocket socket = new DatagramSocket(PORT);
             System.out.println("UDP Server started... Listening on port " + PORT);
 
             while (true) {
@@ -73,8 +74,14 @@ public class udpBaseServer_2 {
                 socket.send(replyPacket);
             }
 
+            socket.close();
+
+        } catch (BindException e) {
+            System.err.println("ERROR: Port " + PORT + " is already in use. Please close any running instances and try again.");
+            System.exit(1); // Exit gracefully
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("IOException in UDP server: " + e.getMessage());
+            System.exit(1);
         }
     }
 
