@@ -42,6 +42,7 @@ public class EntryScreen {
     //implement database and udp client functionality to connnect
     public database db = new database();
     private udpBaseClient_2 udpClient;
+    private udpBaseServer_2 udpServer;
 
 
 
@@ -51,9 +52,13 @@ public class EntryScreen {
      * @param udpClient 
      */
 
-    public EntryScreen(database db, udpBaseClient_2 udpClient){
+    public EntryScreen(database db, udpBaseClient_2 udpClient) {
         this.db = db;
         this.udpClient = udpClient;
+    }
+
+    public void setUdpServer(udpBaseServer_2 udpServer) {
+        this.udpServer = udpServer;
     }
 
 
@@ -444,7 +449,7 @@ public class EntryScreen {
             countdownWindow.setVisible(true);
     
             final Thread[] musicThread = new Thread[1];
-            for (int i = 30; i > -1; i--) {
+            for (int i = 3; i > -1; i--) {
                 countdownLabel.setText(String.valueOf(i));
                 try {
                     if (i == 16) {
@@ -463,7 +468,8 @@ public class EntryScreen {
             }
             countdownWindow.setVisible(false);
             countdownWindow.dispose();
-            udpClient.sendEquipmentID(202);
+            //udpClient.sendEquipmentID(202);
+            udpServer.sendCode("202");
     
             // Set up player window
             JFrame playerWindow = new JFrame("Entered Players");
@@ -633,7 +639,7 @@ public class EntryScreen {
     
                 SwingUtilities.invokeLater(() -> timerLabel.setText("Game Over!"));
                 for(int i = 0; i < 3; i++){
-                    udpClient.sendEquipmentID(221);
+                    udpServer.sendCode("221");
                 }
                 System.out.println("Stop Traffic!");
                 System.out.println("Game Has Ended!");

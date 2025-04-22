@@ -36,6 +36,7 @@ public class main {
             e.printStackTrace();
         }
 
+        entryScreen.setUdpServer(udpServer);
         // Show the GUI
         entryScreen.createAndShowGUI();
     }

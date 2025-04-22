@@ -9,7 +9,7 @@ public class music_player {
     public music_player() {}
 
     public static File select_random_track() {
-        String tracks_dir_path = "wav_files/";
+        String tracks_dir_path = "../wav_files/";
         File tracks_dir = new File(tracks_dir_path);
         File[] tracks = tracks_dir.listFiles();
 
