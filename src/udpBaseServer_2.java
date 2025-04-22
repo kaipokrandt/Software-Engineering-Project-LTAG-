@@ -232,7 +232,13 @@ public class udpBaseServer_2 {
 
                             System.out.println(shooterTag + " hit " + targetTag);
 
-                            String targetTeam = entryScreen.getTeamByID(targetID);
+                            if (entryScreen != null) {
+                                shooterTeam = db.getTeamByID(shooterID);
+                                JPanel shooterTeamPanel = "Red".equalsIgnoreCase(shooterTeam) ? entryScreen.redTeamPlayerPanel : entryScreen.greenTeamPlayerPanel;
+                                entryScreen.updatePlayerPanel(shooterTeamPanel, Integer.toString(shooterID), shooterTeam, false);
+                            }
+
+                            String targetTeam = db.getTeamByID(targetID);
 
                             if (shooterTeam != null && targetTeam != null) {
                                 if (shooterTeam.equals(targetTeam)) {
@@ -305,63 +311,35 @@ public class udpBaseServer_2 {
 
     public void stylelizedBaseHitRepaint(int targOpCode, int shooterId) {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-        // Get the shooter's team and target the correct team panel
-        String shooterTeam = entryScreen.getTeamByID(shooterId);
-
-        System.out.println("Shooter Team: " + shooterTeam);
-        final JPanel teamPanel;
-
-        if ("red".equalsIgnoreCase(shooterTeam)) {
-            teamPanel = entryScreen.redTeamPlayerPanel;
-        } else {
-            teamPanel = entryScreen.greenTeamPlayerPanel;
-        }
-
-        if (entryScreen == null) {
-            System.out.println("entryScreen is null!");
-        } else {
-            System.out.println("Updating player panel for shooter ID: " + shooterId);
-            entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId));
-        }
     
-        //Runnable stylizedBaseHit = () -> {
+        Runnable stylizedBaseHit = () -> {
     
-            // // Get the shooter's team and target the correct team panel
-            // String shooterTeam = entryScreen.getTeamByID(shooterId);
+            // Get the shooter's team and target the correct team panel
+            String shooterTeam = db.getTeamByID(shooterId);
+            final JPanel teamPanel;
 
-            // System.out.println("Shooter Team: " + shooterTeam);
-            // final JPanel teamPanel;
-    
-            // if ("red".equalsIgnoreCase(shooterTeam)) {
-            //     teamPanel = entryScreen.redTeamPlayerPanel;
-            // } else {
-            //     teamPanel = entryScreen.greenTeamPlayerPanel;
-            // }
-
-            // if (entryScreen == null) {
-            //     System.out.println("entryScreen is null!");
-            // } else {
-            //     System.out.println("Updating player panel for shooter ID: " + shooterId);
-            //     entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId));
-            // }
-
-
+            if (targOpCode == 43) {
+                System.out.println("Green base hit by Red player!");
+                teamPanel = entryScreen.redTeamPlayerPanel; // Replace with entryScreen.greenTeamPlayerPanel if needed
+            } else if (targOpCode == 53) {
+                System.out.println("Red base hit by Green player!");
+                teamPanel = entryScreen.greenTeamPlayerPanel;
+            } else {
+                teamPanel = entryScreen.greenTeamPlayerPanel;
+            }
     
             // Now use the correct team panel
-        //     SwingUtilities.invokeLater(() -> {
-        //         if (entryScreen == null) {
-        //             System.out.println("entryScreen is null!");
-        //         } else {
-        //             System.out.println("Updating player panel for shooter ID: " + shooterId);
-        //             entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId));
-        //         }
-        //     });
-        // };
+            SwingUtilities.invokeLater(() -> {
+                if (entryScreen == null) {
+                    System.out.println("entryScreen is null!");
+                } else {
+                    entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterID), db.getTeamByID(shooterID), true);
+                }
+            });
+        };
     
-       // scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350, TimeUnit.MILLISECONDS);
-    //}
-}
+        scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350, TimeUnit.MILLISECONDS);
+    }
 }
 
     
