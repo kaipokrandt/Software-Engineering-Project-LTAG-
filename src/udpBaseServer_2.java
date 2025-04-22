@@ -1,6 +1,8 @@
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,13 +11,14 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
+import java.net.BindException;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class udpBaseServer_2 {
 
     private static final int PORT = 7500;
+    private static final int RECEIVE_PORT = 7501; // Default broadcast port
     private final byte[] buffer = new byte[256];
 
     private int redScore = 0;
@@ -30,6 +33,7 @@ public class udpBaseServer_2 {
     private int shooterID;
     private int team;
 
+    private ScheduledExecutorService scheduler;
     private Set<Integer> baseHitPlayerIDs = new HashSet<>();
 
     public udpBaseServer_2(database db, EntryScreen entryScreen) {
@@ -46,34 +50,53 @@ public class udpBaseServer_2 {
     }
 
     public void createSocket() {
-        try (DatagramSocket socket = new DatagramSocket(PORT)) {
-            System.out.println("UDP Server started... Listening on port " + PORT);
-
+        DatagramSocket receiveSocket = null;
+        DatagramSocket sendSocket = null;
+    
+        try {
+            // Create a socket to receive messages on RECEIVE_PORT
+            receiveSocket = new DatagramSocket(RECEIVE_PORT);
+            System.out.println("UDP Server started... Listening on port " + RECEIVE_PORT);
+    
+            // Create a socket to send messages on PORT
+            sendSocket = new DatagramSocket();
+    
             while (true) {
+                // Receive a packet
                 DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
-                socket.receive(receivedPacket);
-
+                receiveSocket.receive(receivedPacket);
+    
                 String receivedMessage = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
                 System.out.println("Received: " + receivedMessage);
-
+    
+                // Process the received message
                 processMessage(receivedMessage);
-
+    
                 if (receivedMessage.equalsIgnoreCase("bye")) {
                     System.out.println("Client sent 'bye'... Server shutting down.");
                     break;
                 }
-
+    
+                // Send acknowledgment back to the sender on PORT
                 String reply = "ACK";
                 byte[] replyBytes = reply.getBytes();
                 DatagramPacket replyPacket = new DatagramPacket(
                         replyBytes, replyBytes.length,
-                        receivedPacket.getAddress(), receivedPacket.getPort()
+                        receivedPacket.getAddress(), PORT // Send to the normal PORT
                 );
-                socket.send(replyPacket);
+                sendSocket.send(replyPacket);
             }
-
+        } catch (BindException e) {
+            System.err.println("ERROR: Port " + RECEIVE_PORT + " is already in use. Please close any running instances and try again.");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("IOException in UDP server: " + e.getMessage());
+        } finally {
+            if (receiveSocket != null && !receiveSocket.isClosed()) {
+                receiveSocket.close();
+            }
+            if (sendSocket != null && !sendSocket.isClosed()) {
+                sendSocket.close();
+            }
         }
     }
 
@@ -94,16 +117,62 @@ public class udpBaseServer_2 {
             e.printStackTrace();
         }
     }
+    private void broadcastMessage(String message) {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            byte[] messageBytes = message.getBytes();
+            DatagramPacket packet = new DatagramPacket(
+                messageBytes, messageBytes.length, 
+                InetAddress.getByName("127.0.0.1"), 7500 // Address and port of the traffic generator
+            );
+            socket.send(packet);
+            System.out.println("Broadcasted: " + message);
+        } catch (IOException e) {
+            System.err.println("Error broadcasting message: " + e.getMessage());
+        }
+    }   
+
+    public void sendCode(String code) {
+        try {
+            // Create a DatagramSocket
+            DatagramSocket socket = new DatagramSocket();
+
+            // Prepare the data to send
+            String message = code;
+            byte[] buffer = message.getBytes();
+
+            // Specify the target address and port
+            InetAddress address = InetAddress.getByName("127.0.0.1");
+            int port = 7500;
+
+            // Create a DatagramPacket to send the data
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
+
+            // Send the packet
+            socket.send(packet);
+
+            System.out.println("Message sent: " + message);
+
+            // Close the socket
+            socket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 
     private void processMessage(String message) {
         switch (message) {
             case "202":
                 System.out.println("Game Started!");
                 startScheduler();
+                broadcastMessage("202");
                 break;
 
             case "221":
                 System.out.println("Game Ended!");
+                if (scheduler != null && !scheduler.isShutdown()) {
+                    scheduler.shutdown();
+                }
                 break;
 
             case "43": 
@@ -229,6 +298,10 @@ public class udpBaseServer_2 {
     }
 
     public void startScheduler() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
+        scheduler = Executors.newScheduledThreadPool(1);
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Runnable flashHigherScore = () -> {
             SwingUtilities.invokeLater(() -> {
@@ -243,12 +316,13 @@ public class udpBaseServer_2 {
         scheduler.scheduleAtFixedRate(flashHigherScore, 0, 350, TimeUnit.MILLISECONDS);
     }
 
-
     public void stylelizedBaseHitRepaint(int targOpCode, int shooterId) {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
+    
         Runnable stylizedBaseHit = () -> {
-
+    
+            // Get the shooter's team and target the correct team panel
+            String shooterTeam = db.getTeamByID(shooterId);
             final JPanel teamPanel;
 
             if (targOpCode == 43) {
@@ -258,8 +332,10 @@ public class udpBaseServer_2 {
                 System.out.println("Red base hit by Green player!");
                 teamPanel = entryScreen.greenTeamPlayerPanel;
             } else {
-                teamPanel = new JPanel(); // Default case to ensure teamPanel is initialized
+                teamPanel = entryScreen.greenTeamPlayerPanel;
             }
+    
+            // Now use the correct team panel
             SwingUtilities.invokeLater(() -> {
                 if (entryScreen == null) {
                     System.out.println("entryScreen is null!");
@@ -268,10 +344,8 @@ public class udpBaseServer_2 {
                 }
             });
         };
-
-        scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350,TimeUnit.MILLISECONDS);
-
-
+    
+        scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350, TimeUnit.MILLISECONDS);
     }
 }
 

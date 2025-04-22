@@ -33,14 +33,29 @@ Run the following in your linux terminal
 
 sudo apt-get update
 
+**REQUIRED**
 sudo apt-get install libpq-dev
 
 pip install psycopg2
-
+**REQUIRED**
 
 Then, 
 
 TO RUN:
+
+***PRIMARY METHOD***
+**************************************************************************************************
+1) Open Terminal
+2) Navigate to the project directory
+3) Run the run.bash file (command for linux: "./run.bash")
+**************************************************************************************************
+
+***ALTERNATE METHOD 1***
+**************************************************************************************************
+1) Open Terminal
+2) Navigate to the src project directory (similar to /home/student/Documents/././src/)
+3) Run the run.bash file (command for linux: "./run.bash")
+**************************************************************************************************
 **************************************************************************************************
 1) Open Terminal
 2) **Navigate to the src project directory (similar to /home/student/Documents/././src/)**
