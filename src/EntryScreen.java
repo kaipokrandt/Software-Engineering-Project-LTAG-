@@ -790,8 +790,10 @@ public class EntryScreen {
 
         String shooterName = db.getUserNameByID(Integer.parseInt(playerID));
 
+        System.out.println("Shooter Name:" + shooterName);
+
         for (Component component : Panel.getComponents()) {
-            System.out.println("Panel: " + Panel.getComponentCount());
+            //System.out.println("Panel: " + Panel.getComponentCount());
 
             if (component instanceof JPanel) {
                 JPanel playerPanel = (JPanel) component;
