@@ -154,31 +154,23 @@ public class EntryScreen {
 
     //create bottom buttons with keybind functionality through helper
     public JPanel createBottomPanel() {
-        JPanel bottomPanel = new JPanel(new GridLayout(1, 9, 5, 5));
+        JPanel bottomPanel = new JPanel(new GridLayout(1, 5, 5, 5));
         bottomPanel.setBackground(Color.BLACK);
     
         // Add buttons and descriptions using the helper method.
-        bottomPanel.add(createButton("Edit Game (F1)", KeyEvent.VK_F1, e -> editGame()));
-        bottomPanel.add(createButton("Game Params (F2)", KeyEvent.VK_F2, e -> gameParameters()));
-        bottomPanel.add(createButton("View Game (F3)", KeyEvent.VK_F3, e -> viewGame()));
-        bottomPanel.add(createButton("PreEnt. Games (F4)", KeyEvent.VK_F4, e -> preEnteredGames()));
         bottomPanel.add(createButton("Start Game (F5)", KeyEvent.VK_F5, e -> startGame()));
-        bottomPanel.add(createButton("Flick Sync (F6)", KeyEvent.VK_F6, e -> flickSync()));
         bottomPanel.add(createButton("Change IP (F7)", KeyEvent.VK_F7, e -> changeIPAddress()));
         bottomPanel.add(createButton("Clear Game (F12)", KeyEvent.VK_F8, e -> clearGame()));
         bottomPanel.add(createButton("Submit (F8)", KeyEvent.VK_F12, e -> savePlayersToDatabase()));
+        bottomPanel.add(createButton("Find User (Enter)", KeyEvent.VK_ENTER, e -> findUsernameOffID()));
         
         // keybind remapping
         // Bind the function keys to the panel
-        bindKeyToAction(bottomPanel, KeyEvent.VK_F1, "editGame", this::editGame);
-        bindKeyToAction(bottomPanel, KeyEvent.VK_F2, "gameParams", this::gameParameters);
-        bindKeyToAction(bottomPanel, KeyEvent.VK_F3, "viewGame", this::viewGame);
-        bindKeyToAction(bottomPanel, KeyEvent.VK_F4, "preEnteredGames", this::preEnteredGames);
         bindKeyToAction(bottomPanel, KeyEvent.VK_F5, "startGame", this::startGame);
-        bindKeyToAction(bottomPanel, KeyEvent.VK_F6, "flickSync", this::flickSync);
         bindKeyToAction(bottomPanel, KeyEvent.VK_F7, "changeIPAddress", this::changeIPAddress);
         bindKeyToAction(bottomPanel, KeyEvent.VK_F12, "clearGame", this::clearGame);
         bindKeyToAction(bottomPanel, KeyEvent.VK_F8, "submitPlayers", this::savePlayersToDatabase);
+        bindKeyToAction(bottomPanel, KeyEvent.VK_ENTER, "findUserName", this::findUsernameOffID);
         
         return bottomPanel;
     }
@@ -262,8 +254,10 @@ public class EntryScreen {
                 
                 // Add the red team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Red");
-                db.setIsPlaying_True(playerID);
-                redTeamPlayerIds.add(playerID);
+                if(!redTeamPlayerIds.contains(playerID)){
+                    redTeamPlayerIds.add(playerID);
+                }
+
                 redTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at red team entry " + (i + 1));
@@ -305,8 +299,10 @@ public class EntryScreen {
                 
                 // Add the green team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Green");
-                db.setIsPlaying_True(playerID);
-                greenTeamPlayerIds.add(playerID);
+                if(!greenTeamPlayerIds.contains(playerID)){
+                    greenTeamPlayerIds.add(playerID);
+                }
+
                 greenTeamHasPlayer = true;
             } catch (NumberFormatException ex) {
                 System.err.println("Invalid input for player ID at green team entry " + (i + 1));
@@ -323,6 +319,24 @@ public class EntryScreen {
         
         // Retrieve updated entries from the database (if desired)
         db.retreiveEntries();
+    }
+
+    private void findUsernameOffID() {
+        for (int i = 0; i < 15; i++) {
+            String redPlayerID = redTeamFields[i][0].getText().trim();
+            if (!redPlayerID.isEmpty()) {
+                String playerName = db.getUserNameByID(Integer.parseInt(redPlayerID));
+                redTeamFields[i][1].setText(playerName);
+            }
+        }
+        for (int i = 0; i < 15; i++) {
+            String greenPlayerID = greenTeamFields[i][0].getText().trim();
+            if (!greenPlayerID.isEmpty()) {
+                String playerName = db.getUserNameByID(Integer.parseInt(greenPlayerID));
+                greenTeamFields[i][1].setText(playerName);
+            }
+        }
+       
     }
 
     private void changeIPAddress() {
@@ -407,20 +421,6 @@ public class EntryScreen {
         }
     }
 
-    public void flickSync() {
-        // Implement flick sync functionality
-        System.out.println("Flick Sync functionality triggered!");
-    }
-
-    public void viewGame() {
-        // Implement view game functionality
-        System.out.println("View Game functionality triggered!");
-    }
-
-    public void preEnteredGames() {
-        // Implement pre-entered games functionality
-        System.out.println("Pre-Entered Games functionality triggered!");
-    }
 
     public void startGame() {
         new Thread(() -> {
@@ -472,16 +472,17 @@ public class EntryScreen {
             udpServer.sendCode("202");
     
             // Set up player window
-            JFrame playerWindow = new JFrame("Entered Players");
+            JFrame playerWindow = new JFrame("Player Action");
             playerWindow.setLayout(new BorderLayout());
     
             playerWindow.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    db.setIsPlaying_False();
                     udpClient.sendEquipmentID(221);
                     if (musicThread[0] != null && musicThread[0].isAlive()) {
                         music_player.stopPlayback();
                     }
+                    redTeamPlayerIds.clear();
+                    greenTeamPlayerIds.clear();
                     playerWindow.dispose();
                 }
             });
@@ -505,7 +506,6 @@ public class EntryScreen {
             for (int i = 0; i < redTeamPlayerIds.size(); i++) {
                 //red team players
                 String redCodename = db.getUserNameByID(redTeamPlayerIds.get(i));
-                System.out.println("Red Codename: " + redCodename);
 
                 JPanel playerPanel = new JPanel();
                 playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS));
@@ -517,8 +517,11 @@ public class EntryScreen {
                 codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
                 playerPanel.add(codenameLabel);
 
-                       redTeamPlayerPanel.add(playerPanel);
-                       redTeamPlayerPanel.add(Box.createVerticalStrut(10));
+                redTeamPlayerPanel.add(playerPanel);
+                redTeamPlayerPanel.add(Box.createVerticalStrut(10));
+
+                redTeamPlayerPanel.revalidate();
+                redTeamPlayerPanel.repaint();
 
                     
             }
@@ -643,7 +646,8 @@ public class EntryScreen {
                 }
                 System.out.println("Stop Traffic!");
                 System.out.println("Game Has Ended!");
-                db.setIsPlaying_False();
+
+
     
                 if (musicThread[0] != null && musicThread[0].isAlive()) {
                     music_player.stopPlayback();
@@ -653,9 +657,15 @@ public class EntryScreen {
                 redScoreTotal = 0;
                 greenScoreTotal = 0;
                 playerWindow.dispose();
+                System.out.println("Clearing Player Entries");
+                redTeamPlayerIds.clear();
+                greenTeamPlayerIds.clear();
             }).start();
-    
+            
+
+
         }).start();
+
     }
 
     // Method for updating Scores on Base Server
@@ -745,78 +755,75 @@ public class EntryScreen {
         return greenScoreTotal;
     }
 
+    public String getTeamByID(int playerID) {
+        if(redTeamPlayerIds.contains(playerID)) {
+            return "Red";
+        } else if(greenTeamPlayerIds.contains(playerID)) {
+            return "Green";
+        } else {
+            return "Unknown";
+        }
+    }
 
 
-    // public void markPlayerWithBaseHit(int playerID, String team) {
-    //     // Implement base hit functionality
-    //     System.out.println("Base Hit functionality triggered for Player ID: " + playerID);
-
-    //     String playerIDString = String.valueOf(playerID);
-
-    //     if (team.equalsIgnoreCase("Red")) {
-    //         for (int i = 0; i < redTeamFields.length; i++) {
-    //             if (redTeamFields[i][0].getText().equals(playerIDString)) {
-    //                 if (!redTeamFields[i][1].getText().contains("(B)")) {
-    //                     redTeamPlayerIds.add(redTeamPlayerIds.get(i) + " (B)");
-    //                 }
-    //             }
-    //         }
-    //     } else if (team.equalsIgnoreCase("Green")) {
-    //         for (int i = 0; i < greenTeamFields.length; i++) {
-    //             if (greenTeamFields[i][0].getText().equals(playerIDString)) {
-    //                 if (!greenTeamFields[i][1].getText().contains("(B)")) {
-    //                     greenTeamPlayerIds.add(greenTeamPlayerIds.get(i) + " (B)");
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-
-    public void updatePlayerPanel(JPanel Panel, String playerID, String team) {
+    public void updatePlayerPanel(JPanel Panel, String playerID) {
         // Return early if the panel is null
         if (Panel == null) {
             return;
         }
+        // Check if the playerID is numeri
+        String playerName = db.getUserNameByID(Integer.parseInt(playerID));
+        if (playerName == null) {
+            System.out.println("Player not found in database.");
+            return;
+        }
+
+        System.out.println("Player Name: " + playerName);
     
         // Iterate through the components of the team panel
+        
         for (Component component : Panel.getComponents()) {
+            System.out.println("Panel: " + Panel.getComponentCount());
+
             if (component instanceof JPanel) {
                 JPanel playerPanel = (JPanel) component;
-    
+
+                System.out.println("Player Panel Component Count: " + playerPanel.getComponentCount());
                 // Find the JLabel with the player's name
                 for (Component playerComponent : playerPanel.getComponents()) {
-                    if (playerComponent instanceof JLabel) {
+                    if (component instanceof JLabel) {
                         JLabel nameLabel = (JLabel) playerComponent;
     
                         String labelText = nameLabel.getText();
-                        if (!labelText.contains("(B)")) {
-                            // If label doesn't already use HTML, wrap it
-                            if (!labelText.startsWith("<html>")) {
-                                labelText = "<html>" + labelText;
+
+                        System.out.println("Label Text: " + labelText);
+                        if(playerName.equals(labelText)){
+                            System.out.println("Player and lable text are the same ") ;
+                            if (!labelText.contains("(B)")) {
+                                // If label doesn't already use HTML, wrap it
+                                if (!labelText.startsWith("<html>")) {
+                                    labelText = "<html>" + labelText;
+                                }
+        
+                                // Append the stylized (B) using red bold HTML span
+                                labelText += " <span style='color:red; font-weight:bold;'>(B)</span></html>";
+                                nameLabel.setText(labelText);
+                                Panel.repaint();
+                                return;
                             }
-    
-                            // Append the stylized (B) using red bold HTML span
-                            labelText += " <span style='color:red; font-weight:bold;'>(B)</span></html>";
-                            nameLabel.setText(labelText);
-                            Panel.repaint();
                         }
-                        return;
+                        else{
+                            System.out.println("Player and lable text are not the same ") ;
+                        }
+
+                    }
+                    else{
+                        System.out.println("Component is not a JLabel");
                     }
                 }
             }
         }
-    }
 
-   
-    
-    public void gameParameters() {
-        // Implement game parameters functionality - might do later
-        System.out.println("Game Parameters functionality triggered!");
-    }
-
-    public void editGame() {
-        // Implement edit game functionality
-        System.out.println("Edit Game functionality triggered!");
+        return;
     }
 }

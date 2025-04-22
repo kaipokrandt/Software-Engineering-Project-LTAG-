@@ -26,11 +26,11 @@ public class database {
         try (Connection connection = DriverManager.getConnection(url, user, password);
             Statement statement = connection.createStatement()) {
 
-            statement.executeUpdate(sqlColumn_isPlaying);
+            //statement.executeUpdate(sqlColumn_isPlaying);
             
-            statement.executeUpdate(sqlColumn);
-            statement.executeUpdate(sqlColumnTeam);
-            statement.executeUpdate(sqlColumn_isPlaying);
+            //statement.executeUpdate(sqlColumn);
+            //statement.executeUpdate(sqlColumnTeam);
+            //statement.executeUpdate(sqlColumn_isPlaying);
             //System.out.println("Connected to the PostgreSQL database successfully!");
             return connection;
 
@@ -96,8 +96,7 @@ public class database {
         String sqlColumnTeam = "ALTER TABLE players ADD COLUMN IF NOT EXISTS team VARCHAR(255);";
         String sqlColumn = "ALTER TABLE players ADD COLUMN IF NOT EXISTS hardwareId INT;"; 
         Boolean isPlaying = true;
-        String sql = "INSERT INTO players(id, codename, hardwareId, team, isPlaying) VALUES('" + ID + "','" + playerName + "', '" + hardwareId + "', '" + team + "', '" + isPlaying + "') ON CONFLICT (id) DO UPDATE SET " + 
-        "team = EXCLUDED.team, hardwareId = EXCLUDED.hardwareID;";
+        String sql = "INSERT INTO players(id, codename) VALUES('" + ID + "','" + playerName +"') ON CONFLICT (id) DO NOTHING ";
         //String sql = "INSERT OR REpINTO players(id, codename) VALUES('" + ID + "','" + playerName + "');";
 
         // Establish the connection
@@ -107,8 +106,8 @@ public class database {
             System.out.println("Connected to the PostgreSQL database successfully!");
 
             // Execute a query
-            statement.executeUpdate(sqlColumnTeam);
-            statement.executeUpdate(sqlColumn);
+            //statement.executeUpdate(sqlColumnTeam);
+            //statement.executeUpdate(sqlColumn);
             statement.executeUpdate(sql);
             System.out.println("Player added successfully!");
 

@@ -38,7 +38,7 @@ public class udpBaseServer_2 {
 
     public udpBaseServer_2(database db, EntryScreen entryScreen) {
         this.db = db;
-        fetchPlayersFromDatabase();
+        //fetchPlayersFromDatabase();
         this.entryScreen = entryScreen;
         if (entryScreen != null) {
             startScheduler();
@@ -60,6 +60,8 @@ public class udpBaseServer_2 {
     
             // Create a socket to send messages on PORT
             sendSocket = new DatagramSocket();
+
+
     
             while (true) {
                 // Receive a packet
@@ -70,15 +72,10 @@ public class udpBaseServer_2 {
                 System.out.println("Received: " + receivedMessage);
     
                 // Process the received message
-                processMessage(receivedMessage);
-    
-                if (receivedMessage.equalsIgnoreCase("bye")) {
-                    System.out.println("Client sent 'bye'... Server shutting down.");
-                    break;
-                }
-    
+                String reply = processMessage(receivedMessage);
+
                 // Send acknowledgment back to the sender on PORT
-                String reply = "ACK";
+                //String reply = "ACK";
                 byte[] replyBytes = reply.getBytes();
                 DatagramPacket replyPacket = new DatagramPacket(
                         replyBytes, replyBytes.length,
@@ -100,36 +97,23 @@ public class udpBaseServer_2 {
         }
     }
 
-    private void fetchPlayersFromDatabase() {
-        try {
-            ResultSet rs = db.retreiveEntries();
-            while (rs.next()) {
-                String team = rs.getString("team");
-                String playerID = rs.getString("id");
+    // private void fetchPlayersFromDatabase() {
+    //     try {
+    //         ResultSet rs = db.retreiveEntries();
+    //         while (rs.next()) {
+    //             String team = rs.getString("team");
+    //             String playerID = rs.getString("id");
 
-                if ("Red".equalsIgnoreCase(team)) {
-                    redPlayers.add(playerID);
-                } else if ("Green".equalsIgnoreCase(team)) {
-                    greenPlayers.add(playerID);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    private void broadcastMessage(String message) {
-        try (DatagramSocket socket = new DatagramSocket()) {
-            byte[] messageBytes = message.getBytes();
-            DatagramPacket packet = new DatagramPacket(
-                messageBytes, messageBytes.length, 
-                InetAddress.getByName("127.0.0.1"), 7500 // Address and port of the traffic generator
-            );
-            socket.send(packet);
-            System.out.println("Broadcasted: " + message);
-        } catch (IOException e) {
-            System.err.println("Error broadcasting message: " + e.getMessage());
-        }
-    }   
+    //             if ("Red".equalsIgnoreCase(team)) {
+    //                 redPlayers.add(playerID);
+    //             } else if ("Green".equalsIgnoreCase(team)) {
+    //                 greenPlayers.add(playerID);
+    //             }
+    //         }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
     public void sendCode(String code) {
         try {
@@ -160,12 +144,13 @@ public class udpBaseServer_2 {
     }
     
 
-    private void processMessage(String message) {
+    private String processMessage(String message) {
+
+        String target_ID = null;
         switch (message) {
             case "202":
                 System.out.println("Game Started!");
                 startScheduler();
-                broadcastMessage("202");
                 break;
 
             case "221":
@@ -192,7 +177,12 @@ public class udpBaseServer_2 {
                             shooterID = Integer.parseInt(parts[0]);
                             int targetOrCode = Integer.parseInt(parts[1]);
 
-                            String shooterTeam = db.getTeamByID(shooterID);
+                            System.out.println("Shooter ID: " + shooterID);
+                            System.out.println("Target or Code: " + targetOrCode);
+
+                            String shooterTeam = entryScreen.getTeamByID(shooterID);
+
+                            //TODO: Shooter ID is different from Player ID. Shooter ID is the hardware id sent by the traffic generator. 
 
                             if (targetOrCode == 43) {
                                 // Green base hit
@@ -212,7 +202,7 @@ public class udpBaseServer_2 {
                                 } else {
                                     System.out.println("Ignored: " + shooterID + " attempted to hit their own base (Green)");
                                 }
-                                return;
+                                return Integer.toString(shooterID);
                             } else if (targetOrCode == 53) {
                                 // Red base hit
                                 if ("Green".equalsIgnoreCase(shooterTeam)) {
@@ -231,17 +221,18 @@ public class udpBaseServer_2 {
                                 } else {
                                     System.out.println("Ignored: " + shooterID + " attempted to hit their own base (Red)");
                                 }
-                                return;
+                                return Integer.toString(shooterID);
                             }
 
                             // Standard player vs player hit
                             int targetID = targetOrCode;
+                            target_ID = Integer.toString(targetID);
                             String shooterTag = getTaggedPlayer(shooterID);
                             String targetTag = getTaggedPlayer(targetID);
 
                             System.out.println(shooterTag + " hit " + targetTag);
 
-                            String targetTeam = db.getTeamByID(targetID);
+                            String targetTeam = entryScreen.getTeamByID(targetID);
 
                             if (shooterTeam != null && targetTeam != null) {
                                 if (shooterTeam.equals(targetTeam)) {
@@ -277,6 +268,8 @@ public class udpBaseServer_2 {
                     System.out.println("Unknown command received: " + message);
                 }
         }
+        return target_ID;
+        
     }
 
     private void updateScores() {
@@ -312,31 +305,63 @@ public class udpBaseServer_2 {
 
     public void stylelizedBaseHitRepaint(int targOpCode, int shooterId) {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        // Get the shooter's team and target the correct team panel
+        String shooterTeam = entryScreen.getTeamByID(shooterId);
+
+        System.out.println("Shooter Team: " + shooterTeam);
+        final JPanel teamPanel;
+
+        if ("red".equalsIgnoreCase(shooterTeam)) {
+            teamPanel = entryScreen.redTeamPlayerPanel;
+        } else {
+            teamPanel = entryScreen.greenTeamPlayerPanel;
+        }
+
+        if (entryScreen == null) {
+            System.out.println("entryScreen is null!");
+        } else {
+            System.out.println("Updating player panel for shooter ID: " + shooterId);
+            entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId));
+        }
     
-        Runnable stylizedBaseHit = () -> {
+        //Runnable stylizedBaseHit = () -> {
     
-            // Get the shooter's team and target the correct team panel
-            String shooterTeam = db.getTeamByID(shooterId);
-            final JPanel teamPanel;
+            // // Get the shooter's team and target the correct team panel
+            // String shooterTeam = entryScreen.getTeamByID(shooterId);
+
+            // System.out.println("Shooter Team: " + shooterTeam);
+            // final JPanel teamPanel;
     
-            if ("red".equalsIgnoreCase(shooterTeam)) {
-                teamPanel = entryScreen.redTeamPlayerPanel;
-            } else {
-                teamPanel = entryScreen.greenTeamPlayerPanel;
-            }
+            // if ("red".equalsIgnoreCase(shooterTeam)) {
+            //     teamPanel = entryScreen.redTeamPlayerPanel;
+            // } else {
+            //     teamPanel = entryScreen.greenTeamPlayerPanel;
+            // }
+
+            // if (entryScreen == null) {
+            //     System.out.println("entryScreen is null!");
+            // } else {
+            //     System.out.println("Updating player panel for shooter ID: " + shooterId);
+            //     entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId));
+            // }
+
+
     
             // Now use the correct team panel
-            SwingUtilities.invokeLater(() -> {
-                if (entryScreen == null) {
-                    System.out.println("entryScreen is null!");
-                } else {
-                    entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId), shooterTeam);
-                }
-            });
-        };
+        //     SwingUtilities.invokeLater(() -> {
+        //         if (entryScreen == null) {
+        //             System.out.println("entryScreen is null!");
+        //         } else {
+        //             System.out.println("Updating player panel for shooter ID: " + shooterId);
+        //             entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId));
+        //         }
+        //     });
+        // };
     
-        scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350, TimeUnit.MILLISECONDS);
-    }
+       // scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350, TimeUnit.MILLISECONDS);
+    //}
+}
 }
 
     
