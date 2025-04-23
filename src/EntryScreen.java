@@ -693,12 +693,6 @@ public class EntryScreen {
             timerLabel.setForeground(Color.WHITE);
             timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     
-            // Play action pane
-            
-    
-            // Define styles
-
-    
             JScrollPane actionScroll = new JScrollPane(playActionPane);
             actionScroll.setPreferredSize(new Dimension(400, 150));
             actionScroll.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
@@ -737,7 +731,7 @@ public class EntryScreen {
     
             // Start game timer
             new Thread(() -> {
-                int totalSeconds = 30;
+                int totalSeconds = 360;
     
                 for (int i = totalSeconds; i >= 0; i--) {
                     int minutes = i / 60;
