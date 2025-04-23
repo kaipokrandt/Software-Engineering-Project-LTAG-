@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -431,7 +432,9 @@ public class EntryScreen {
             countdownWindow.setLayout(new BorderLayout());
             countdownWindow.getContentPane().setBackground(Color.BLACK);
     
-            JLabel countdownLabel = new JLabel("3", SwingConstants.CENTER);
+            
+
+            JLabel countdownLabel = new JLabel("",SwingConstants.CENTER);
             countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
             countdownLabel.setForeground(Color.WHITE);
     
@@ -446,13 +449,42 @@ public class EntryScreen {
             int width = (int) (screenSize.width * 0.8);
             int height = (int) (screenSize.height * 0.8);
     
+            Image backgroundImage = new ImageIcon("../countdown_images/background.png").getImage();
+            Image scaledBackground = backgroundImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            JLabel backgroundImageLabel = new JLabel(new ImageIcon(scaledBackground));
+            backgroundImageLabel.setLayout(new BorderLayout());
+            
+            backgroundImageLabel.add(countdownLabel, SwingConstants.CENTER);
+
             countdownWindow.setSize(width, height);
             countdownWindow.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2);
+            countdownWindow.setContentPane(backgroundImageLabel);
             countdownWindow.setVisible(true);
     
             final Thread[] musicThread = new Thread[1];
-            for (int i = 3; i > -1; i--) {
-                countdownLabel.setText(String.valueOf(i));
+            for (int i = 30; i > -1; i--) {
+                final int index = i;
+                //countdownLabel.setText(String.valueOf(i));
+                SwingUtilities.invokeLater(() -> {
+                
+                String imagepath = "../countdown_images/" + index + ".png";
+
+                File imageFile = new File(imagepath);
+                if (!imageFile.exists()) {
+                    System.out.println("Image not found: " + imagepath);
+                } else {
+                    System.out.println("Image loaded: " + imagepath);
+                }
+                
+                ImageIcon icon = new ImageIcon(imagepath);
+                Image image = icon.getImage();
+                countdownLabel.setIcon(new ImageIcon(image));
+            
+
+                countdownLabel.revalidate();
+                countdownLabel.repaint();
+            });
+
                 try {
                     if (i == 16) {
                         musicThread[0] = new Thread(() -> {
@@ -468,6 +500,8 @@ public class EntryScreen {
                     e.printStackTrace();
                 }
             }
+
+
             countdownWindow.setVisible(false);
             countdownWindow.dispose();
             //udpClient.sendEquipmentID(202);
