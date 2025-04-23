@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.text.Document;
 import javax.swing.text.Style;
@@ -719,7 +720,7 @@ public class EntryScreen {
     
             // Start game timer
             new Thread(() -> {
-                int totalSeconds = 360;
+                int totalSeconds = 30;
     
                 for (int i = totalSeconds; i >= 0; i--) {
                     int minutes = i / 60;
@@ -746,7 +747,7 @@ public class EntryScreen {
                     music_player.stopPlayback();
                 }
                 
-                new ResultWindow(getRedScoreTotal(), getGreenScoreTotal()).setVisible(true);
+                new ResultWindow(getRedScoreTotal(), getGreenScoreTotal(), getPlayerScores(redScoreLabels), getPlayerScores(greenScoreLabels)).setVisible(true);
                 redScoreTotal = 0;
                 greenScoreTotal = 0;
                 playerWindow.dispose();
@@ -980,6 +981,11 @@ public class EntryScreen {
 
         return -1;
 
+    }
+
+    private Map<String, Integer> getPlayerScores(Map<String, JLabel> scoreLabels) {
+        return scoreLabels.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> Integer.parseInt(e.getValue().getText())));
     }
 
 }
