@@ -330,6 +330,15 @@ public class EntryScreen {
             String redPlayerID = redTeamFields[i][0].getText().trim();
             if (!redPlayerID.isEmpty()) {
                 String playerName = db.getUserNameByID(Integer.parseInt(redPlayerID));
+                if (playerName == null || playerName.isEmpty()) {
+                    // Inform the user that no username is associated with the ID
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "No username found for ID: " + redPlayerID + " - Please enter a UserName in the provided field inside the EntryScreen before submitting.",
+                        "Username Not Found",
+                        JOptionPane.WARNING_MESSAGE
+                    );
+                }
                 redTeamFields[i][1].setText(playerName);
             }
         }
@@ -337,10 +346,18 @@ public class EntryScreen {
             String greenPlayerID = greenTeamFields[i][0].getText().trim();
             if (!greenPlayerID.isEmpty()) {
                 String playerName = db.getUserNameByID(Integer.parseInt(greenPlayerID));
+                if (playerName == null || playerName.isEmpty()) {
+                    // Inform the user that no username is associated with the ID
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "No username found for ID: " + greenPlayerID + " - Please enter a UserName in the provided field inside the EntryScreen before submitting.",
+                        "Username Not Found",
+                        JOptionPane.WARNING_MESSAGE
+                    );
+                }
                 greenTeamFields[i][1].setText(playerName);
             }
         }
-       
     }
 
     private void changeIPAddress() {
