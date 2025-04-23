@@ -47,7 +47,7 @@ public class EntryScreen {
     private udpBaseClient_2 udpClient;
     private udpBaseServer_2 udpServer;
 
-
+    //store for comparisons
     Map<String, JLabel> redScoreLabels = new HashMap<>();
     Map<String, JLabel> greenScoreLabels = new HashMap<>();
 
@@ -72,7 +72,18 @@ public class EntryScreen {
         JFrame frame = new JFrame("Entry Terminal");
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        // Add a WindowListener to handle the window closing event
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Perform any cleanup or save operations here
+                udpServer.sendCode("221");
+                udpServer.sendCode("221");
+                udpServer.sendCode("221");
+                System.out.println("Closing Entry Screen");
+                System.exit(0);
+            }
+        });
         // Get screen size dynamically
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = (int) (screenSize.width * 0.8);  // 80% of screen width
@@ -264,6 +275,7 @@ public class EntryScreen {
                             "Duplicate User ID detected: " + playerID + ". Please enter a unique User ID.",
                             "Duplicate User ID", JOptionPane.ERROR_MESSAGE);
                     redTeamFields[i][0].setText(""); // Clear the duplicate user ID
+                    redTeamFields[i][1].setText(""); // Clear the duplicate player name
                     continue;
                 }
                 // Check for duplicate hardware IDs
@@ -324,6 +336,7 @@ public class EntryScreen {
                             "Duplicate User ID detected: " + playerID + ". Please enter a unique User ID.",
                             "Duplicate User ID", JOptionPane.ERROR_MESSAGE);
                     greenTeamFields[i][0].setText(""); // Clear the duplicate user ID
+                    greenTeamFields[i][1].setText(""); // Clear the duplicate player name
                     continue;
                 }
                 // Check for duplicate hardware IDs
@@ -489,8 +502,6 @@ public class EntryScreen {
             JWindow countdownWindow = new JWindow();
             countdownWindow.setLayout(new BorderLayout());
             countdownWindow.getContentPane().setBackground(Color.BLACK);
-    
-            
 
             JLabel countdownLabel = new JLabel("",SwingConstants.CENTER);
             countdownLabel.setFont(new Font("Arial", Font.BOLD, 100));
@@ -559,19 +570,18 @@ public class EntryScreen {
                 }
             }
 
-
             countdownWindow.setVisible(false);
             countdownWindow.dispose();
-            //udpClient.sendEquipmentID(202);
 
-    
             // Set up player window
             JFrame playerWindow = new JFrame("Player Action");
             playerWindow.setLayout(new BorderLayout());
     
             playerWindow.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    udpClient.sendEquipmentID(221);
+                    udpServer.sendCode("221");
+                    udpServer.sendCode("221");
+                    udpServer.sendCode("221");
                     if (musicThread[0] != null && musicThread[0].isAlive()) {
                         music_player.stopPlayback();
                     }
@@ -600,8 +610,6 @@ public class EntryScreen {
             StyleConstants.setForeground(baseHitStyle, Color.CYAN);
             StyleConstants.setFontSize(baseHitStyle, 16);
             StyleConstants.setBold(baseHitStyle, true);
-
-
     
             // Team panels
             redTeamPlayerPanel = new JPanel();
@@ -633,8 +641,6 @@ public class EntryScreen {
                 codenameLabel.setFont(new Font("Arial", Font.BOLD, 12));
                 codenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
                 playerPanel.add(codenameLabel);
-
-
                 //playerPanel.add(Box.createHorizontalStrut(10));
 
                 JLabel scoreLabel = new JLabel("0");
@@ -645,14 +651,9 @@ public class EntryScreen {
 
                 redTeamPlayerPanel.add(playerPanel);
                 redTeamPlayerPanel.add(Box.createVerticalStrut(10));
-
-                    
             }
 
             for (int i = 0; i < greenTeamPlayerIds.size(); i++) {
-                
-
-
                 //green team players
                 String greenCodename = db.getUserNameByID(greenTeamPlayerIds.get(i));
                 
@@ -676,11 +677,8 @@ public class EntryScreen {
 
                 greenTeamPlayerPanel.add(playerPanel);
                 greenTeamPlayerPanel.add(Box.createVerticalStrut(10));
-                
-            
             }
             
-           
             // Live score labels
             redScore = 0;
             greenScore = 0;
@@ -732,7 +730,7 @@ public class EntryScreen {
             playerWindow.setLocationRelativeTo(null);
             playerWindow.setVisible(true);
 
-
+            //START GAME CODE
             udpServer.sendCode("202");
     
             // Start game timer
@@ -750,20 +748,20 @@ public class EntryScreen {
                         e.printStackTrace();
                     }
                 }
-    
+                
+                //SEND GAME END CODE
                 SwingUtilities.invokeLater(() -> timerLabel.setText("Game Over!"));
                 for(int i = 0; i < 3; i++){
                     udpServer.sendCode("221");
                 }
                 System.out.println("Stop Traffic!");
                 System.out.println("Game Has Ended!");
-
-
     
                 if (musicThread[0] != null && musicThread[0].isAlive()) {
                     music_player.stopPlayback();
                 }
                 
+                //RESULT SCREEN
                 new ResultWindow(getRedScoreTotal(), getGreenScoreTotal(), getPlayerScores(redScoreLabels), getPlayerScores(greenScoreLabels)).setVisible(true);
                 redScoreTotal = 0;
                 greenScoreTotal = 0;
@@ -772,11 +770,7 @@ public class EntryScreen {
                 redTeamPlayerIds.clear();
                 greenTeamPlayerIds.clear();
             }).start();
-            
-
-
         }).start();
-
     }
 
     // Method for updating Scores on Base Server
@@ -802,11 +796,9 @@ public class EntryScreen {
             if(redScoreLabel.getForeground() == Color.RED){
                 redScoreLabel.setForeground(Color.WHITE);
             }
-
             else{
                 redScoreLabel.setForeground(Color.RED);
             }
-
         }
         else if(greenScore > redScore) {
             if(greenScoreLabel.getForeground() == Color.GREEN){
@@ -821,14 +813,12 @@ public class EntryScreen {
                 redScoreLabel.setForeground(Color.RED);
                 greenScoreLabel.setForeground(Color.GREEN);
             }
-
         }
     }
     
     public void appendPlayAction(String message) {
         SwingUtilities.invokeLater(() -> {
             try {
-
                 if (doc == null || playActionPane == null) {
                     System.out.println("Error: doc or playActionPane is null.");
                     return;
@@ -876,7 +866,6 @@ public class EntryScreen {
         }
     }
 
-
     public void updatePlayerPanel(JPanel Panel, String playerID, String team, Boolean isBaseHit, Boolean isFriendlyFire) {
          // Iterate through the components of the team panel
         if(Panel == null){
@@ -884,7 +873,6 @@ public class EntryScreen {
         }
 
         String shooterName = db.getUserNameByID(Integer.parseInt(playerID));
-
         System.out.println("Shooter Name:" + shooterName);
 
         for (Component component : Panel.getComponents()) {
@@ -899,7 +887,6 @@ public class EntryScreen {
                     JLabel playerNameLabel = (JLabel) playerComponents[0];
                     JLabel playerScoreLabel = (JLabel) playerComponents[1];
                 
-                    
                     if (playerNameLabel.getText().equals(shooterName)) {
                         int currentScore = Integer.parseInt(playerScoreLabel.getText());
                         if (isFriendlyFire) {
@@ -918,8 +905,6 @@ public class EntryScreen {
                                 parentPanel.add(baseHitLabel);
                                 parentPanel.revalidate();
                                 parentPanel.repaint();
-
-
                             }
                             currentScore += 100; // Add 100 for a base hit
                         } else {
@@ -932,11 +917,9 @@ public class EntryScreen {
                         } else if (team.equalsIgnoreCase("green")) {
                             greenScoreLabels.put(shooterName, playerScoreLabel);
                         }
-                        
                         Panel.revalidate();
                         Panel.repaint();
                         return;
-
                     }
                     else if (playerNameLabel.getText().equals(shooterName) && isBaseHit == true) {
                         // Update the player's score
@@ -968,21 +951,17 @@ public class EntryScreen {
                         return;
                     }
                 }
-                
             }
         }
     }
 
     public int getPlayerIdByHardwareId(int hardwareId){
-
         for (int i = 0; i < 15; i++) {
             String hardwareIdText = redTeamFields[i][2].getText().trim();
 
             if (hardwareIdText.equals("")) {
                 break;
             }
-
-            System.out.println("Hardware ID Text: " + hardwareIdText);
 
             if(hardwareId == Integer.parseInt(hardwareIdText)){
                 String playerIDText = redTeamFields[i][0].getText().trim();
@@ -1009,5 +988,4 @@ public class EntryScreen {
         return scoreLabels.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> Integer.parseInt(e.getValue().getText())));
     }
-
 }
