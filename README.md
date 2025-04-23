@@ -56,15 +56,14 @@ TO RUN:
 2) Navigate to the src project directory (similar to /home/student/Documents/././src/)
 3) Run the run.bash file (command for linux: "./run.bash")
 **************************************************************************************************
-**************************************************************************************************
-1) Open Terminal
-2) **Navigate to the src project directory (similar to /home/student/Documents/././src/)**
-3) Enter "javac *.java" to create class files for all java files.
-4) **Now, navigate to the parent directory of /src/ (this contains run_me.py and the readme.txt)**
-5) Run run_me.py by entering "python3 run_me.py"
-6) Done!
-**************************************************************************************************
 
+**HOW TO USE**
+1) Enter USERID (ex. 1)
+2) press ENTER to find username
+3) if no username associated with ID, asks you to enter new username
+4) enter HARDWAREID based on HARDWAREID entered into python generator
+5) SUBMIT button to add players 1 by 1 down array to SQL database
+6) STARTGAME button to begin the game
 
 ----------------------------------------------------------------
 Team Members ///////////////////////////////////////////////////
