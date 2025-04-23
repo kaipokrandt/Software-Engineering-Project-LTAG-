@@ -10,6 +10,7 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -222,7 +223,8 @@ public class EntryScreen {
         // Flags to ensure at least one valid entry exists for each team
         boolean redTeamHasPlayer = false;
         boolean greenTeamHasPlayer = false;
-        
+        HashSet<Integer> hardwareIDs = new HashSet<>();
+        HashSet<Integer> userIDs = new HashSet<>();
         // Process red team entries
         for (int i = 0; i < 15; i++) {
             try {
@@ -256,6 +258,22 @@ public class EntryScreen {
                 int playerID = Integer.parseInt(idText);
                 int hardwareId = hardwareIdText.isEmpty() ? 0 : Integer.parseInt(hardwareIdText);
                 
+                // Check for duplicate user IDs across both teams
+                if (!userIDs.add(playerID)) {
+                    JOptionPane.showMessageDialog(null,
+                            "Duplicate User ID detected: " + playerID + ". Please enter a unique User ID.",
+                            "Duplicate User ID", JOptionPane.ERROR_MESSAGE);
+                    redTeamFields[i][0].setText(""); // Clear the duplicate user ID
+                    continue;
+                }
+                // Check for duplicate hardware IDs
+                if (hardwareId != 0 && !hardwareIDs.add(hardwareId)) {
+                    JOptionPane.showMessageDialog(null,
+                        "Duplicate Hardware ID detected: " + hardwareId + ". Please enter a unique Hardware ID.",
+                        "Duplicate Hardware ID", JOptionPane.ERROR_MESSAGE);
+                    redTeamFields[i][2].setText(""); // Clear the duplicate hardware ID
+                    continue;
+                }
                 // Add the red team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Red");
                 if(!redTeamPlayerIds.contains(playerID)){
@@ -300,7 +318,23 @@ public class EntryScreen {
                 
                 int playerID = Integer.parseInt(idText);
                 int hardwareId = hardwareIdText.isEmpty() ? 0 : Integer.parseInt(hardwareIdText);
-                
+                // Check for duplicate user IDs across both teams
+                if (!userIDs.add(playerID)) {
+                    JOptionPane.showMessageDialog(null,
+                            "Duplicate User ID detected: " + playerID + ". Please enter a unique User ID.",
+                            "Duplicate User ID", JOptionPane.ERROR_MESSAGE);
+                    greenTeamFields[i][0].setText(""); // Clear the duplicate user ID
+                    continue;
+                }
+                // Check for duplicate hardware IDs
+                if (hardwareId != 0 && !hardwareIDs.add(hardwareId)) {
+                    JOptionPane.showMessageDialog(null,
+                        "Duplicate Hardware ID detected: " + hardwareId + ". Please enter a unique Hardware ID.",
+                        "Duplicate Hardware ID", JOptionPane.ERROR_MESSAGE);
+                    greenTeamFields[i][2].setText(""); // Clear the duplicate hardware ID
+                    continue;
+                }
+
                 // Add the green team player to the database
                 db.addplayer(playerName, playerID, hardwareId, "Green");
                 if(!greenTeamPlayerIds.contains(playerID)){
