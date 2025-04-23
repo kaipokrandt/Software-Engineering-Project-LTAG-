@@ -426,6 +426,40 @@ public class EntryScreen {
 
 
     public void startGame() {
+        // Check if hardwareID is present at all
+        boolean hardwareIDPresent = false;
+
+        for (int i = 0; i < 15; i++) {
+            String redHardwareIdText = redTeamFields[i][2].getText().trim();
+            if (!redHardwareIdText.isEmpty()) {
+                hardwareIDPresent = true;
+                break;
+            }
+        }
+
+        if (!hardwareIDPresent) {
+            for (int i = 0; i < 15; i++) {
+                String greenHardwareIdText = greenTeamFields[i][2].getText().trim();
+                if (!greenHardwareIdText.isEmpty()) {
+                    hardwareIDPresent = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hardwareIDPresent) {
+            JOptionPane.showMessageDialog(
+                null,
+                "No hardware ID found for either team.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // Proceed with starting the game
+        // ... existing game logic ...
+
         new Thread(() -> {
             // Countdown window
             JWindow countdownWindow = new JWindow();
@@ -825,7 +859,7 @@ public class EntryScreen {
     }
 
 
-    public void updatePlayerPanel(JPanel Panel, String playerID, String team, Boolean isBaseHit) {
+    public void updatePlayerPanel(JPanel Panel, String playerID, String team, Boolean isBaseHit, Boolean isFriendlyFire) {
          // Iterate through the components of the team panel
         if(Panel == null){
             return;
@@ -846,20 +880,39 @@ public class EntryScreen {
                 if(playerComponents.length >= 2 && playerComponents[0] instanceof JLabel && playerComponents[1] instanceof JLabel){
                     JLabel playerNameLabel = (JLabel) playerComponents[0];
                     JLabel playerScoreLabel = (JLabel) playerComponents[1];
-
-                    
-                    // Check if the player's ID matches
-                    if (playerNameLabel.getText().contains(shooterName) && isBaseHit == false) {
-                        // Update the player's score
+                    if (playerNameLabel.getText().equals(shooterName)) {
                         int currentScore = Integer.parseInt(playerScoreLabel.getText());
-                        currentScore += 10;
-                        playerScoreLabel.setText(String.valueOf(currentScore));
-                        if(team.equalsIgnoreCase("red")){
-                            redScoreLabels.put(shooterName, playerScoreLabel);
+                        if (isFriendlyFire) {
+                            currentScore -= 10; // Subtract 10 for friendly fire
+                        } else if (isBaseHit) {
+                            // Handle base hit
+                            if (!playerNameLabel.getText().contains("(B)")) {
+                                playerNameLabel.setText(playerNameLabel.getText() + " (B)");
+                            }
+                            currentScore += 100; // Add 100 for a base hit
+                        } else {
+                            // Handle regular hit
+                            currentScore += 10; // Add 10 for a regular hit
                         }
-                        else if(team.equalsIgnoreCase("green")){
+                        playerScoreLabel.setText(String.valueOf(currentScore));
+                        if (team.equalsIgnoreCase("red")) {
+                            redScoreLabels.put(shooterName, playerScoreLabel);
+                        } else if (team.equalsIgnoreCase("green")) {
                             greenScoreLabels.put(shooterName, playerScoreLabel);
                         }
+                    
+                    // Check if the player's ID matches
+                    //if (playerNameLabel.getText().contains(shooterName) && isBaseHit == false) {
+                        // Update the player's score
+                    //    int currentScore = Integer.parseInt(playerScoreLabel.getText());
+                    //    currentScore += 10;
+                    //    playerScoreLabel.setText(String.valueOf(currentScore));
+                    //    if(team.equalsIgnoreCase("red")){
+                    //        redScoreLabels.put(shooterName, playerScoreLabel);
+                    //    }
+                    //    else if(team.equalsIgnoreCase("green")){
+                    //        greenScoreLabels.put(shooterName, playerScoreLabel);
+                    //    }
                         
                         Panel.revalidate();
                         Panel.repaint();

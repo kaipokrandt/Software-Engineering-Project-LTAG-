@@ -242,7 +242,8 @@ public class udpBaseServer_2 {
                             if (entryScreen != null) {
                                 shooterTeam = entryScreen.getTeamByID(shooterId);
                                 JPanel shooterTeamPanel = "Red".equalsIgnoreCase(shooterTeam) ? entryScreen.redTeamPlayerPanel : entryScreen.greenTeamPlayerPanel;
-                                entryScreen.updatePlayerPanel(shooterTeamPanel, Integer.toString(shooterId), shooterTeam, false);
+                                boolean isFriendlyFire = shooterTeam.equalsIgnoreCase(entryScreen.getTeamByID(targetID));
+                                entryScreen.updatePlayerPanel(shooterTeamPanel, Integer.toString(shooterId), shooterTeam, false, isFriendlyFire);
                             }
 
                             String targetTeam = entryScreen.getTeamByID(targetID);
@@ -265,11 +266,9 @@ public class udpBaseServer_2 {
                                     }
                                     System.out.println(shooterTag + " hit an enemy " + targetTag);
                                 }
-
                                 if (entryScreen != null) {
                                     entryScreen.appendPlayAction(shooterTag + " hit " + targetTag);
                                 }
-
                                 updateScores();
                             }
 
@@ -335,7 +334,7 @@ public class udpBaseServer_2 {
             if (entryScreen == null) {
                 System.out.println("entryScreen is null!");
             } else {
-                entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId), entryScreen.getTeamByID(shooterId), true);
+                entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId), entryScreen.getTeamByID(shooterId), true, false);
             }
     
     }
