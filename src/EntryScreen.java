@@ -397,13 +397,6 @@ public class EntryScreen {
     }
 
     public void clearGame() {
-        // Show confirmation dialog to the user for clearing the database
-        int confirm = JOptionPane.showConfirmDialog(
-            null, 
-            "DEBUG ONLY! : Do you want to clear the database along with the player entries?", 
-            "Clear Game", 
-            JOptionPane.YES_NO_OPTION
-        );
     
         // Always clear red team fields
         for (int i = 0; i < 15; i++) {
@@ -419,27 +412,6 @@ public class EntryScreen {
             greenTeamFields[i][2].setText(""); // Clear Hardware ID field
         }
     
-        // If user selects YES, clear the database as well
-        if (confirm == JOptionPane.YES_OPTION) {
-            // Clear the database
-            db.clearTable();
-    
-            // Show confirmation message for clearing both
-            JOptionPane.showMessageDialog(
-                null, 
-                "Player entries and database have been cleared.", 
-                "Clear Game", 
-                JOptionPane.INFORMATION_MESSAGE
-            );
-        } else {
-            // Show message confirming only player entries were cleared
-            JOptionPane.showMessageDialog(
-                null, 
-                "Player entries have been cleared, but database was not affected.", 
-                "Clear Game", 
-                JOptionPane.INFORMATION_MESSAGE
-            );
-        }
     }
 
 
@@ -892,6 +864,8 @@ public class EntryScreen {
                 if(playerComponents.length >= 2 && playerComponents[0] instanceof JLabel && playerComponents[1] instanceof JLabel){
                     JLabel playerNameLabel = (JLabel) playerComponents[0];
                     JLabel playerScoreLabel = (JLabel) playerComponents[1];
+                
+                    
                     if (playerNameLabel.getText().equals(shooterName)) {
                         int currentScore = Integer.parseInt(playerScoreLabel.getText());
                         if (isFriendlyFire) {
@@ -899,7 +873,19 @@ public class EntryScreen {
                         } else if (isBaseHit) {
                             // Handle base hit
                             if (!playerNameLabel.getText().contains("(B)")) {
-                                playerNameLabel.setText(playerNameLabel.getText() + " (B)");
+                                //playerNameLabel.setText(playerNameLabel.getText() + " (B)");
+                                // Create a new JLabel for the "(B)" indicator
+                                JLabel baseHitLabel = new JLabel(" (B)");
+                                baseHitLabel.setForeground(Color.CYAN); // Set the color to cyan
+                                baseHitLabel.setFont(playerNameLabel.getFont()); // Match the font of the player name label
+
+                                // Add the base hit label next to the player's name
+                                JPanel parentPanel = (JPanel) playerNameLabel.getParent();
+                                parentPanel.add(baseHitLabel);
+                                parentPanel.revalidate();
+                                parentPanel.repaint();
+
+
                             }
                             currentScore += 100; // Add 100 for a base hit
                         } else {
@@ -912,19 +898,6 @@ public class EntryScreen {
                         } else if (team.equalsIgnoreCase("green")) {
                             greenScoreLabels.put(shooterName, playerScoreLabel);
                         }
-                    
-                    // Check if the player's ID matches
-                    //if (playerNameLabel.getText().contains(shooterName) && isBaseHit == false) {
-                        // Update the player's score
-                    //    int currentScore = Integer.parseInt(playerScoreLabel.getText());
-                    //    currentScore += 10;
-                    //    playerScoreLabel.setText(String.valueOf(currentScore));
-                    //    if(team.equalsIgnoreCase("red")){
-                    //        redScoreLabels.put(shooterName, playerScoreLabel);
-                    //    }
-                    //    else if(team.equalsIgnoreCase("green")){
-                    //        greenScoreLabels.put(shooterName, playerScoreLabel);
-                    //    }
                         
                         Panel.revalidate();
                         Panel.repaint();
@@ -934,7 +907,18 @@ public class EntryScreen {
                     else if (playerNameLabel.getText().equals(shooterName) && isBaseHit == true) {
                         // Update the player's score
                         if (!playerNameLabel.getText().contains("(B)")) {
-                            playerNameLabel.setText(playerNameLabel.getText() + " (B)");
+                            //playerNameLabel.setText(playerNameLabel.getText() + " (B)");
+                            // Create a new JLabel for the "(B)" indicator
+                            JLabel baseHitLabel = new JLabel(" (B)");
+                            baseHitLabel.setForeground(Color.CYAN); // Set the color to cyan
+                            baseHitLabel.setFont(playerNameLabel.getFont()); // Match the font of the player name label
+
+                            // Add the base hit label next to the player's name
+                            JPanel parentPanel = (JPanel) playerNameLabel.getParent();
+                            parentPanel.add(baseHitLabel);
+                            parentPanel.revalidate();
+                            parentPanel.repaint();
+
                         }
                         int currentScore = Integer.parseInt(playerScoreLabel.getText());
                         currentScore += 100;
@@ -958,7 +942,6 @@ public class EntryScreen {
     public int getPlayerIdByHardwareId(int hardwareId){
 
         for (int i = 0; i < 15; i++) {
-
             String hardwareIdText = redTeamFields[i][2].getText().trim();
 
             if (hardwareIdText.equals("")) {
@@ -974,24 +957,18 @@ public class EntryScreen {
         }
         
         for (int i = 0; i < 15; i++) {
-
-
             String hardwareIdText = greenTeamFields[i][2].getText().trim();
 
             if (hardwareIdText.equals("")) {
                 break;
             }
 
-
             if(hardwareId == Integer.parseInt(hardwareIdText) && !hardwareIdText.equals("")){
                 String playerIDText = greenTeamFields[i][0].getText().trim();
                 return Integer.parseInt(playerIDText);
             }
         }
-        
-
         return -1;
-
     }
 
     private Map<String, Integer> getPlayerScores(Map<String, JLabel> scoreLabels) {
