@@ -30,7 +30,7 @@ public class udpBaseServer_2 {
     private EntryScreen entryScreen = new EntryScreen(null, null);
     private database db;
 
-    private int shooterID;
+    private int shooterId;
     private int team;
 
     private ScheduledExecutorService scheduler;
@@ -74,6 +74,9 @@ public class udpBaseServer_2 {
                 // Process the received message
                 String reply = processMessage(receivedMessage);
 
+                if(reply.equals(null)){
+                    reply = "ERROR";
+                }
                 // Send acknowledgment back to the sender on PORT
                 //String reply = "ACK";
                 byte[] replyBytes = reply.getBytes();
@@ -146,7 +149,7 @@ public class udpBaseServer_2 {
 
     private String processMessage(String message) {
 
-        String target_ID = null;
+        int targetID = -1;
         switch (message) {
             case "202":
                 System.out.println("Game Started!");
@@ -171,71 +174,75 @@ public class udpBaseServer_2 {
 
             default:
                 if (message.contains(":")) {
-                    String[] parts = message.split(":");
+                    String[] parts = message.split(":"); 
                     if (parts.length == 2) {
                         try {
-                            shooterID = Integer.parseInt(parts[0]);
+                            int shooterHardwareId = Integer.parseInt(parts[0]);
+                            shooterId = entryScreen.getPlayerIdByHardwareId(shooterHardwareId);
                             int targetOrCode = Integer.parseInt(parts[1]);
 
-                            System.out.println("Shooter ID: " + shooterID);
+                            System.out.println("Shooter ID: " + shooterId);
                             System.out.println("Target or Code: " + targetOrCode);
 
-                            String shooterTeam = entryScreen.getTeamByID(shooterID);
+
+
+                            String shooterTeam = entryScreen.getTeamByID(shooterId);
 
                             //TODO: Shooter ID is different from Player ID. Shooter ID is the hardware id sent by the traffic generator. 
 
                             if (targetOrCode == 43) {
                                 // Green base hit
                                 if ("Red".equalsIgnoreCase(shooterTeam)) {
-                                    baseHitPlayerIDs.add(shooterID);
-                                    String shooterTag = getTaggedPlayer(shooterID);
+                                    baseHitPlayerIDs.add(shooterId);
+                                    String shooterTag = getTaggedPlayer(shooterId);
                                     System.out.println(shooterTag + " hit the Green base! +100 Red");
                                     redScore += 100;
                                     if (entryScreen != null) {
-                                        //entryScreen.markPlayerWithBaseHit(shooterID, "Green");
+                                        //entryScreen.markPlayerWithBaseHit(shooterId, "Green");
                                     entryScreen.appendPlayAction(shooterTag + " hit the Green base! (BASE)");
-                                        stylelizedBaseHitRepaint(targetOrCode, shooterID);
+                                        stylelizedBaseHitRepaint(targetOrCode, shooterId);
                                     
 
                                 }
                                     updateScores();
                                 } else {
-                                    System.out.println("Ignored: " + shooterID + " attempted to hit their own base (Green)");
+                                    System.out.println("Ignored: " + shooterId + " attempted to hit their own base (Green)");
                                 }
-                                return Integer.toString(shooterID);
+                                return Integer.toString(shooterId);
                             } else if (targetOrCode == 53) {
                                 // Red base hit
                                 if ("Green".equalsIgnoreCase(shooterTeam)) {
-                                    baseHitPlayerIDs.add(shooterID);
-                                    String shooterTag = getTaggedPlayer(shooterID);
+                                    baseHitPlayerIDs.add(shooterId);
+                                    String shooterTag = getTaggedPlayer(shooterId);
                                     System.out.println(shooterTag + " hit the Red base! +100 Green");
                                     greenScore += 100;
                                     if (entryScreen != null) {
-                                        //entryScreen.markPlayerWithBaseHit(shooterID, "Red");
+                                        //entryScreen.markPlayerWithBaseHit(shooterId, "Red");
                                     entryScreen.appendPlayAction(shooterTag + " hit the Red base! (BASE)");
-                                        stylelizedBaseHitRepaint(targetOrCode, shooterID);
+                                        stylelizedBaseHitRepaint(targetOrCode, shooterId);
 
 
                                 }
                                     updateScores();
                                 } else {
-                                    System.out.println("Ignored: " + shooterID + " attempted to hit their own base (Red)");
+                                    System.out.println("Ignored: " + shooterId + " attempted to hit their own base (Red)");
                                 }
-                                return Integer.toString(shooterID);
+                                return Integer.toString(shooterId);
                             }
 
+                            
                             // Standard player vs player hit
-                            int targetID = targetOrCode;
-                            target_ID = Integer.toString(targetID);
-                            String shooterTag = getTaggedPlayer(shooterID);
+                            int targetHardwareID = targetOrCode;
+                            targetID = entryScreen.getPlayerIdByHardwareId(targetHardwareID);
+                            String shooterTag = getTaggedPlayer(shooterId);
                             String targetTag = getTaggedPlayer(targetID);
 
                             System.out.println(shooterTag + " hit " + targetTag);
 
                             if (entryScreen != null) {
-                                shooterTeam = entryScreen.getTeamByID(shooterID);
+                                shooterTeam = entryScreen.getTeamByID(shooterId);
                                 JPanel shooterTeamPanel = "Red".equalsIgnoreCase(shooterTeam) ? entryScreen.redTeamPlayerPanel : entryScreen.greenTeamPlayerPanel;
-                                entryScreen.updatePlayerPanel(shooterTeamPanel, Integer.toString(shooterID), shooterTeam, false);
+                                entryScreen.updatePlayerPanel(shooterTeamPanel, Integer.toString(shooterId), shooterTeam, false);
                             }
 
                             String targetTeam = entryScreen.getTeamByID(targetID);
@@ -266,7 +273,9 @@ public class udpBaseServer_2 {
                                 updateScores();
                             }
 
-                        } catch (NumberFormatException e) {
+                        } catch (Exception e) {
+                            System.out.println("Error processing message: " + e.getMessage());
+                            e.printStackTrace();
                             System.out.println("Invalid player ID format: " + message);
                         }
                     }
@@ -274,7 +283,7 @@ public class udpBaseServer_2 {
                     System.out.println("Unknown command received: " + message);
                 }
         }
-        return target_ID;
+        return Integer.toString(targetID);
         
     }
 
@@ -310,11 +319,7 @@ public class udpBaseServer_2 {
     }
 
     public void stylelizedBaseHitRepaint(int targOpCode, int shooterId) {
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    
-        // Runnable stylizedBaseHit = () -> {
-    
-            // Get the shooter's team and target the correct team panel
+
             String shooterTeam = entryScreen.getTeamByID(shooterId);
             final JPanel teamPanel;
 
@@ -330,16 +335,9 @@ public class udpBaseServer_2 {
             if (entryScreen == null) {
                 System.out.println("entryScreen is null!");
             } else {
-                entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterID), entryScreen.getTeamByID(shooterID), true);
+                entryScreen.updatePlayerPanel(teamPanel, Integer.toString(shooterId), entryScreen.getTeamByID(shooterId), true);
             }
     
-            // Now use the correct team panel
-            // SwingUtilities.invokeLater(() -> {
-
-        //     });
-        // };
-    
-        // scheduler.scheduleAtFixedRate(stylizedBaseHit, 0, 350, TimeUnit.MILLISECONDS);
     }
 }
 

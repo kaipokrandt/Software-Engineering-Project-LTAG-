@@ -471,7 +471,7 @@ public class EntryScreen {
             countdownWindow.setVisible(false);
             countdownWindow.dispose();
             //udpClient.sendEquipmentID(202);
-            udpServer.sendCode("202");
+
     
             // Set up player window
             JFrame playerWindow = new JFrame("Player Action");
@@ -488,6 +488,28 @@ public class EntryScreen {
                     playerWindow.dispose();
                 }
             });
+
+            playActionPane = new JTextPane();
+            playActionPane.setEditable(false);
+            playActionPane.setBackground(Color.BLACK);
+            doc = playActionPane.getStyledDocument();
+
+            regularStyle = playActionPane.addStyle("Regular", null);
+            StyleConstants.setForeground(regularStyle, Color.WHITE);
+            StyleConstants.setFontSize(regularStyle, 14);
+            StyleConstants.setFontFamily(regularStyle, "Monospaced");
+    
+            hitStyle = playActionPane.addStyle("Hit", null);
+            StyleConstants.setForeground(hitStyle, Color.YELLOW);
+            StyleConstants.setFontSize(hitStyle, 16);
+            StyleConstants.setBold(hitStyle, true);
+    
+            baseHitStyle = playActionPane.addStyle("BaseHit", null);
+            StyleConstants.setForeground(baseHitStyle, Color.CYAN);
+            StyleConstants.setFontSize(baseHitStyle, 16);
+            StyleConstants.setBold(baseHitStyle, true);
+
+
     
             // Team panels
             redTeamPlayerPanel = new JPanel();
@@ -586,26 +608,10 @@ public class EntryScreen {
             timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     
             // Play action pane
-            playActionPane = new JTextPane();
-            playActionPane.setEditable(false);
-            playActionPane.setBackground(Color.BLACK);
-            doc = playActionPane.getStyledDocument();
+            
     
             // Define styles
-            regularStyle = playActionPane.addStyle("Regular", null);
-            StyleConstants.setForeground(regularStyle, Color.WHITE);
-            StyleConstants.setFontSize(regularStyle, 14);
-            StyleConstants.setFontFamily(regularStyle, "Monospaced");
-    
-            hitStyle = playActionPane.addStyle("Hit", null);
-            StyleConstants.setForeground(hitStyle, Color.YELLOW);
-            StyleConstants.setFontSize(hitStyle, 16);
-            StyleConstants.setBold(hitStyle, true);
-    
-            baseHitStyle = playActionPane.addStyle("BaseHit", null);
-            StyleConstants.setForeground(baseHitStyle, Color.CYAN);
-            StyleConstants.setFontSize(baseHitStyle, 16);
-            StyleConstants.setBold(baseHitStyle, true);
+
     
             JScrollPane actionScroll = new JScrollPane(playActionPane);
             actionScroll.setPreferredSize(new Dimension(400, 150));
@@ -639,6 +645,9 @@ public class EntryScreen {
             playerWindow.setSize(700, 700);
             playerWindow.setLocationRelativeTo(null);
             playerWindow.setVisible(true);
+
+
+            udpServer.sendCode("202");
     
             // Start game timer
             new Thread(() -> {
@@ -811,7 +820,13 @@ public class EntryScreen {
                         int currentScore = Integer.parseInt(playerScoreLabel.getText());
                         currentScore += 10;
                         playerScoreLabel.setText(String.valueOf(currentScore));
-                        redScoreLabels.put(shooterName, playerScoreLabel);
+                        if(team.equalsIgnoreCase("red")){
+                            redScoreLabels.put(shooterName, playerScoreLabel);
+                        }
+                        else if(team.equalsIgnoreCase("green")){
+                            greenScoreLabels.put(shooterName, playerScoreLabel);
+                        }
+                        
                         Panel.revalidate();
                         Panel.repaint();
                         return;
@@ -822,42 +837,62 @@ public class EntryScreen {
                         if (!playerNameLabel.getText().contains("(B)")) {
                             playerNameLabel.setText(playerNameLabel.getText() + " (B)");
                         }
+                        int currentScore = Integer.parseInt(playerScoreLabel.getText());
+                        currentScore += 100;
+                        playerScoreLabel.setText(String.valueOf(currentScore));
+                        if(team.equalsIgnoreCase("red")){
+                            redScoreLabels.put(shooterName, playerScoreLabel);
+                        }
+                        else if(team.equalsIgnoreCase("green")){
+                            greenScoreLabels.put(shooterName, playerScoreLabel);
+                        }
                         Panel.revalidate();
                         Panel.repaint();
                         return;
                     }
                 }
                 
-
-
-                // Find the JLabel with the player's name
-                // for (Component playerComponent : playerPanel.getComponents()) {
-                //     if (playerComponent instanceof JLabel) {
-                //         JLabel nameLabel = (JLabel) playerComponent;
-
-                //         // Check if the label contains the player's ID
-                //             if (!nameLabel.getText().contains("(B)")) {
-                //                 nameLabel.setText(nameLabel.getText() + " (B)");
-                //             }
-
-                //         Panel.revalidate();
-                //         Panel.repaint();  
-                //         return;
-                //     }
-                // }
             }
         }
     }
 
-   
-    
-    public void gameParameters() {
-        // Implement game parameters functionality - might do later
-        System.out.println("Game Parameters functionality triggered!");
+    public int getPlayerIdByHardwareId(int hardwareId){
+
+        for (int i = 0; i < 15; i++) {
+
+            String hardwareIdText = redTeamFields[i][2].getText().trim();
+
+            if (hardwareIdText.equals("")) {
+                break;
+            }
+
+            System.out.println("Hardware ID Text: " + hardwareIdText);
+
+            if(hardwareId == Integer.parseInt(hardwareIdText)){
+                String playerIDText = redTeamFields[i][0].getText().trim();
+                return Integer.parseInt(playerIDText);
+            }
+        }
+        
+        for (int i = 0; i < 15; i++) {
+
+
+            String hardwareIdText = greenTeamFields[i][2].getText().trim();
+
+            if (hardwareIdText.equals("")) {
+                break;
+            }
+
+
+            if(hardwareId == Integer.parseInt(hardwareIdText) && !hardwareIdText.equals("")){
+                String playerIDText = greenTeamFields[i][0].getText().trim();
+                return Integer.parseInt(playerIDText);
+            }
+        }
+        
+
+        return -1;
+
     }
 
-    public void editGame() {
-        // Implement edit game functionality
-        System.out.println("Edit Game functionality triggered!");
-    }
 }
